@@ -1,10 +1,72 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse,HttpResponseRedirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from acct.models import Agency_t
 import datetime
 # Create your views here.
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(username=username,password=password)
+
+        if user:
+            if user.is_active:
+                login(request, user)
+                #return HttpResponseRedirect(reverse('index'))
+                return JsonResponse({"is_login":True,"login_result_string":"Success","NickName":user.first_name,"DJName":user.last_name})
+            else:
+                #return HttpResponse("your account is disabled.")
+                return JsonResponse({"is_login":False,"login_result_string":"your account is disabled."})
+        else:
+            print("Invalid login details:{0},{1}".format(username,password))
+            #return HttpResponse("Invalid login details supplied.")
+            return JsonResponse({"is_login":False,"login_result_string":"Invalid login details supplied."})
+    else:
+        return render(request,'login.html',{})
+        #return JsonResponse({"is_login":False,"login_result_string":"No login details supplied, not POST method."})
+
+@login_required
+def user_logout(request):
+
+    logout(request)
+
+    return HttpResponseRedirect(reverse('index'))
+
+@login_required
+def get_orz(request):
+    if request.method == 'GET':
+        agencies = Agency_t.objects.all()
+        return JsonResponse({'agency':agencies})
+
+@login_required
+def add_orz(request):
+    if request.method == 'POST':
+        org_name = request.POST.get('org_name')
+        org_remark = request.POST.get('remark')
+
+        if org_name:
+            agency = Agency_t(name=org_name,remark=org_remark)
+            agency.save()
+            return JsonResponse({"add_orz_result":"Success"})
+
+        else:
+            return JsonResponse({"add_orz_result":"Organization name should not be null or '' "})
+
+    else:
+        return JsonResponse({"add_orz_result":"not post method"})
+
+
+def add_route(request):
+    pass
+
 def index(request):
     return render(request,'index.html',context={})
 
+@login_required
 def request_form_list(request):
     return render(request,'request_form_list.html')
 
