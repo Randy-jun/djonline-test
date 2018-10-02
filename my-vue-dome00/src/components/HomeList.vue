@@ -29,8 +29,8 @@
       </div>
     </div>
     <div class="row">
-        <div class="col"><button class="btn btn-success" v-on:click="postTest(true)">POST test</button></div>
-        <div class="col"><button class="btn btn-danger" v-on:click="postTest(false)">POST test</button></div>
+        <div class="col"><button class="btn btn-success" v-on:click="postTest(true)">POST !!!!!!! test</button></div>
+        <div class="col"><button class="btn btn-danger" v-on:click="postTest(false)">POST !!!!!!! test</button></div>
     </div>
   </div>
 </template>
