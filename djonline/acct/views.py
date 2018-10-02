@@ -21,11 +21,11 @@ def return_json(request):
     testdata=[
         {
           "aid":110,
-          "title":"iOS程序员的月薪已降到12K但是13k还招不到html5移动app开发者",
+          "title":"iOS程序员的月薪已降到12K但是13k还招不到html5移动app开发者!",
         },
         {
           "aid":111,
-          "title":"锤子代工厂倒闭 罗永浩:已尽力了",
+          "title":"锤子代工厂倒闭 罗永浩:已尽力了!",
         },
         {
           "aid":112,
@@ -41,7 +41,11 @@ def return_json(request):
         },
         {
           "aid":115,
-          "title":"angulard sagefgfdsad Chart.js的使用",
+          "title":"angulard sagefgfdsad Chart.js的使用!",
+        },
+        {
+          "aid":116,
+          "title":"djonline first submit",
         },
     ]
     # testdata={'teststr':'This is a string','testint':2018,'testdate':datetime.datetime.now(),'testfloat':12.8,'testinner':{'a':'a','b':'b'}}
