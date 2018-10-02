@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="container-fluid">
-    <login msg="This is Login!"/>
+    <Login msg="This is Login!"/>
     <!-- <Header msg="Financial Management Systems Software" />
     <div class="row">
       <Asider msg="This is Asider!" />
