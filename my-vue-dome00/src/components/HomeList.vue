@@ -9,11 +9,11 @@
                <th>Details/Edit/Del</th>
             </tr>
          </thead>
-         <tbody v-for="(item,key) in test_list" v-bind:key='item.aid'>
+         <tbody v-for="(item,key) in data_list" v-bind:key='item.aid'>
             <!-- key 要写到后面才可以 -->
             <tr>
                <td>{{item.aid}}</td>
-               <td>{{item.title}}</td>
+               <td>{{item.name}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
                   <button type="button" class="btn btn-primary" v-bind:value="'#a'+key">Details</button>
@@ -54,7 +54,7 @@ export default {
         dd_date:"2018-8.31"
       },
       // post_data:{},
-      test_list:[],
+      data_list:[],
       tourist:[]
     }
   },
@@ -82,7 +82,7 @@ export default {
     },
     postTest(flag){
       const api='http://127.0.0.1:9090/acct/get_json/';
-      var post_data={"id":123,"title":"this is 中文"};
+      // var post_data={"id":123,"title":"this is 中文"};
 
       var params = new URLSearchParams();
       params.append('id', 1234325456); 
@@ -103,14 +103,13 @@ export default {
   },
   mounted() {
     // var list = JSON.parse(localStorage.getItem('list'));
-      
-    // var api="http://127.0.0.1:9090/acct/request_form/6";
-    var api='http://127.0.0.1:9090/acct/return_json/';
-    // var api='http://www.phonegap100.com/appapi.php?a=getPortalList&catid=20&page=2';
+    
+    const api='http://127.0.0.1:9090/acct/agencies/';
     Axios.get(api).then((response)=>{
-        // console.log(response);
+        console.log(response.data);
+        this.data_list=response.data;
         // console.log(typeof(response.data.result));
-        this.test_list=response.data.result;
+        // this.test_list=response.data.result;
       }).catch((error)=>{
         // console.log(error);
       })
