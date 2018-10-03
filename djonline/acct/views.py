@@ -3,13 +3,22 @@ from django.http import JsonResponse,HttpResponse,HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from acct.models import Agency_t
+from django.http import Http404
 
+from acct.models import Agency_t,Line_Price_t,Ref_Price_t
+
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from acct.serializers import Agency_tSerializer
+from rest_framework.views import APIView
+
+from acct.serializers import Agency_tSerializer,Line_Price_tSerializer,Ref_Price_tSerializer
+
 import datetime
 # Create your views here.
+
 def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -76,6 +85,41 @@ def orz_detail(request,pk):
         agency.delete()
         return HttpResponse(status=204)
 
+@api_view(['GET','POST'])
+def line_list(request):
+    if request.method == 'GET':
+        line_price = Line_Price_t.objects.all()
+        serializer = Line_Price_tSerializer(line_price,many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = Line_Price_tSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET','PUT','DELETE'])
+def line_detail(request,pk):
+    try:
+        line = Line_Price_t.objects.get(pk=pk)
+    except Line_Price_t.DoesNotExist:
+        return Response(status=status.HTTP_404_NOTFOUND)
+
+    if request.method == 'GET':
+        serializer = Line_Price_tSerializer(line)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = Line_Price_tSerializer(line, data = request.data)
+        if serializer.is_valid:
+            serializer.save()
+            return Reponse(serializer.data)
+        return Response(serializer.errors,status = status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        line.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 def add_route(request):
     pass
@@ -174,3 +218,41 @@ def calculate_acct(request):
               'diaobo_business': diaobo_business}
 
     return JsonResponse(result)
+
+class Ref_PriceList(APIView):
+    def get(self, request, format=None):
+        refP = Ref_Price_t.objects.all()
+        serializer = Ref_Price_tSerializer(refP,many=True)
+        return Response(serializer.data)
+
+    def post(self,request, format=None):
+        serializer = Ref_Price_tSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class Ref_PriceDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Ref_Price_t.objects.get(pk=pk)
+        except Ref_Price_t.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        refP = self.get_object(pk)
+        serializer = Ref_Price_tSerializer(refP)
+        return Response(serializer.data)
+
+    def put(self, request, pk ,format=None):
+        refP = self.get_object(pk)
+        serializer = Ref_Price_tSerializer(refP, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Reponse(serializer.data)
+        return Response(serializer.errros,status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request,pk, format=None):
+        refP = self.get_object(pk)
+        refP.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)   

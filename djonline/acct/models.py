@@ -21,7 +21,6 @@ class Line_Price_t(models.Model):
 #参考报价表 
 # level挡位；kind类型，price报价，line_price_fk所属线路报价单
 class Ref_Price_t(models.Model):
-	level = models.IntegerField()
 	kind = models.CharField(max_length=64)
 	price = models.FloatField()
 	line_price_fk = models.ForeignKey(Line_Price_t, on_delete=models.DO_NOTHING)
