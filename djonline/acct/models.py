@@ -4,6 +4,7 @@ from django.db import models
 #组织信息表
 class Agency_t(models.Model):
 	name = models.CharField(max_length=128)
+	remark = models.CharField(max_length=256)
 	def __str__(self):
 		return self.name
 

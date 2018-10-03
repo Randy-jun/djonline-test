@@ -4,6 +4,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from acct.models import Agency_t
+
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from acct.serializers import Agency_tSerializer
 import datetime
 # Create your views here.
 def user_login(request):
@@ -36,28 +40,41 @@ def user_logout(request):
 
     return HttpResponseRedirect(reverse('index'))
 
-@login_required
-def get_orz(request):
+#@login_required
+def orz_list(request):
     if request.method == 'GET':
         agencies = Agency_t.objects.all()
-        return JsonResponse({'agency':agencies})
+        serializer = Agency_tSerializer(agencies, many = True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = Agency_tSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
-@login_required
-def add_orz(request):
-    if request.method == 'POST':
-        org_name = request.POST.get('org_name')
-        org_remark = request.POST.get('remark')
+#@login_required
+def orz_detail(request,pk):
+    try:
+        agency = Agency_t.objects.get(pk=pk)
+    except Agency_t.DoesNotExist:
+        return HttpResponse(status=404)
 
-        if org_name:
-            agency = Agency_t(name=org_name,remark=org_remark)
-            agency.save()
-            return JsonResponse({"add_orz_result":"Success"})
+    if request.method == 'GET':
+        serializer = Agency_tSerializer(agency)
+        return JsonResponse(serializer.data)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = Agency_tSerializer(agency,data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status = 400)
 
-        else:
-            return JsonResponse({"add_orz_result":"Organization name should not be null or '' "})
-
-    else:
-        return JsonResponse({"add_orz_result":"not post method"})
+    elif request.method=='DELETE':
+        agency.delete()
+        return HttpResponse(status=204)
 
 
 def add_route(request):
