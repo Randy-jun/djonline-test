@@ -1,8 +1,10 @@
 .DS_Store
 node_modules
-/dist
+/my-vue-dome00/dist
+__pycache__
 
 # local env files
+/djonline/db.sqlite3
 .env.local
 .env.*.local
 
