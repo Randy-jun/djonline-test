@@ -73,7 +73,7 @@
 
 <script>
 import Axios from 'axios';
-import Storage from '../module/storage.js';
+import Storage from '../module/lstorage.js';
 export default {
   name: 'Home',
   props: {

@@ -1,6 +1,6 @@
 //localstorage function packae
 
-var storage = {
+var lstorage = {
     set(key, value){
         localStorage.setItem(key, JSON.stringify(value));
     },
@@ -12,4 +12,4 @@ var storage = {
     }
 }
 
-export default storage;
+export default lstorage;
