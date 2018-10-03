@@ -106,8 +106,9 @@ export default {
     
     const api='http://127.0.0.1:9090/acct/agencies/';
     Axios.get(api).then((response)=>{
-        console.log(response.data);
-        this.data_list=response.data;
+        // console.log(response.data);
+        this.data_list=response.data.result;
+        // console.log(response.data.result);
         // console.log(typeof(response.data.result));
         // this.test_list=response.data.result;
       }).catch((error)=>{
