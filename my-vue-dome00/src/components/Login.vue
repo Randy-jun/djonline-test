@@ -65,6 +65,7 @@ export default {
             if(response.data.is_login){
               this.show_F=false;
               this.show_S=true;
+              this.$router.replace({ path: 'main' })
               // console.log(response.data.is_login);
               // console.log(response.data.login_result_string)
               // console.log(response.data.NickName)
@@ -80,7 +81,7 @@ export default {
           });
       }
     },
-    reg(flag){
+    reg(){
     }
   },
   mounted() {
