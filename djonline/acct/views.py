@@ -54,13 +54,13 @@ def orz_list(request):
     if request.method == 'GET':
         agencies = Agency_t.objects.all()
         serializer = Agency_tSerializer(agencies, many = True)
-        return JsonResponse(serializer.data, safe=False)
+        return JsonResponse({'result':serializer.data}, safe=False)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = Agency_tSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
+            return JsonResponse({'result':serializer.data,'s':'ss'}, status=201)
         return JsonResponse(serializer.errors, status=400)
 
 #@login_required
@@ -78,7 +78,7 @@ def orz_detail(request,pk):
         serializer = Agency_tSerializer(agency,data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
+            return JsonResponse({'result':serializer.data})
         return JsonResponse(serializer.errors, status = 400)
 
     elif request.method=='DELETE':
@@ -223,7 +223,7 @@ class Ref_PriceList(APIView):
     def get(self, request, format=None):
         refP = Ref_Price_t.objects.all()
         serializer = Ref_Price_tSerializer(refP,many=True)
-        return Response(serializer.data)
+        return Response({'result':serializer.data})
 
     def post(self,request, format=None):
         serializer = Ref_Price_tSerializer(data=request.data)
