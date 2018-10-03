@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container-fluid">
     <Header msg="Financial Management Systems Software" />
       <div class="row">
         <Asider msg="This is Asider!" />

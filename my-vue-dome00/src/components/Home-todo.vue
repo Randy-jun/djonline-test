@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import storage from '../module/storage.js';
+import storage from '../module/lstorage.js';
 export default {
   name: 'Home',
   props: {

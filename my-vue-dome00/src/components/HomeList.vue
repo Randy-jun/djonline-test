@@ -12,7 +12,7 @@
          <tbody v-for="(item,key) in data_list" v-bind:key='item.aid'>
             <!-- key 要写到后面才可以 -->
             <tr>
-               <td>{{item.aid}}</td>
+               <td>{{item.id}}</td>
                <td>{{item.name}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
@@ -37,7 +37,7 @@
 
 <script>
 import Axios from 'axios';
-import Storage from '../module/storage.js';
+import Storage from '../module/lstorage.js';
 export default {
   name: 'Home',
   props: {
