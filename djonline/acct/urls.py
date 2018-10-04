@@ -10,6 +10,7 @@ urlpatterns = [
     path('new_request/', views.new_request, name='new_request'),
     path('return_json/',views.return_json,name='return_json'),
     path('get_json/',views.get_json,name='get_json'),
+    
     path('agencies/',views.orz_list,name='orz_list'),
     path('agency/<int:pk>/',views.orz_detail,name='orz_detail'),
     path('lineprices/',views.line_list,name='line_list'),

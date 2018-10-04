@@ -1,10 +1,11 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
 #组织信息表
 class Agency_t(models.Model):
 	name = models.CharField(max_length=128)
 	remark = models.CharField(max_length=256)
+	localname = models.CharField(max_length=128)
 	def __str__(self):
 		return self.name
 
@@ -13,6 +14,7 @@ class Line_Price_t(models.Model):
 	name = models.CharField(max_length=64)
 	remark = models.CharField(max_length=128,blank=True)
 	detail = models.TextField(max_length=2048, blank=True)
+	localname = models.CharField(max_length=128)
 
 	def __str__(self):
 		return self.name
@@ -24,6 +26,8 @@ class Ref_Price_t(models.Model):
 	kind = models.CharField(max_length=64)
 	price = models.FloatField()
 	line_price_fk = models.ForeignKey(Line_Price_t, on_delete=models.DO_NOTHING)
+	localname = models.CharField(max_length=128)
+
 	def __str__(self):
 		return self.kind
 
@@ -35,6 +39,8 @@ class Application_t(models.Model):
 	agency_fk = models.ForeignKey(Agency_t,on_delete=models.DO_NOTHING)
 	line_name_fk = models.ForeignKey(Line_Price_t,on_delete=models.DO_NOTHING)
 	def_price_fk = models.ForeignKey(Ref_Price_t, on_delete=models.DO_NOTHING)
+	localname = models.CharField(max_length=128)
+
 	def __str__(self):
 		return self.agency_fk.name+'-'+self.line_name_fk.name+'-'+str(self.date)
 
@@ -53,6 +59,8 @@ class Tourist_t(models.Model):#游客表
 	#调拨单位
 	agent_price = models.FloatField(default=0)#代收金额
 	agent_remark = models.CharField(max_length=128,blank=True)#代收备注
+	localname = models.CharField(max_length=128)
+
 	def __str__(self):
 		return self.name	
 
@@ -63,8 +71,14 @@ class Settlement_t(models.Model):#结算表
 	                related_name='rec_agency',on_delete=models.DO_NOTHING)#收款方
 	pay_agency_fk = models.ForeignKey(Agency_t,on_delete=models.DO_NOTHING)#付款方
 	application_t =models.OneToOneField(Application_t,on_delete=models.DO_NOTHING)#所属出团申请单
+	localname = models.CharField(max_length=128)
+	
+	
 	def __str__(self):
-		return self.application_t.name+'-'+self.rec_angency_fk.name+'-'+self.pay_angecy_fk.name+'-'+self.kind
+		return self.application_t.name+'-'+self.rec_angency_fk.name+'-'+self.pay_angecy_fk.name+'-'+self.kind+'-'+self.localname
+
+
+
 
 
 

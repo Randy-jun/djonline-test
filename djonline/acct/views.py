@@ -183,7 +183,7 @@ def get_json(request):
         return JsonResponse({'result':'No data'})
 
 
-def calculate_acct(request):
+def calculate_acct(request,youke):
     '''核算信息计算函数
     youke是查询的游客信息表'''
     ultip_sum = 0  # 最终报价之和
@@ -199,7 +199,7 @@ def calculate_acct(request):
         if t.trans_agency == '0':  # 通过主键查询调拨单位的名称，主键为0则是没有调拨单位的情况
             trans_agency = ''
         else:
-            trans_agency = agency_t.objects.get(
+            trans_agency = Agency_t.objects.get(
                 pk=int(t.trans_agency)).name  # 通过保存的主键查询名称
         if trans_agency == '':  # 无调拨单位，总代收金额=总代收金额+当前游客代收金额
             trans_price = trans_price + t.agent_price
