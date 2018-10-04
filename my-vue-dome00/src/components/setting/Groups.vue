@@ -1,5 +1,6 @@
 <template>
   <div class="col">
+    Groups
     <div class="row">
       <table class="table table-hover table-responsive-lg">
          <thead class="thead-lights">

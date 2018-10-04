@@ -88,7 +88,7 @@ export default {
     }
   },
   mounted() {
-  }
+  },
 }
 </script>
 

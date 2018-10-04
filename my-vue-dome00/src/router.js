@@ -17,7 +17,22 @@ export default new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "mains" */ './components/Main.vue')
+      component: () => import(/* webpackChunkName: "mains" */ './components/Main.vue'),
+    },
+    {
+      path: '/setting',
+      name: 'setting',
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "setting" */ './components/setting/Setting.vue'),
+      children: [{
+        path: 'products',
+        component: () => import(/* webpackChunkName: "setting" */ './components/setting/Products.vue'),
+      }, {
+        path: 'groups',
+        component: () => import(/* webpackChunkName: "setting" */ './components/setting/Groups.vue'),
+      }],
     }
   ]
 })

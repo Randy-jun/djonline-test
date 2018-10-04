@@ -2,7 +2,7 @@
   <nav class="navbar navbar-light bg-light">
     <span class="navbar-brand"><h1>DJonline</h1></span>
       <div class="col-auto">
-      <small>{{nickname}} | {{djname}} | <a class="badge badge-second" v-on:click="setting()">设置</a></small>
+      <small>{{nickname}} | {{djname}} | <a class="badge badge-second" v-on:click="goback()">返回</a></small>
       </div>
   </nav>
 </template>
@@ -10,7 +10,7 @@
 <script>
 import Sstorage from '@/module/sstorage.js';
 export default {
-  name: 'Header',
+  name: 'Headerset',
   props: {
     msg: String
   },
@@ -21,9 +21,8 @@ export default {
     }
   },
   methods: {
-    setting(){
-      // alert("setting")
-      this.$router.replace({ path: 'setting' })
+    goback(){
+      this.$router.replace({ path: '/main' })
     },
   },
   mounted() {

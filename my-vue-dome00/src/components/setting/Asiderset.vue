@@ -1,18 +1,15 @@
 <template>
 <div class="col-2 ">
   <nav class="nav nav-pills nav-fill flex-column">
-    <a class="nav-item nav-link active" href="#">导航一</a>
-    <a class="nav-item nav-link" href="#">导航二</a>
-    <a class="nav-item nav-link" href="#">导航三</a>
-    <a class="nav-item nav-link" href="#">导航四</a>
-    <a class="nav-item nav-link disabled" href="#">导航五</a>
+    <a class="nav-item nav-link active" v-on:click="navgo('groups')">组团社管理</a>
+    <a class="nav-item nav-link" v-on:click="navgo('products')">线路报价管理</a>
   </nav>
 </div>
 </template>
 
 <script>
 export default {
-  name: 'Asider',
+  name: 'Asiderset',
   data() {
     return {
         menu_name: "MENU",
@@ -20,6 +17,13 @@ export default {
   },
   props: {
     msg: String,
+  },
+  methods: {
+    navgo(addgo){
+      var goadd = "/setting/" + addgo
+      // console.log(goadd)
+      this.$router.replace({ path: goadd })
+    },
   },
   mounted() {
 

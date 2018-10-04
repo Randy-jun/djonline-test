@@ -1,5 +1,6 @@
 <template>
   <div class="col">
+    Proudcts
     <div class="row jumbotron ho-pad">
       <div class="col card text-center"><div class="card-body"><h5 class="card-title">地接社名称：</h5><a class="card-text">{{order.dj_name}}</a></div></div>
       <div class="col card text-center"><div class="card-body"><h5 class="card-title">组团社名称：</h5><a class="card-text">{{order.zt_name}}</a></div></div>
