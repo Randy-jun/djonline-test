@@ -32,6 +32,9 @@ export default new Router({
       }, {
         path: 'groups',
         component: () => import(/* webpackChunkName: "setting" */ './components/setting/Groups.vue'),
+      }, {
+        path: '/setting/',
+        component: () => import(/* webpackChunkName: "setting" */ './components/setting/Groups.vue'),
       }],
     }
   ]
