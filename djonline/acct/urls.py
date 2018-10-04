@@ -1,6 +1,7 @@
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 from . import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('',views.index,name='index'),
@@ -17,6 +18,7 @@ urlpatterns = [
     path('lineprice/<int:pk>/',views.line_detail,name='line_detail'),
     path('refprices/',views.Ref_PriceList.as_view(),name='PriceList'),
     path('refdetail/<int:pk>/',views.Ref_PriceDetail.as_view(),name='PriceDetail'),
+    path('accounts/login/',auth_views.LoginView.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

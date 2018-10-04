@@ -49,12 +49,13 @@ def user_logout(request):
 
     return HttpResponseRedirect(reverse('index'))
 
-#@login_required
+@login_required
 def orz_list(request):
     if request.method == 'GET':
-        agencies = Agency_t.objects.all()
+        localname=request.user.last_name
+        agencies = Agency_t.objects.filter(localname=localname)
         serializer = Agency_tSerializer(agencies, many = True)
-        return JsonResponse({'result':serializer.data}, safe=False)
+        return JsonResponse({'result':serializer.data,'loclname':localname}, safe=False)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = Agency_tSerializer(data=data)
