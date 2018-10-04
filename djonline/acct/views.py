@@ -53,7 +53,7 @@ def user_logout(request):
 
 def orz_list(request):
     if request.method == 'GET':
-        localname=request.user.last_name
+        localname='中国国际旅行社'
         agencies = Agency_t.objects.filter(localname=localname)
         serializer = Agency_tSerializer(agencies, many = True)
         return JsonResponse({'result':serializer.data,'loclname':localname}, safe=False)
@@ -89,10 +89,13 @@ def orz_detail(request,pk):
 
 @api_view(['GET','POST'])
 def line_list(request):
-    localname=request.user.last_name
+    localname='中国国际旅行社'
     if request.method == 'GET':
-        line_price = Line_Price_t.objects.filter(localname=localname)
-        ref_data = []
+        line_prices = Line_Price_t.objects.filter(localname=localname)
+        ref_data = {}
+        #for line in line_prices:
+            #Ref_Price_t.objects.filter(line_price_fk__id=line.id)[:3]
+            #ref_data(line.id:Ref_Price_t)
 
         ref_prices = Ref_Price_t.objects.filter(localname=localname)
         serializer = Line_Price_tSerializer(line_price,many=True)
