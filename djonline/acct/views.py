@@ -97,10 +97,10 @@ def line_list(request):
             #Ref_Price_t.objects.filter(line_price_fk__id=line.id)[:3]
             #ref_data(line.id:Ref_Price_t)
 
-        ref_prices = Ref_Price_t.objects.filter(localname=localname)
-        serializer = Line_Price_tSerializer(line_price,many=True)
-        serializer2 = Ref_Price_tSerializer(ref_prices,many=True)
-        return Response({'result':serializer.data,'lo':localname,'user':request.user.username,'ref_prices':serializer2.data})
+        #ref_prices = Ref_Price_t.objects.filter(localname=localname)
+        serializer = Line_Price_tSerializer(line_prices,many=True)
+        #serializer2 = Ref_Price_tSerializer(ref_prices,many=True)
+        return Response({'result':serializer.data,'lo':localname,'user':request.user.username})
 
     elif request.method == 'POST':
         serializer = Line_Price_tSerializer(data=request.data)
