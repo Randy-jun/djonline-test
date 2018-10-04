@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import Http404
+from django.core import serializers
 
 from acct.models import Agency_t,Line_Price_t,Ref_Price_t
 
@@ -42,14 +43,14 @@ def user_login(request):
         return render(request,'login.html',{})
         #return JsonResponse({"is_login":False,"login_result_string":"No login details supplied, not POST method."})
 
-@login_required
+
 def user_logout(request):
 
     logout(request)
 
     return HttpResponseRedirect(reverse('index'))
 
-@login_required
+
 def orz_list(request):
     if request.method == 'GET':
         localname=request.user.last_name
@@ -64,7 +65,7 @@ def orz_list(request):
             return JsonResponse({'result':serializer.data,'s':'ss'}, status=201)
         return JsonResponse(serializer.errors, status=400)
 
-#@login_required
+
 def orz_detail(request,pk):
     try:
         agency = Agency_t.objects.get(pk=pk)
@@ -88,10 +89,15 @@ def orz_detail(request,pk):
 
 @api_view(['GET','POST'])
 def line_list(request):
+    localname=request.user.last_name
     if request.method == 'GET':
-        line_price = Line_Price_t.objects.all()
+        line_price = Line_Price_t.objects.filter(localname=localname)
+        ref_data = []
+
+        ref_prices = Ref_Price_t.objects.filter(localname=localname)
         serializer = Line_Price_tSerializer(line_price,many=True)
-        return Response(serializer.data)
+        serializer2 = Ref_Price_tSerializer(ref_prices,many=True)
+        return Response({'result':serializer.data,'lo':localname,'user':request.user.username,'ref_prices':serializer2.data})
 
     elif request.method == 'POST':
         serializer = Line_Price_tSerializer(data=request.data)
@@ -122,13 +128,12 @@ def line_detail(request,pk):
         line.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-def add_route(request):
-    pass
+
 
 def index(request):
     return render(request,'index.html',context={})
 
-@login_required
+
 def request_form_list(request):
     return render(request,'request_form_list.html')
 
@@ -140,49 +145,6 @@ def new_request(request):
 
 def add_new_request(request):
     return render(request,'add_new_request.html')
-
-def return_json(request):
-    testdata=[
-        {
-          "aid":110,
-          "title":"iOS程序员的月薪已降到12K但是13k还招不到html5移动app开发者!",
-        },
-        {
-          "aid":111,
-          "title":"锤子代工厂倒闭 罗永浩:已尽力了!",
-        },
-        {
-          "aid":112,
-          "title":"ionic模板源码下载市场正式上线了",
-        },
-        {
-          "aid":113,
-          "title":"我为什么创建Ionic中文网",
-        },
-        {
-          "aid":114,
-          "title":"angularjs ionic中图表和报表插件 Chart.js的使用",
-        },
-        {
-          "aid":115,
-          "title":"angulard sagefgfdsad Chart.js的使用!",
-        },
-        {
-          "aid":116,
-          "title":"djonline first submit",
-        },
-    ]
-    # testdata={'teststr':'This is a string','testint':2018,'testdate':datetime.datetime.now(),'testfloat':12.8,'testinner':{'a':'a','b':'b'}}
-    return JsonResponse({"result":testdata})
-
-def get_json(request):
-    # print(request)
-    getdata = request.POST
-    if request.POST['id'] == "156":
-        return JsonResponse({'result':'OK'})
-    else:
-        return JsonResponse({'result':'No data'})
-
 
 def calculate_acct(request,youke):
     '''核算信息计算函数

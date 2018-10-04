@@ -29,7 +29,7 @@ class Ref_Price_t(models.Model):
 	localname = models.CharField(max_length=128)
 
 	def __str__(self):
-		return self.kind
+		return self.kind+'-'+str(self.price)+'-'+self.line_price_fk.name+'-'+self.localname
 
 #出团申请单
 #data出团日期；loca_agency_fk地接社名称；angency_fk组团社名称；line_name_fk线路名称
