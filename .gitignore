@@ -5,6 +5,7 @@ __pycache__
 
 # local env files
 /djonline/db.sqlite3
+/djonline/db.sqlite3.bak
 .env.local
 .env.*.local
 
