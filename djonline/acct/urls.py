@@ -17,6 +17,8 @@ urlpatterns = [
     path('lineprice/<int:pk>/',views.line_detail,name='line_detail'),
     path('refprices/',views.Ref_PriceList.as_view(),name='PriceList'),
     path('refdetail/<int:pk>/',views.Ref_PriceDetail.as_view(),name='PriceDetail'),
+    path('applications/',views.application_list,name='application_list'),
+    path('tourists/',views.tourist_list,name='tourist_list'),
     
 ]
 

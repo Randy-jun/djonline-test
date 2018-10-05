@@ -1,12 +1,13 @@
 from django.shortcuts import render
-from django.http import JsonResponse,HttpResponse,HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import Http404
 from django.core import serializers
+from django.views.decorators.csrf import ensure_csrf_cookie
 
-from acct.models import Agency_t,Line_Price_t,Ref_Price_t
+from acct.models import Agency_t, Line_Price_t, Ref_Price_t, Application_t, Settlement_t, Tourist_t
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -15,33 +16,37 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
-from acct.serializers import Agency_tSerializer,Line_Price_tSerializer,Ref_Price_tSerializer
+from acct.serializers import Agency_tSerializer, Line_Price_tSerializer, Ref_Price_tSerializer, Application_tSerializer, Tourist_tSerializer, Settlement_tSerializer
 
 import datetime
 # Create your views here.
+
 
 def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        user = authenticate(username=username,password=password)
+        user = authenticate(username=username, password=password)
 
         if user:
             if user.is_active:
                 login(request, user)
-                #return HttpResponseRedirect(reverse('index'))
-                return JsonResponse({"is_login":True,"login_result_string":"Success","NickName":user.first_name,"DJName":user.last_name})
+                sessionId = ""#request.session.get('_auth_user_hash',0)
+                ex =""#sessionId.get_expiry_age()
+                print(sessionId,ex)
+                # return HttpResponseRedirect(reverse('index'))
+                return JsonResponse({"is_login": True, "login_result_string": "Success", "NickName": user.first_name, "DJName": user.last_name,"sessionId":sessionId})
             else:
-                #return HttpResponse("your account is disabled.")
-                return JsonResponse({"is_login":False,"login_result_string":"your account is disabled."})
+                # return HttpResponse("your account is disabled.")
+                return JsonResponse({"is_login": False, "login_result_string": "your account is disabled."})
         else:
-            print("Invalid login details:{0},{1}".format(username,password))
-            #return HttpResponse("Invalid login details supplied.")
-            return JsonResponse({"is_login":False,"login_result_string":"Invalid login details supplied."})
+            print("Invalid login details:{0},{1}".format(username, password))
+            # return HttpResponse("Invalid login details supplied.")
+            return JsonResponse({"is_login": False, "login_result_string": "Invalid login details supplied."})
     else:
-        return render(request,'login.html',{})
-        #return JsonResponse({"is_login":False,"login_result_string":"No login details supplied, not POST method."})
+        return render(request, 'login.html', {})
+        # return JsonResponse({"is_login":False,"login_result_string":"No login details supplied, not POST method."})
 
 
 def user_logout(request):
@@ -53,20 +58,27 @@ def user_logout(request):
 
 def orz_list(request):
     if request.method == 'GET':
-        localname='中国国际旅行社'
+        localname = '中国国际旅行社'
         agencies = Agency_t.objects.filter(localname=localname)
-        serializer = Agency_tSerializer(agencies, many = True)
-        return JsonResponse({'result':serializer.data,'loclname':localname}, safe=False)
+        serializer = Agency_tSerializer(agencies, many=True)
+        
+
+        return JsonResponse({ 'result': serializer.data, 'loclname': localname}, safe=False)
     elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = Agency_tSerializer(data=data)
+        data = JSONParser().parse(request)        
+        serializer = Agency_tSerializer(data=data)       
+        
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({'result':serializer.data,'s':'ss'}, status=201)
+            item = Agency_t.objects.filter(name=serializer.data['name'],localname=serializer.data['localname'])
+            if len(item)!=0:
+                return JsonResponse({'result': serializer.data, 'error': 'name should be unique'}, status=400)
+            else:
+                serializer.save()
+                return JsonResponse({'result': serializer.data, 's': 'sucess'}, status=201)
         return JsonResponse(serializer.errors, status=400)
 
 
-def orz_detail(request,pk):
+def orz_detail(request, pk):
     try:
         agency = Agency_t.objects.get(pk=pk)
     except Agency_t.DoesNotExist:
@@ -77,30 +89,34 @@ def orz_detail(request,pk):
         return JsonResponse(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = Agency_tSerializer(agency,data=data)
+        serializer = Agency_tSerializer(agency, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse({'result':serializer.data})
-        return JsonResponse(serializer.errors, status = 400)
+            return JsonResponse({'result': serializer.data})
+        return JsonResponse(serializer.errors, status=400)
 
-    elif request.method=='DELETE':
+    elif request.method == 'DELETE':
         agency.delete()
         return HttpResponse(status=204)
 
-@api_view(['GET','POST'])
+
+@api_view(['GET', 'POST'])
 def line_list(request):
-    localname='中国国际旅行社'
+    localname = '中国国际旅行社'
     if request.method == 'GET':
         line_prices = Line_Price_t.objects.filter(localname=localname)
-        ref_data = {}
-        #for line in line_prices:
-            #Ref_Price_t.objects.filter(line_price_fk__id=line.id)[:3]
-            #ref_data(line.id:Ref_Price_t)
+        top3_ref_data = {}
+        for line in line_prices:
+            top3_price = Ref_Price_t.objects.filter(
+                line_price_fk__id=line.id)[:3]
+            top3_ref_data[line.id] = Ref_Price_tSerializer(
+                top3_price, many=True).data
 
-        #ref_prices = Ref_Price_t.objects.filter(localname=localname)
-        serializer = Line_Price_tSerializer(line_prices,many=True)
-        #serializer2 = Ref_Price_tSerializer(ref_prices,many=True)
-        return Response({'result':serializer.data,'lo':localname,'user':request.user.username})
+        ref_prices = Ref_Price_t.objects.filter(localname=localname)
+        serializer = Line_Price_tSerializer(line_prices, many=True)
+        serializer2 = Ref_Price_tSerializer(ref_prices, many=True)
+        return Response({'result': serializer.data, 'lo': localname,
+        'user': request.user.username, 'top3_ref_prices': top3_ref_data})
 
     elif request.method == 'POST':
         serializer = Line_Price_tSerializer(data=request.data)
@@ -109,8 +125,9 @@ def line_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET','PUT','DELETE'])
-def line_detail(request,pk):
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def line_detail(request, pk):
     try:
         line = Line_Price_t.objects.get(pk=pk)
     except Line_Price_t.DoesNotExist:
@@ -121,35 +138,69 @@ def line_detail(request,pk):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = Line_Price_tSerializer(line, data = request.data)
+        serializer = Line_Price_tSerializer(line, data=request.data)
         if serializer.is_valid:
             serializer.save()
-            return Reponse(serializer.data)
-        return Response(serializer.errors,status = status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         line.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['GET', 'POST'])
+def application_list(request):
+    localname = '中国国际旅行社'
+    if request.method == 'GET':
+        application_list = Application_t.objects.filter(localname=localname)
+        serializer = Application_tSerializer(application_list, many=True)
+        return Response({'result': serializer.data})
+
+    elif request.method == 'POST':
+        serializer = Application_tSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'POST'])
+@ensure_csrf_cookie
+def tourist_list(request):
+    localname = '中国国际旅行社'
+    if request.method == 'GET':
+        tourist_list = Tourist_t.objects.filter(localname=localname)
+        serializer = Tourist_tSerializer(tourist_list, many=True)
+        return Response({'result': serializer.data})
+
+    elif request.method == 'POST':
+        serializer = Tourist_tSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def index(request):
-    return render(request,'index.html',context={})
+    return render(request, 'index.html', context={})
 
 
 def request_form_list(request):
-    return render(request,'request_form_list.html')
+    return render(request, 'request_form_list.html')
 
-def request_form(request,num):
-    return render(request,'request_form.html',context={'num':num})
+
+def request_form(request, num):
+    return render(request, 'request_form.html', context={'num': num})
+
 
 def new_request(request):
-    return render(request,'add_new_request.html')
+    return render(request, 'add_new_request.html')
+
 
 def add_new_request(request):
-    return render(request,'add_new_request.html')
+    return render(request, 'add_new_request.html')
 
-def calculate_acct(request,youke):
+
+def calculate_acct(request, youke):
     '''核算信息计算函数
     youke是查询的游客信息表'''
     ultip_sum = 0  # 最终报价之和
@@ -185,18 +236,20 @@ def calculate_acct(request,youke):
 
     return JsonResponse(result)
 
+
 class Ref_PriceList(APIView):
     def get(self, request, format=None):
         refP = Ref_Price_t.objects.all()
-        serializer = Ref_Price_tSerializer(refP,many=True)
-        return Response({'result':serializer.data})
+        serializer = Ref_Price_tSerializer(refP, many=True)
+        return Response({'result': serializer.data})
 
-    def post(self,request, format=None):
+    def post(self, request, format=None):
         serializer = Ref_Price_tSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class Ref_PriceDetail(APIView):
     def get_object(self, pk):
@@ -210,15 +263,15 @@ class Ref_PriceDetail(APIView):
         serializer = Ref_Price_tSerializer(refP)
         return Response(serializer.data)
 
-    def put(self, request, pk ,format=None):
+    def put(self, request, pk, format=None):
         refP = self.get_object(pk)
         serializer = Ref_Price_tSerializer(refP, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Reponse(serializer.data)
-        return Response(serializer.errros,status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request,pk, format=None):
+    def delete(self, request, pk, format=None):
         refP = self.get_object(pk)
         refP.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)   
+        return Response(status=status.HTTP_204_NO_CONTENT)
