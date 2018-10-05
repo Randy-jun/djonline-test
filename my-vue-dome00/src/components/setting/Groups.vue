@@ -1,5 +1,9 @@
 <template>
-  <div class="col">
+  <div class="col" id="groups">
+    <CustomeAlert v-if="alertState" v-bind:alertmsg="alertMsg" />
+    <!-- <div class="alert alert-success" role="alert">
+      A simple success alert—check it out!
+    </div> -->
     <small>总共: <span class="font-italic font-weight-bold">{{count_all}}</span> 条记录</small>
     <div class="row">
       <table class="table table-hover table-responsive-lg">
@@ -33,8 +37,8 @@
                <td v-bind:id="item.id">{{item.remark}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
-                  <button type="button" class="btn btn-second">编辑</button>
-                  <button type="button" class="btn btn-danger" data-toggle="modal" v-bind:data-target='"#deleteConfirm"+item.id'>删除</button>
+                  <button type="button" class="btn btn-primary btn-sm">编辑</button>
+                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" v-bind:data-target='"#deleteConfirm"+item.id'>删除</button>
                 </div>
                 <div class="modal fade" role="dialog" v-bind:id='"deleteConfirm"+item.id'>
                   <div class="modal-dialog modal-sm">
@@ -49,7 +53,7 @@
                         <p>Modal body text goes here.</p>
                       </div> -->
                       <div class="modal-footer">
-                        <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="delete_group(item.id)">确认</button>
+                        <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDeleGroup(item.id)">确认</button>
                         <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
                       </div>
                     </div>
@@ -60,15 +64,50 @@
          </tbody>
       </table>
     </div>
-    <div class="row">
-      <div class="col-2"><button class="btn btn-default" v-on:click="doAdd($event)">添加</button></div>
+    <div class="row align-items-end">
+      <div class="col"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addGroup">新增组团社</button></div>
+      <div class="modal fade" role="dialog" id="addGroup">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">新增组团社</h5>
+              <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button> -->
+            </div>
+            <div class="modal-body">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="groupName">组团社名称</span>
+                </div>
+                <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" v-model="AddGroup.groupName">
+              </div>
+              <small>{{AddGroup.groupName}}</small>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">备注</span>
+                </div>
+                <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="AddGroup.groupRemark"></textarea>
+              </div>
+              <small>{{AddGroup.groupRemark}}</small>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doAddGroup()">保存</button>
+              <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+
 import Axios from 'axios';
 import Storage from '@/module/lstorage.js';
+import CustomeAlert from  '@/components/sysinfo/CustomAlert.vue';
+
 export default {
   name: 'Home',
   props: {
@@ -76,7 +115,13 @@ export default {
   },
   data() {
     return {
-      count_all:0,
+      count_all:null,
+      alertState:false,
+      alertMsg:null,
+      AddGroup:{
+        groupName:null,
+        groupRemark:null,
+      },
       order:{
         dj_name:"百恒国际旅行社",
         zt_name:"光大旅行社",
@@ -90,17 +135,36 @@ export default {
       tourist:[]
     }
   },
+  components: {
+    CustomeAlert,
+  },
   methods: {
     choice(groupid){
       // console.log(zuid)
     },
-    delete_group(groupid){
-      
-      console.log(groupid)
+    doDeleGroup(groupid){
+      console.log(groupid);
+      this.alertMsg={
+        'stateFlag':'alert-danger',
+        'msgConten':'删除成功！',
+      }
+      this.alertState=true;
+      setTimeout(()=>{
+        this.alertState=false;
+        // this
+      },2000);
     },
-    doDel(delKey){
-      this.list.splice(delKey,1 );
-      this.saveList();
+    doAddGroup(){
+      console.log(this.AddGroup);
+      this.alertMsg={
+        'stateFlag':'alert-success',
+        'msgConten':'添加成功！',
+      }
+      this.alertState=true;
+      setTimeout(()=>{
+        this.alertState=false;
+        // this
+      },2000);
     },
     saveList(){
       Storage.set('list', this.list);
@@ -148,5 +212,8 @@ export default {
 .ho-pad{
   padding-top: 28px;
   padding-bottom: 28px;
+}
+#groups{
+  margin-bottom: 2%;
 }
 </style>

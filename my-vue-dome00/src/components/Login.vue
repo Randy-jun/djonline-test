@@ -68,7 +68,10 @@ export default {
               Sstorage.set('nickname', response.data.NickName);
               Sstorage.set('djname', response.data.DJName);
               //  console.log(response);
-              this.$router.replace({ path: 'main' })
+              setTimeout(()=>{
+                this.$router.replace({ path: 'main' })
+              },1000)
+              // var int=self.setInterval(this.$router.replace({ path: 'main' }),1000);
               // console.log(response.data.is_login);
               // console.log(response.data.login_result_string)
               // console.log(response.data.NickName)
