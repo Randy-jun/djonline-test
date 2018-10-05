@@ -143,16 +143,24 @@ export default {
       // console.log(zuid)
     },
     doDeleGroup(groupid){
-      console.log(groupid);
-      this.alertMsg={
-        'stateFlag':'alert-danger',
-        'msgConten':'删除成功！',
-      }
-      this.alertState=true;
-      setTimeout(()=>{
-        this.alertState=false;
-        // this
-      },2000);
+      var api='http://127.0.0.1:9090/acct/agency/' + groupid;
+      console.log(api);
+      Axios.delete(api).then((response)=>{
+        console.log(response);
+        this.alertMsg={
+          'stateFlag':'alert-success',
+          'msgConten':'删除成功！',
+        }
+        this.alertState=true;
+        setTimeout(()=>{
+          this.alertState=false;
+          // this
+        },2000);
+      }).catch((error)=>{
+        // console.log(error);
+      })
+      // console.log(groupid);
+      
     },
     doAddGroup(){
       console.log(this.AddGroup);
@@ -198,7 +206,8 @@ export default {
     Axios.get(api).then((response)=>{
         this.data_list=response.data.result;
         this.count_all=response.data.result.length;
-        // console.log(response.data.result);
+
+        console.log(response.data.result);
         // console.log(typeof(response.data.result));
         // this.test_list=response.data.result;
       }).catch((error)=>{

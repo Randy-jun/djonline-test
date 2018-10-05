@@ -97,8 +97,6 @@ export default {
 
 <style scoped>
 .login{
-  margin-top: 25rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 20rem auto auto auto;
 }
 </style>
