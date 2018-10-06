@@ -53,7 +53,7 @@
                         <p>Modal body text goes here.</p>
                       </div> -->
                       <div class="modal-footer">
-                        <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDeleGroup(item.id)">确认</button>
+                        <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDeleGroup(index, item.id)">确认</button>
                         <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
                       </div>
                     </div>
@@ -142,7 +142,7 @@ export default {
     choice(groupid){
       // console.log(zuid)
     },
-    doDeleGroup(groupid){
+    doDeleGroup(localId, groupid){
       var api='http://127.0.0.1:9090/acct/agency/' + groupid;
       console.log(api);
       Axios.delete(api).then((response)=>{
@@ -152,6 +152,7 @@ export default {
           'msgConten':'删除成功！',
         }
         this.alertState=true;
+        this.data_list.splice(localId,1)
         setTimeout(()=>{
           this.alertState=false;
           // this
@@ -217,8 +218,12 @@ export default {
     Axios.get(api).then((response)=>{
         this.data_list=response.data.result;
         this.count_all=response.data.result.length;
-
-        // console.log(this.data_list)s
+        console.log(this.data_list)
+        // setTimeout(()=>{
+        //   this.data_list.splice(0,1)
+        //   console.log(this.data_list)
+        // },5000);
+        
         // console.log(typeof(response.data.result));
         // this.test_list=response.data.result;
       }).catch((error)=>{
