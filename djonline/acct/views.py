@@ -57,6 +57,7 @@ def user_logout(request):
 
     return HttpResponseRedirect(reverse('index'))
 
+@api_view(['GET', 'POST'])
 def orz_list(request):
     if request.method == 'GET':
         localname = '中国国际旅行社'
@@ -64,9 +65,9 @@ def orz_list(request):
         serializer = Agency_tSerializer(agencies, many=True)
         item_num = len(agencies)
         return JsonResponse({ 'result': serializer.data, 'loclname': localname, 'item_num':item_num }, safe=False)
-    if request.method == 'POST':
-        data = FormParser().parse(request)
-        serializer = Agency_tSerializer(data=data)       
+   
+    elif request.method == 'POST':
+        serializer = Agency_tSerializer(data=request.data)      
         
         if serializer.is_valid():
             item = Agency_t.objects.filter(name=serializer.validated_data['name'],localname=serializer.validated_data['localname'])
