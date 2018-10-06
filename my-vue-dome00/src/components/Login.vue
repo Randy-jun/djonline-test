@@ -34,7 +34,7 @@
 
 <script>
 import Axios from 'axios';
-import Sstorage from '../module/sstorage.js';
+import Sstorage from '@/module/sstorage.js';
 export default {
   name: 'Login',
   props: {
@@ -65,7 +65,7 @@ export default {
             this.show_F=false;
             this.show_S=true;
             Sstorage.set('nickname', response.data.NickName);
-            Sstorage.set('djname', response.data.DJName);
+            Sstorage.set('localname', response.data.DJName);
             //  console.log(response);
             setTimeout(()=>{
               this.$router.replace({ path: 'main' })

@@ -105,7 +105,7 @@
 <script>
 
 import Axios from 'axios';
-import Storage from '@/module/lstorage.js';
+import Sstorage from '@/module/sstorage.js';
 import CustomeAlert from  '@/components/sysinfo/CustomAlert.vue';
 
 export default {
@@ -169,7 +169,10 @@ export default {
       if (e.type == 'click' || e.keyCode == 13) {
         // console.log(this.username,this.password);
         var params = new URLSearchParams();
-        params.append("AddGroup",this.AddGroup);
+        params.append("name",this.AddGroup.groupName);
+        params.append("remark",this.AddGroup.groupRemark);
+        params.append("localname",Sstorage.get('localname'));
+        console.log(params);
         Axios.post(api, params).then((response)=>{
           console.log(response);
           this.alertMsg={
@@ -177,6 +180,8 @@ export default {
             'msgConten':'添加成功！',
           }
           this.alertState=true;
+          this.count_all+=1;
+          this.data_list.push(response.data.result)
           setTimeout(()=>{
             this.alertState=false;
             // this

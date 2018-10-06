@@ -27,7 +27,7 @@ export default {
   },
   mounted() {
     this.nickname = Sstorage.get('nickname')
-    this.djname = Sstorage.get('djname');
+    this.djname = Sstorage.get('localname');
   },
 }
 </script>
