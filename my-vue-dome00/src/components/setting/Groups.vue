@@ -146,23 +146,32 @@ export default {
       var api='http://127.0.0.1:9090/acct/agency/' + groupid;
       console.log(api);
       Axios.delete(api).then((response)=>{
-        console.log(response);
-        this.alertMsg={
-          'stateFlag':'alert-success',
-          'msgConten':'删除成功！',
-        }
-        this.alertState=true;
-        this.count_all-=1;
-        this.data_list.splice(localId,1)
-        setTimeout(()=>{
-          this.alertState=false;
-          // this
-        },2000);
-      }).catch((error)=>{
-        // console.log(error);
-      })
-      // console.log(groupid);
-      
+        if(response.data.status_flag){
+          console.log(response);
+          this.alertMsg={
+            'stateFlag':'alert-success',
+            'msgConten':'删除成功！',
+          }
+          this.alertState=true;
+          this.count_all-=1;
+          this.data_list.splice(localId,1)
+          setTimeout(()=>{
+            this.alertState=false;
+          },2000);
+        }else{
+          console.log(response);
+          this.alertMsg={
+            'stateFlag':'alert-danger',
+            'msgConten':'删除失败！',
+          }
+          this.alertState=true;
+          setTimeout(()=>{
+            this.alertState=false;
+          },2000);
+        }})
+        .catch((error)=>{
+          console.log(error);
+        });
     },
     doAddGroup(e){
       const api='http://127.0.0.1:9090/acct/agencies/';
@@ -172,24 +181,35 @@ export default {
         params.append("name",this.AddGroup.groupName);
         params.append("remark",this.AddGroup.groupRemark);
         params.append("localname",Sstorage.get('localname'));
-        console.log(params);
         Axios.post(api, params).then((response)=>{
-          console.log(response);
-          this.alertMsg={
-            'stateFlag':'alert-success',
-            'msgConten':'添加成功！',
-          }
-          this.alertState=true;
-          this.count_all+=1;
-          this.data_list.push(response.data.result)
-          setTimeout(()=>{
-            this.alertState=false;
-            // this
-          },2000);
-        })
-        .catch((error)=>{
-          console.log(error);
-        });
+          if(response.data.status_flag){
+            console.log(response);
+            this.alertMsg={
+              'stateFlag':'alert-success',
+              'msgConten':'添加成功！',
+            }
+            this.alertState=true;
+            this.count_all+=1;
+            this.data_list.push(response.data.result)
+            setTimeout(()=>{
+              this.alertState=false;
+              // this
+            },2000);
+          }else{
+            console.log(response);
+            this.alertMsg={
+              'stateFlag':'alert-danger',
+              'msgConten':'添加失败！',
+            }
+            this.alertState=true;
+            setTimeout(()=>{
+              this.alertState=false;
+              // this
+            },2000);
+          }})
+          .catch((error)=>{
+            console.log(error);
+          });
       }
     },
     saveList(){
