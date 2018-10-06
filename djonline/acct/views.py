@@ -35,9 +35,7 @@ def user_login(request):
             if user.is_active:
                 login(request, user)
                 sessionId = ""#request.session.get('_auth_user_hash',0)
-                request.session['localname']=user.last_name
-                ex =""#sessionId.get_expiry_age()
-                print(sessionId,ex,user.is_active,user.is_authenticated)
+                request.session['localname']=user.last_name                
                 # return HttpResponseRedirect(reverse('index'))
                 return JsonResponse({"is_login": True, "login_result_string": "Success", "NickName": user.first_name, "DJName": user.last_name,"sessionId":sessionId})
             else:
@@ -62,7 +60,7 @@ def user_logout(request):
 def orz_list(request):
     if request.method == 'GET':
         print(request.session.get('localname','no data'))
-        request.session['localname']='701国际旅行社'
+        request.session['localname']='中国国际旅行社'
         print(request.session.get('localname','no data'))
         print(request.user.is_active)
         if request.user.is_active:
@@ -70,7 +68,7 @@ def orz_list(request):
         elif request.session.get('localname'):
             localname = request.session.get('localname')
         else:
-            localname = '701国际旅行社'
+            localname = '中国国际旅行社'
         agencies = Agency_t.objects.filter(localname=localname)
         serializer = Agency_tSerializer(agencies, many=True)
         item_num = len(agencies)
