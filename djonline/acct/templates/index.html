@@ -6,9 +6,9 @@
 
 <body>
     <h1>{{welcome}}</h1>
-    <a href="{% url 'login'  %}">Login</a>
+    <a href="{% url 'login2'  %}">Login</a>
     <hr>
-    {% if user.is_authenticated %}
+    {% if user.isLogin %}
 
         <a href="{% url 'request_form_list'  %}">出团申请单</a>
         <a href="{% url 'new_request'  %}">新增出团申请单</a>

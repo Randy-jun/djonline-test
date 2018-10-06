@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from acct.models import Agency_t, Line_Price_t, Ref_Price_t,Application_t,Tourist_t,Settlement_t
+from acct.models import Agency_t, Line_Price_t, Ref_Price_t, Application_t, Tourist_t, Settlement_t
 
 class Agency_tSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agency_t
-        fields =('id','name','remark','localname')
+        fields = '__all__'
 
 
 class Line_Price_tSerializer(serializers.ModelSerializer):
