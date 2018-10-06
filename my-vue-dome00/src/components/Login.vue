@@ -61,21 +61,21 @@ export default {
         params.append("username",this.username);
         params.append("password",this.password); 
         Axios.post(api, params).then((response)=>{
-          if(response.data.is_login){
+          if(response.data.isLogin){
+            console.log(response);
             this.show_F=false;
             this.show_S=true;
             Sstorage.set('nickname', response.data.NickName);
             Sstorage.set('localname', response.data.DJName);
+            Sstorage.set('userID', response.data.userID);
+            Sstorage.set('tokenID', response.data.tokenID);
             //  console.log(response);
             setTimeout(()=>{
               this.$router.replace({ path: 'main' })
             },1000)
             // var int=self.setInterval(this.$router.replace({ path: 'main' }),1000);
-            // console.log(response.data.is_login);
-            // console.log(response.data.login_result_string)
-            // console.log(response.data.NickName)
-            // console.log(response.data.DJName)
           }else{
+            console.log(response);
             // alert("登录失败");
             this.show_S=false;
             this.show_F=true;
