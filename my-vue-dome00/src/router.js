@@ -27,14 +27,14 @@ export default new Router({
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "setting" */ './components/setting/Setting.vue'),
       children: [{
-        path: 'products',
-        component: () => import(/* webpackChunkName: "setting" */ './components/setting/Products.vue'),
-      }, {
         path: 'groups',
-        component: () => import(/* webpackChunkName: "setting" */ './components/setting/Groups.vue'),
+        component: () => import(/* webpackChunkName: "setting/groups" */ './components/setting/Groups.vue'),
       }, {
-        path: '/setting/',
-        component: () => import(/* webpackChunkName: "setting" */ './components/setting/Groups.vue'),
+        path: 'products',
+        component: () => import(/* webpackChunkName: "setting/products" */ './components/setting/Products.vue'),
+      },{
+        path: '/',
+        component: () => import(/* webpackChunkName: "setting/settinghome" */ './components/setting/SettingHome.vue'),
       }],
     }
   ]

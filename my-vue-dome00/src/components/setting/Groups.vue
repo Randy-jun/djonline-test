@@ -92,7 +92,7 @@
               <small>{{AddGroup.groupRemark}}</small>
             </div>
             <div class="modal-footer">
-              <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doAddGroup()">保存</button>
+              <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doAddGroup($event)">保存</button>
               <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
             </div>
           </div>
@@ -162,17 +162,28 @@ export default {
       // console.log(groupid);
       
     },
-    doAddGroup(){
-      console.log(this.AddGroup);
-      this.alertMsg={
-        'stateFlag':'alert-success',
-        'msgConten':'添加成功！',
+    doAddGroup(e){
+      const api='http://127.0.0.1:9090/acct/agencies/';
+      if (e.type == 'click' || e.keyCode == 13) {
+        // console.log(this.username,this.password);
+        var params = new URLSearchParams();
+        params.append("AddGroup",this.AddGroup);
+        Axios.post(api, params).then((response)=>{
+          console.log(response);
+          this.alertMsg={
+            'stateFlag':'alert-success',
+            'msgConten':'添加成功！',
+          }
+          this.alertState=true;
+          setTimeout(()=>{
+            this.alertState=false;
+            // this
+          },2000);
+        })
+        .catch((error)=>{
+          console.log(error);
+        });
       }
-      this.alertState=true;
-      setTimeout(()=>{
-        this.alertState=false;
-        // this
-      },2000);
     },
     saveList(){
       Storage.set('list', this.list);
@@ -207,8 +218,7 @@ export default {
         this.data_list=response.data.result;
         this.count_all=response.data.result.length;
 
-        console.log(this.data_list);
-        console.log(typeof(this.data_list));
+        // console.log(this.data_list)s
         // console.log(typeof(response.data.result));
         // this.test_list=response.data.result;
       }).catch((error)=>{
