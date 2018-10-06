@@ -60,22 +60,26 @@ def user_logout(request):
 @api_view(['GET', 'POST'])
 def orz_list(request):
     if request.method == 'GET':
-        localname = '中国国际旅行社'
+        if request.user.is_active:
+            localname = request.user.last_name
+        else:
+            localname = '701国际旅行社'
         agencies = Agency_t.objects.filter(localname=localname)
         serializer = Agency_tSerializer(agencies, many=True)
         item_num = len(agencies)
         return JsonResponse({ 'result': serializer.data, 'loclname': localname, 'item_num':item_num }, safe=False)
    
     elif request.method == 'POST':
-        serializer = Agency_tSerializer(data=request.data)      
+        serializer = Agency_tSerializer(data=request.data)
+             
         
         if serializer.is_valid():
             item = Agency_t.objects.filter(name=serializer.validated_data['name'],localname=serializer.validated_data['localname'])
             if len(item)!=0:
-                return JsonResponse({'result': serializer.data, 'error': 'name should be unique'}, status=400)
+                return JsonResponse({'result': serializer.data, 'status_string': 'error : name should be unique'}, status=400)
             else:
                 serializer.save()
-                return JsonResponse({'result': serializer.data, 's': 'sucess'}, status=201)
+                return JsonResponse({'result': serializer.data, 'status_string': 'sucess'}, status=201)
         return JsonResponse(serializer.errors, status=400)
 
 
@@ -98,7 +102,7 @@ def orz_detail(request, pk):
 
     elif request.method == 'DELETE':
         agency.delete()
-        return HttpResponse(status=204)
+        return JsonResponse({"status_string":"Delete Success!"},status=204)
 
 @csrf_exempt
 @api_view(['GET', 'POST'])
