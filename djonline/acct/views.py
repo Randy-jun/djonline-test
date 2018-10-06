@@ -25,7 +25,7 @@ import datetime,uuid
 def generate_ID(prefix, list):
     pass
 
-
+'''
 def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -50,12 +50,12 @@ def user_login(request):
     else:
         return render(request, 'login.html', {})
         # return JsonResponse({"is_login":False,"login_result_string":"No login details supplied, not POST method."})
+'''
 
-
-def user_login2(request):
+def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
-        password = request.POST.get('password','')
+        password = request.POST.get('password', '')
         user = DjUser_t.objects.get(name=username)
         if user:
             if user.password == password:
@@ -86,11 +86,12 @@ def get_token(userID):
         return user.token
     else:
         return False
-def user_logout(request):
+'''def user_logout(request):
 
     logout(request)
 
     return HttpResponseRedirect(reverse('index'))
+'''
 
 def user_logout(request,userID):
     try:
