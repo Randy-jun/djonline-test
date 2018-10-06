@@ -207,7 +207,8 @@ export default {
         this.data_list=response.data.result;
         this.count_all=response.data.result.length;
 
-        console.log(response.data.result);
+        console.log(this.data_list);
+        console.log(typeof(this.data_list));
         // console.log(typeof(response.data.result));
         // this.test_list=response.data.result;
       }).catch((error)=>{
