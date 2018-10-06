@@ -113,11 +113,11 @@ def orz_list(request):
         serializer = Agency_tSerializer(agencies, many=True)
         item_num = len(agencies)
         return JsonResponse({'result': serializer.data, 'item_num': item_num}, safe=False)
-    if request.method == 'POST' and request.data['reqMethod'] == 'GET':     
+    if request.method == 'POST' and request.data['reqMethod'] == 'GET' :     
         agencies = Agency_t.objects.filter(local_name='中国国际旅行社')
         serializer = Agency_tSerializer(agencies, many=True)
         item_num = len(agencies)
-        return JsonResponse({'result': serializer.data, 'item_num': item_num,'token':get_token(1)}, safe=False, )
+        return JsonResponse({'result': serializer.data, 'item_num': item_num, 'token':get_token(1)}, safe=False, )
 
     if request.method == 'POST' and request.data['reqMethod'] == 'ADD':
         serializer = Agency_tSerializer(data=request.data)
@@ -144,7 +144,7 @@ def orz_list(request):
 
     if request.method == 'POST' and request.data['reqMethod'] == 'DELETE':
         try:
-            agency = Agency_t.objects.get(pk=pk)
+            agency = Agency_t.objects.get(pk=request.data['pk'])
         except Agency_t.DoesNotExist:
             return HttpResponse(status=404)
         agency.delete()
