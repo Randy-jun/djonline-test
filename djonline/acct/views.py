@@ -35,8 +35,9 @@ def user_login(request):
             if user.is_active:
                 login(request, user)
                 sessionId = ""#request.session.get('_auth_user_hash',0)
+                request.session['localname']=user.last_name
                 ex =""#sessionId.get_expiry_age()
-                print(sessionId,ex)
+                print(sessionId,ex,user.is_active,user.is_authenticated)
                 # return HttpResponseRedirect(reverse('index'))
                 return JsonResponse({"is_login": True, "login_result_string": "Success", "NickName": user.first_name, "DJName": user.last_name,"sessionId":sessionId})
             else:
@@ -60,8 +61,14 @@ def user_logout(request):
 @api_view(['GET', 'POST'])
 def orz_list(request):
     if request.method == 'GET':
+        print(request.session.get('localname','no data'))
+        request.session['localname']='701国际旅行社'
+        print(request.session.get('localname','no data'))
+        print(request.user.is_active)
         if request.user.is_active:
             localname = request.user.last_name
+        elif request.session.get('localname'):
+            localname = request.session.get('localname')
         else:
             localname = '701国际旅行社'
         agencies = Agency_t.objects.filter(localname=localname)
@@ -76,10 +83,10 @@ def orz_list(request):
         if serializer.is_valid():
             item = Agency_t.objects.filter(name=serializer.validated_data['name'],localname=serializer.validated_data['localname'])
             if len(item)!=0:
-                return JsonResponse({'result': serializer.data, 'status_string': 'error : name should be unique'}, status=400)
+                return JsonResponse({'result': serializer.data,'status_flag':False, 'status_string': 'error : name should be unique'}, status=400)
             else:
                 serializer.save()
-                return JsonResponse({'result': serializer.data, 'status_string': 'sucess'}, status=201)
+                return JsonResponse({'result': serializer.data, 'status_flag':True,'status_string': 'Success'}, status=201)
         return JsonResponse(serializer.errors, status=400)
 
 
@@ -91,6 +98,7 @@ def orz_detail(request, pk):
 
     if request.method == 'GET':
         serializer = Agency_tSerializer(agency)
+        print(request.session.get('localname','no data'))
         return JsonResponse(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
@@ -102,7 +110,7 @@ def orz_detail(request, pk):
 
     elif request.method == 'DELETE':
         agency.delete()
-        return JsonResponse({"status_string":"Delete Success!"},status=204)
+        return JsonResponse({'status_flag':True,"status_string":"Delete Success!"},status=204)
 
 @csrf_exempt
 @api_view(['GET', 'POST'])
@@ -122,13 +130,13 @@ def line_list(request):
         serializer = Line_Price_tSerializer(line_prices, many=True)
         serializer2 = Ref_Price_tSerializer(ref_prices, many=True)
         return Response({'result': serializer.data, 'item_num': item_num,
-        'user': request.user.username, 'top3_ref_prices': top3_ref_data})
+        'user': request.user.username, 'top3_ref_prices': top3_ref_data,'status_flag':True,'status_string': 'Success'})
 
     elif request.method == 'POST':
         serializer = Line_Price_tSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, {'status_flag':True,'status_string': 'Success'},status=status.HTTP_201_CREATED,)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -152,7 +160,7 @@ def line_detail(request, pk):
 
     elif request.method == 'DELETE':
         line.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'status_flag':True,'status_string': 'Success'},status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'POST'])
