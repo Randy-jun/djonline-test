@@ -6,20 +6,22 @@ from django.urls import reverse
 from django.http import Http404
 from django.core import serializers
 from django.views.decorators.csrf import ensure_csrf_cookie
-
+from django.views.decorators.csrf import csrf_exempt
 from acct.models import Agency_t, Line_Price_t, Ref_Price_t, Application_t, Settlement_t, Tourist_t
 
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import JSONParser,FormParser
 from rest_framework.views import APIView
 
 from acct.serializers import Agency_tSerializer, Line_Price_tSerializer, Ref_Price_tSerializer, Application_tSerializer, Tourist_tSerializer, Settlement_tSerializer
 
 import datetime
 # Create your views here.
+def generate_ID(prefix,list):
+    pass
 
 
 def user_login(request):
@@ -55,21 +57,19 @@ def user_logout(request):
 
     return HttpResponseRedirect(reverse('index'))
 
-
 def orz_list(request):
     if request.method == 'GET':
         localname = '中国国际旅行社'
         agencies = Agency_t.objects.filter(localname=localname)
         serializer = Agency_tSerializer(agencies, many=True)
-        
-
-        return JsonResponse({ 'result': serializer.data, 'loclname': localname}, safe=False)
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)        
+        item_num = len(agencies)
+        return JsonResponse({ 'result': serializer.data, 'loclname': localname, 'item_num':item_num }, safe=False)
+    if request.method == 'POST':
+        data = FormParser().parse(request)
         serializer = Agency_tSerializer(data=data)       
         
         if serializer.is_valid():
-            item = Agency_t.objects.filter(name=serializer.data['name'],localname=serializer.data['localname'])
+            item = Agency_t.objects.filter(name=serializer.validated_data['name'],localname=serializer.validated_data['localname'])
             if len(item)!=0:
                 return JsonResponse({'result': serializer.data, 'error': 'name should be unique'}, status=400)
             else:
@@ -99,12 +99,13 @@ def orz_detail(request, pk):
         agency.delete()
         return HttpResponse(status=204)
 
-
+@csrf_exempt
 @api_view(['GET', 'POST'])
 def line_list(request):
     localname = '中国国际旅行社'
     if request.method == 'GET':
         line_prices = Line_Price_t.objects.filter(localname=localname)
+        item_num = len(line_prices)
         top3_ref_data = {}
         for line in line_prices:
             top3_price = Ref_Price_t.objects.filter(
@@ -115,7 +116,7 @@ def line_list(request):
         ref_prices = Ref_Price_t.objects.filter(localname=localname)
         serializer = Line_Price_tSerializer(line_prices, many=True)
         serializer2 = Ref_Price_tSerializer(ref_prices, many=True)
-        return Response({'result': serializer.data, 'lo': localname,
+        return Response({'result': serializer.data, 'item_num': item_num,
         'user': request.user.username, 'top3_ref_prices': top3_ref_data})
 
     elif request.method == 'POST':

@@ -40,6 +40,7 @@ class Application_t(models.Model):
 	line_name_fk = models.ForeignKey(Line_Price_t,on_delete=models.DO_NOTHING)
 	def_price_fk = models.ForeignKey(Ref_Price_t, on_delete=models.DO_NOTHING)
 	localname = models.CharField(max_length=128)
+	status = models.CharField(max_length=32)
 
 	def __str__(self):
 		return self.agency_fk.name+'-'+self.line_name_fk.name+'-'+str(self.date)
@@ -48,7 +49,7 @@ class Application_t(models.Model):
 class Tourist_t(models.Model):#游客表
 	name = models.CharField(max_length=64)
 	amount = models.IntegerField(default=1)#数量
-	application_fk = models.ForeignKey(Application_t,on_delete=models.DO_NOTHING)
+	application_fk = models.ForeignKey(Application_t,on_delete=models.DO_NOTHING) 
 	ref_price_fk = models.ForeignKey(Ref_Price_t,on_delete=models.DO_NOTHING)#参考报价
 	fix_price = models.FloatField(default=0)#修正报价
 	final_price= models.FloatField(default=0)#最终报价
