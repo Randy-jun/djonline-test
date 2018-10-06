@@ -152,6 +152,7 @@ export default {
           'msgConten':'删除成功！',
         }
         this.alertState=true;
+        this.count_all-=1;
         this.data_list.splice(localId,1)
         setTimeout(()=>{
           this.alertState=false;
