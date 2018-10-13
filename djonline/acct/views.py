@@ -113,13 +113,14 @@ def orz_list(request):
         serializer = Agency_tSerializer(agencies, many=True)
         item_num = len(agencies)
         return JsonResponse({'result': serializer.data, 'item_num': item_num}, safe=False)
-    if request.method == 'POST' and request.data['reqMethod'] == 'GET' :     
+
+    if request.method == 'POST' and request.data['req_method'] == 'GET' :     
         agencies = Agency_t.objects.filter(local_name='中国国际旅行社')
         serializer = Agency_tSerializer(agencies, many=True)
         item_num = len(agencies)
-        return JsonResponse({'result': serializer.data, 'item_num': item_num, 'token':get_token(1)}, safe=False, )
+        return JsonResponse({'result': serializer.data, 'item_num': item_num, 'token':get_token(1),'status_flag':True,'stauts_string':'get data'}, safe=False, )
 
-    if request.method == 'POST' and request.data['reqMethod'] == 'ADD':
+    if request.method == 'POST' and request.data['req_method'] == 'ADD':
         serializer = Agency_tSerializer(data=request.data)
         if serializer.is_valid():
             item = Agency_t.objects.filter(
@@ -130,19 +131,19 @@ def orz_list(request):
             return JsonResponse({'result': serializer.data, 'status_flag': True, 'status_string': 'Success'}, status=201)
         return JsonResponse(serializer.errors, status=400)
 
-    if request.method == 'POST' and request.data['reqMethod'] == 'UPDATE':
+    if request.method == 'POST' and request.data['req_method'] == 'UPDATE':
         try:
             agency = Agency_t.objects.get(pk=request.data['pk'])
         except Agency_t.DoesNotExist:
             return HttpResponse(status=404)
-        serializer = Agency_tSerializer(data=request.data)
+        serializer = Agency_tSerializer(data=request.Sdata)
         if serializer.is_valid():
             serializer.update(agency,serializer.validated_data)
             #serializer.save()
-            return JsonResponse({'result': serializer.data,'status_string':'Update Success'})
+            return JsonResponse({'result': serializer.data,'status_flag':True, 'status_string':'Update Success','resultCount':1})
         return JsonResponse(serializer.errors, status=400)
 
-    if request.method == 'POST' and request.data['reqMethod'] == 'DELETE':
+    if request.method == 'POST' and request.data['req_method'] == 'DELETE':
         try:
             agency = Agency_t.objects.get(pk=request.data['pk'])
         except Agency_t.DoesNotExist:
@@ -180,7 +181,7 @@ def orz_detail(request, pk):
 @api_view(['GET', 'POST'])
 def line_list(request):
     local_name = '中国国际旅行社'
-    if request.method == 'POST' and request.data['reqMethod'] == 'GET':
+    if request.method == 'POST' and request.data['req_method'] == 'GET':
         line_prices = Line_Price_t.objects.filter(local_name=local_name)
         item_num = len(line_prices)
         top3_ref_data = {}
@@ -196,21 +197,21 @@ def line_list(request):
         return Response({'result': serializer.data, 'item_num': item_num,
                          'user': request.user.username, 'top3_ref_prices': top3_ref_data, 'status_flag': True, 'status_string': 'Success'})
 
-    if request.method == 'POST' and request.data['reqMethod'] == 'ADD':
+    if request.method == 'POST' and request.data['req_method'] == 'ADD':
         serializer = Line_Price_tSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'result': serializer.data, 'status_flag': True, 'status_string': 'Success'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    if request.method =='POST' and request.data['reqMethod'] == 'PUT':
+    if request.method =='POST' and request.data['req_method'] == 'PUT':
         serializer = Line_Price_tSerializer(line, data=request.data)
         if serializer.is_valid:
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    if request.method =='POST' and request.data['reqMethod'] == 'DELETE':
+    if request.method =='POST' and request.data['req_method'] == 'DELETE':
         line.delete()
         return Response({'status_flag': True, 'status_string': 'Success'}, status=status.HTTP_204_NO_CONTENT)
 
