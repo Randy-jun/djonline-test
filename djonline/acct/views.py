@@ -141,7 +141,8 @@ def orz_list(request):
         if serializer.is_valid():
             serializer.update(agency,serializer.validated_data)
             #serializer.save()
-            return JsonResponse({'result': serializer.data,'status_flag':True, 'status_string':'Update Success','resultCount':1})
+            serializer.validated_data['id'] = agency.id
+            return JsonResponse({'result': serializer.validated_data, 'status_flag':True, 'status_string':'Update Success','resultCount':1})
         return JsonResponse(serializer.errors, status=400)
 
     if request.method == 'POST' and request.data['req_method'] == 'DELETE':
