@@ -21,7 +21,7 @@ class DjUser_t(models.Model):
 # 组织信息表
 class Agency_t(models.Model):
 	name = models.CharField(max_length=128)
-	remark = models.CharField(max_length=256)
+	remark = models.CharField(max_length=256,blank=True,default='')
 	local_name = models.CharField(max_length=128)
 	def __str__(self):
 		return self.name
