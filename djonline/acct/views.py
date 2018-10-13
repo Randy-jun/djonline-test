@@ -368,15 +368,25 @@ class Ref_PriceList(APIView):
         if request.data['req_method'] == 'GET':#get refprice by line_price_pk and local_name
             refP = Ref_Price_t.objects.filter(local_name=request.data['local_name']).filter(line_price_fk__id=request.data['line_price_pk'])
             serializer = Ref_Price_tSerializer(refP, many=True)
-            return Response({'result': serializer.data})
+            return Response({'result': serializer.data, 'item_num':len(refP),'status_flag':True, 'status_string':'Successfully get {0} ref_price item'.format(len(refP))})
 
         if request.data['req_method'] == 'DELETE':
+            pk = request.data['pk']
             refP = self.get_object(pk)
             refP.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'status_flag':True,'status_string':'Successfully deleted !'}, status=status.HTTP_204_NO_CONTENT)
 
         if request.data['req_method'] == 'UPDATE':
-            pass
+            try:
+                refP = Ref_Price_t.objects.get(pk=request.data['pk'])
+            except Ref_Price_t.DoesNotExist:
+                return HttpResponse(status=404)
+            serializer = Ref_Price_tSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.update(refP,serializer.validated_data)
+                return JsonResponse({'result': serializer.validated_data, 'status_flag':True, 'status_string':'Update Success','resultCount':1})
+        return JsonResponse(serializer.errors, status=400)
+            
 
 
 class Ref_PriceDetail(APIView):
