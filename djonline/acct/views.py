@@ -114,8 +114,9 @@ def orz_list(request):
         item_num = len(agencies)
         return JsonResponse({'result': serializer.data, 'item_num': item_num}, safe=False)
 
-    if request.method == 'POST' and request.data['req_method'] == 'GET' :     
-        agencies = Agency_t.objects.filter(local_name='中国国际旅行社')
+    if request.method == 'POST' and request.data['req_method'] == 'GET' : 
+        local_name = request.data['local_name']    
+        agencies = Agency_t.objects.filter(local_name=local_name)
         serializer = Agency_tSerializer(agencies, many=True)
         item_num = len(agencies)
         return JsonResponse({'result': serializer.data, 'item_num': item_num, 'token':get_token(1),'status_flag':True,'stauts_string':'get data'}, safe=False, )
