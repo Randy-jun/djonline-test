@@ -33,7 +33,7 @@
                </td> -->
                <td>{{index + 1}}</td>
                <td v-bind:id="item.id" >{{item.id}}</td>
-               <td v-bind:id="item.id">{{item.name}}</td>
+               <td v-bind:id="item.id">{{item.name}} </td>
                <td v-bind:id="item.id">{{item.remark}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
@@ -56,7 +56,7 @@
                           </div>
                           <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" v-model="group.groupName">
                         </div>
-                        <small>{{group.groupName}}</small>
+                        <small>{{group.groupNames}}</small>
                         <div class="input-group">
                           <div class="input-group-prepend">
                             <span class="input-group-text">备注</span>
@@ -138,6 +138,7 @@
 
 import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
+import InputCheck from '@/module/inputcheck.js';
 import CustomeAlert from  '@/components/sysinfo/CustomAlert.vue';
 
 export default {
@@ -216,6 +217,17 @@ export default {
     },
     doUpdateGroup(localGroupId, groupid){
       const api='http://127.0.0.1:9090/acct/agencies/';
+      if(InputCheck.namecheck(this.group.groupName)){
+        this.alertMsg={
+            'stateFlag':'alert-danger',
+            'msgConten':'组织名称不能为空或空格',
+        }
+        this.alertState=true;
+        setTimeout(()=>{
+          this.alertState=false;
+        },2000);
+        return 1;
+      }
       var params = new URLSearchParams();
       params.append("req_method","UPDATE");
       params.append("name",this.group.groupName);
@@ -254,13 +266,24 @@ export default {
         });
     },
     addGroup(){
-      this.group.groupName=null;
-      this.group.groupRemark=null;
+      this.group.groupName="";
+      this.group.groupRemark="";
     },
     doAddGroup(e){
       const api='http://127.0.0.1:9090/acct/agencies/';
       if (e.type == 'click' || e.keyCode == 13) {
         // console.log(this.username,this.password);
+        if(InputCheck.namecheck(this.group.groupName)){
+          this.alertMsg={
+              'stateFlag':'alert-danger',
+              'msgConten':'组织名称不能为空或空格',
+          }
+          this.alertState=true;
+          setTimeout(()=>{
+            this.alertState=false;
+          },2000);
+          return 1;
+        }
         var params = new URLSearchParams();
         params.append("req_method","ADD");
         params.append("tokenID",Sstorage.get('tokenID'));
