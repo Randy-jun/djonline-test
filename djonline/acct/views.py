@@ -137,7 +137,7 @@ def orz_list(request):
             agency = Agency_t.objects.get(pk=request.data['pk'])
         except Agency_t.DoesNotExist:
             return HttpResponse(status=404)
-        serializer = Agency_tSerializer(data=request.Sdata)
+        serializer = Agency_tSerializer(data=request.data)
         if serializer.is_valid():
             serializer.update(agency,serializer.validated_data)
             #serializer.save()
