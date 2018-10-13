@@ -151,7 +151,7 @@ def orz_list(request):
         except Agency_t.DoesNotExist:
             return HttpResponse(status=404)
         agency.delete()
-        return JsonResponse({'status_flag': True, "status_string": "Delete Success!"}, status=204)  
+        return JsonResponse({'status_flag': True, "status_string": "Delete Success!"}, status=200)  
 
           
     return JsonResponse({'status_flag':False}, status=400)
