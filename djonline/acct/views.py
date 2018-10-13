@@ -180,7 +180,7 @@ def orz_detail(request, pk):
 @api_view(['GET', 'POST'])
 def line_list(request):
     local_name = '中国国际旅行社'
-    if request.method == 'GET':
+    if request.method == 'POST' and request.data['reqMethod'] == 'GET':
         line_prices = Line_Price_t.objects.filter(local_name=local_name)
         item_num = len(line_prices)
         top3_ref_data = {}
@@ -196,13 +196,23 @@ def line_list(request):
         return Response({'result': serializer.data, 'item_num': item_num,
                          'user': request.user.username, 'top3_ref_prices': top3_ref_data, 'status_flag': True, 'status_string': 'Success'})
 
-    elif request.method == 'POST':
+    if request.method == 'POST' and request.data['reqMethod'] == 'ADD':
         serializer = Line_Price_tSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, {'status_flag': True, 'status_string': 'Success'}, status=status.HTTP_201_CREATED,)
+            return Response({'result': serializer.data, 'status_flag': True, 'status_string': 'Success'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    if request.method =='POST' and request.data['reqMethod'] == 'PUT':
+        serializer = Line_Price_tSerializer(line, data=request.data)
+        if serializer.is_valid:
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method =='POST' and request.data['reqMethod'] == 'DELETE':
+        line.delete()
+        return Response({'status_flag': True, 'status_string': 'Success'}, status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def line_detail(request, pk):
