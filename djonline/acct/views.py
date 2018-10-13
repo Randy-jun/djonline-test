@@ -181,7 +181,7 @@ def orz_detail(request, pk):
 @csrf_exempt
 @api_view(['GET', 'POST'])
 def line_list(request):
-    local_name = '中国国际旅行社'
+    local_name = request.data['local_name']
     if request.method == 'POST' and request.data['req_method'] == 'GET':
         line_prices = Line_Price_t.objects.filter(local_name=local_name)
         item_num = len(line_prices)
@@ -241,7 +241,7 @@ def line_detail(request, pk):
 
 @api_view(['GET', 'POST'])
 def application_list(request):
-    local_name = '中国国际旅行社'
+    local_name = request.data['local_name']
     if request.method == 'GET':
         application_list = Application_t.objects.filter(local_name=local_name)
         serializer = Application_tSerializer(application_list, many=True)
@@ -258,7 +258,7 @@ def application_list(request):
 @api_view(['GET', 'POST'])
 @ensure_csrf_cookie
 def tourist_list(request):
-    local_name = '中国国际旅行社'
+    local_name = request.data['local_name']
     if request.method == 'GET':
         tourist_list = Tourist_t.objects.filter(local_name=local_name)
         serializer = Tourist_tSerializer(tourist_list, many=True)
