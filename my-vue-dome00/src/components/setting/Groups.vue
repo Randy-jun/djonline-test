@@ -37,8 +37,40 @@
                <td v-bind:id="item.id">{{item.remark}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
-                  <button type="button" class="btn btn-primary btn-sm">编辑</button>
+                  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" v-bind:data-target='"#updateGroup"+item.id' v-on:click="updateGroup(item)">编辑</button>
                   <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" v-bind:data-target='"#deleteConfirm"+item.id'>删除</button>
+                </div>
+                <div class="modal fade" role="dialog" v-bind:id='"updateGroup"+item.id'>
+                  <div class="modal-dialog modal-md modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">修改组团社</h5>
+                        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button> -->
+                      </div>
+                      <div class="modal-body">
+                        <div class="input-group mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text" id="groupName">组团社名称</span>
+                          </div>
+                          <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" v-model="group.groupName">
+                        </div>
+                        <small>{{group.groupName}}</small>
+                        <div class="input-group">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">备注</span>
+                          </div>
+                          <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.groupRemark"></textarea>
+                        </div>
+                        <small>{{group.groupRemark}}</small>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doUpdateGroup(index, item.id)">保存</button>
+                        <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="modal fade" role="dialog" v-bind:id='"deleteConfirm"+item.id'>
                   <div class="modal-dialog modal-sm">
@@ -65,7 +97,7 @@
       </table>
     </div>
     <div class="row align-items-end">
-      <div class="col"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addGroup">新增组团社</button></div>
+      <div class="col"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addGroup" v-on:click="addGroup($event)">新增组团社</button></div>
       <div class="modal fade" role="dialog" id="addGroup">
         <div class="modal-dialog modal-md modal-dialog-centered">
           <div class="modal-content">
@@ -80,16 +112,16 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text" id="groupName">组团社名称</span>
                 </div>
-                <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" v-model="AddGroup.groupName">
+                <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" v-model="group.groupName">
               </div>
-              <small>{{AddGroup.groupName}}</small>
+              <small>{{group.groupName}}</small>
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text">备注</span>
                 </div>
-                <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="AddGroup.groupRemark"></textarea>
+                <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.groupRemark"></textarea>
               </div>
-              <small>{{AddGroup.groupRemark}}</small>
+              <small>{{group.groupRemark}}</small>
             </div>
             <div class="modal-footer">
               <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doAddGroup($event)">保存</button>
@@ -118,7 +150,7 @@ export default {
       count_all:null,
       alertState:false,
       alertMsg:null,
-      AddGroup:{
+      group:{
         groupName:null,
         groupRemark:null,
       },
@@ -142,10 +174,15 @@ export default {
     choice(groupid){
       // console.log(zuid)
     },
-    doDeleGroup(localId, groupid){
-      var api='http://127.0.0.1:9090/acct/agency/' + groupid;
+    doDeleGroup(localGroupId, groupid){
+      var api='http://127.0.0.1:9090/acct/agencies/';
       console.log(api);
-      Axios.delete(api).then((response)=>{
+      var params = new URLSearchParams();
+      params.append("req_method","DELETE");
+      params.append("tokenID",Sstorage.get('tokenID'));
+      params.append("pk",groupid);
+      Axios.post(api, params).then((response)=>{
+        console.log(response);
         if(response.data.status_flag){
           console.log(response);
           this.alertMsg={
@@ -154,7 +191,7 @@ export default {
           }
           this.alertState=true;
           this.count_all-=1;
-          this.data_list.splice(localId,1)
+          this.data_list.splice(localGroupId,1)
           setTimeout(()=>{
             this.alertState=false;
           },2000);
@@ -173,14 +210,63 @@ export default {
           console.log(error);
         });
     },
+    updateGroup(groupContent){
+      this.group.groupName=groupContent.name;
+      this.group.groupRemark=groupContent.remark;
+    },
+    doUpdateGroup(localGroupId, groupid){
+      const api='http://127.0.0.1:9090/acct/agencies/';
+      var params = new URLSearchParams();
+      params.append("req_method","UPDATE");
+      params.append("name",this.group.groupName);
+      params.append("remark",this.group.groupRemark);
+      params.append("tokenID",Sstorage.get('tokenID'));
+      params.append("pk",groupid);
+      params.append("local_name",Sstorage.get('localname'));
+      Axios.post(api, params).then((response)=>{
+        if(response.data.status_flag){
+          console.log(response);
+          this.alertMsg={
+            'stateFlag':'alert-success',
+            'msgConten':'修改成功！',
+          }
+          this.alertState=true;
+          // console.log(response.data.result)
+          this.data_list.splice(localGroupId,1,response.data.result);
+          setTimeout(()=>{
+            this.alertState=false;
+            // this
+          },2000);
+        }else{
+          console.log(response);
+          this.alertMsg={
+            'stateFlag':'alert-danger',
+            'msgConten':'修改失败！',
+          }
+          this.alertState=true;
+          setTimeout(()=>{
+            this.alertState=false;
+            // this
+          },2000);
+        }})
+        .catch((error)=>{
+          console.log(error);
+        });
+    },
+    addGroup(){
+      this.group.groupName=null;
+      this.group.groupRemark=null;
+    },
     doAddGroup(e){
       const api='http://127.0.0.1:9090/acct/agencies/';
       if (e.type == 'click' || e.keyCode == 13) {
         // console.log(this.username,this.password);
         var params = new URLSearchParams();
-        params.append("name",this.AddGroup.groupName);
-        params.append("remark",this.AddGroup.groupRemark);
-        params.append("localname",Sstorage.get('localname'));
+        params.append("req_method","ADD");
+        params.append("tokenID",Sstorage.get('tokenID'));
+        params.append("name",this.group.groupName);
+        params.append("remark",this.group.groupRemark);
+        params.append("local_name",Sstorage.get('localname'));
         Axios.post(api, params).then((response)=>{
           if(response.data.status_flag){
             console.log(response);
@@ -241,7 +327,12 @@ export default {
     // var list = JSON.parse(localStorage.getItem('list'));
     
     const api='http://127.0.0.1:9090/acct/agencies/';
-    Axios.get(api).then((response)=>{
+    var params = new URLSearchParams();
+    params.append("req_method","GET");
+    params.append("userID",Sstorage.get('userID'));
+    params.append("local_name",Sstorage.get('localname'));
+    params.append("tokenID",Sstorage.get('tokenID'));
+    Axios.post(api, params).then((response)=>{
         this.data_list=response.data.result;
         this.count_all=response.data.result.length;
         console.log(this.data_list)
