@@ -4,7 +4,7 @@ from acct.models import Agency_t, Line_Price_t, Ref_Price_t, Application_t, Tour
 class Agency_tSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agency_t
-        fields = '__all__'
+        fields = ('id', 'name', 'remark', 'local_name')
 
 
 class Line_Price_tSerializer(serializers.ModelSerializer):
