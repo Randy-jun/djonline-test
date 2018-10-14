@@ -1,80 +1,152 @@
 <template>
-  <div class="col">
-    Proudcts
-    <div class="row jumbotron ho-pad">
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">地接社名称：</h5><a class="card-text">{{order.dj_name}}</a></div></div>
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">组团社名称：</h5><a class="card-text">{{order.zt_name}}</a></div></div>
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">单据编号：</h5><a class="card-text">{{order.dd_number}}</a></div></div>
-      <div class="w-100"></div>
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">线路名称：</h5><a class="card-text">{{order.xl_name}}</a></div></div>
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">默认报价：</h5><a class="card-text">{{order.def_price}}</a></div></div>
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">出团日期：</h5><a class="card-text">{{order.dd_date}}</a></div></div>
-    </div>
-    <div>
-      <ul class="nav nav-pills nav-justified">
-        <li><a href="#">基础业务</a></li>
-        <li><a href="#">调拨业务</a></li>
-        <li><a href="#">代收业务</a></li>
-      </ul>
-    </div>
+  <div class="col" id="products">
+    <CustomeAlert v-if="alertState" v-bind:alertmsg="alertMsg" />
+    <!-- <div class="alert alert-success" role="alert">
+      A simple success alert—check it out!
+    </div> -->
+    <small>总共: <span class="font-italic font-weight-bold">{{count_all}}</span> 条记录</small>
     <div class="row">
       <table class="table table-hover table-responsive-lg">
          <thead class="thead-lights">
             <tr>
-               <th>ID</th>
-               <th>姓名</th>
-               <th>人数</th>
-               <th>参考报价</th>
-               <th>修正金额</th>
-               <th>最终报价</th>
-               <th>报价修正备注</th>
-               <th>Details/Edit/Del</th>
+               <!-- <th>
+                 <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" v-on:change="choiceall()" id="allCheck">
+                  <label class="custom-control-label" for="allCheck">全选</label>
+                </div>
+               </th> -->
+               <th>序号</th>
+               <th>编号</th>
+               <th>名称</th>
+               <th>1档位报价</th>
+               <th>2档位报价</th>
+               <th>3档位报价</th>
+               <th>备注</th>
+               <th>操作</th>
             </tr>
          </thead>
-         <tbody v-for="(item,key) in tourist" v-if="!item.checked" v-bind:key='item.id'>
+         <tbody>
             <!-- key 要写到后面才可以 -->
-            <tr>
-               <td>{{key+1}}</td>
-               <td>{{item.name}}</td>
-               <td>{{item.count}}</td>
-               <td>{{item.refer_price.rp_name}}:{{item.refer_price.rp_price}}</td>
-               <td>{{item.modify_price}}</td>
-               <td>{{item.final_price}}</td>
-               <td>{{item.modify_price_remark}}</td>
+            <tr v-for="(item, index) in data_list">
+              <!-- <td>
+                 <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" v-on:change="choiceall()" v-bind:id="item.id">
+                  <label class="custom-control-label" v-bind:for="item.id"></label>
+                </div>
+               </td> -->
+               <td>{{index + 1}}</td>
+               <td v-bind:id="item.id" >{{item.id}}</td>
+               <td v-bind:id="item.id">{{item.name}} </td>
+               <td v-bind:id="item.id">{{item.top3_ref_data[0]}} </td>
+               <td v-bind:id="item.id">{{item.top3_ref_data[1]}} </td>
+               <td v-bind:id="item.id">{{item.top3_ref_data[2]}} </td>
+               <td v-bind:id="item.id">{{item.remark}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
-                  <button type="button" class="btn btn-primary" data-toggle="collapse" v-bind:data-target="'#a'+key">Details</button>
-                  <button type="button" class="btn btn-warnings">Edit</button>
-                  <button type="button" class="btn btn-danger">Del</button>
+                  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" v-bind:data-target='"#updateGroup"+item.id' v-on:click="updateGroup(item)">编辑</button>
+                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" v-bind:data-target='"#deleteConfirm"+item.id'>删除</button>
                 </div>
-              </td>
-            </tr>
-            <tr v-bind:id="'a'+key" class="collapse in">
-              <td colspan="8">
-                fdsfds
+                <div class="modal fade" role="dialog" v-bind:id='"updateGroup"+item.id'>
+                  <div class="modal-dialog modal-md modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">修改组团社</h5>
+                        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button> -->
+                      </div>
+                      <div class="modal-body">
+                        <div class="input-group mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text" id="groupName">组团社名称</span>
+                          </div>
+                          <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" v-model="group.groupName">
+                        </div>
+                        <small>{{group.groupNames}}</small>
+                        <div class="input-group">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">备注</span>
+                          </div>
+                          <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.groupRemark"></textarea>
+                        </div>
+                        <small>{{group.groupRemark}}</small>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doUpdateGroup(index, item.id)">保存</button>
+                        <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal fade" role="dialog" v-bind:id='"deleteConfirm"+item.id'>
+                  <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">确认删除吗？</h5>
+                        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button> -->
+                      </div>
+                      <!-- <div class="modal-body">
+                        <p>Modal body text goes here.</p>
+                      </div> -->
+                      <div class="modal-footer">
+                        <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDeleGroup(index, item.id)">确认</button>
+                        <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </td>
             </tr>
          </tbody>
       </table>
-      <div class="row">
-        <div class="col-2"><button class="btn btn-default" v-on:click="doAdd($event)">添加</button></div>
+    </div>
+    <div class="row align-items-end">
+      <div class="col"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addGroup" v-on:click="addGroup($event)">新增组团社</button></div>
+      <div class="modal fade" role="dialog" id="addGroup">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">新增组团社</h5>
+              <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button> -->
+            </div>
+            <div class="modal-body">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="groupName">组团社名称</span>
+                </div>
+                <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" v-model="group.groupName">
+              </div>
+              <small>{{group.groupName}}</small>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">备注</span>
+                </div>
+                <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.groupRemark"></textarea>
+              </div>
+              <small>{{group.groupRemark}}</small>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doAddGroup($event)">保存</button>
+              <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <ul class="pagination pagination-sm">
-      <li><a href="#">&laquo;</a></li>
-      <li><a href="#">1</a></li>
-      <li><a href="#">2</a></li>
-      <li><a href="#">3</a></li>
-      <li><a href="#">4</a></li>
-      <li><a href="#">5</a></li>
-      <li><a href="#">&raquo;</a></li>
-    </ul>
   </div>
 </template>
 
 <script>
+
 import Axios from 'axios';
-import Storage from '@/module/lstorage.js';
+import Sstorage from '@/module/sstorage.js';
+import InputCheck from '@/module/inputcheck.js';
+import CustomeAlert from  '@/components/sysinfo/CustomAlert.vue';
+
 export default {
   name: 'Home',
   props: {
@@ -82,6 +154,13 @@ export default {
   },
   data() {
     return {
+      count_all:null,
+      alertState:false,
+      alertMsg:null,
+      group:{
+        groupName:null,
+        groupRemark:null,
+      },
       order:{
         dj_name:"百恒国际旅行社",
         zt_name:"光大旅行社",
@@ -90,239 +169,218 @@ export default {
         def_price: 8888,
         dd_date:"2018-8.31"
       },
-      test_list:[],
-      tourist:[  
-        {
-          name:"甲",
-          count:1,
-          refer_price:{rp_name:"成人",rp_price:270},
-          modify_price:10,
-          final_price:280,
-          modify_price_remark:"含餐",
-          tran_price:null,
-          tran_org:null,
-          tran_remark:null,
-          delivery:null,
-          delivery_remark:null,
-        },
-        {
-          name:"乙",
-          count:1,
-          refer_price:{rp_name:"车住",rp_price:160},
-          modify_price:30,
-          final_price:190,
-          modify_price_remark:"法门寺电瓶车",
-          tran_price:null,
-          tran_org:null,
-          tran_remark:null,
-          delivery:20,
-          delivery_remark:"车费",
-        },
-        {
-          name:"丙",
-          count:1,
-          refer_price:{rp_name:"车费",rp_price:130},
-          modify_price:10,
-          final_price:140,
-          modify_price_remark:"含餐",
-          tran_price:100,
-          tran_org:"大唐旅行社",
-          tran_remark:null,
-          delivery:20,
-          delivery_remark:"车费",
-        },
-        {
-          name:"丁",
-          count:10,
-          refer_price:{rp_name:"成人",rp_price:2700},
-          modify_price:100,
-          final_price:2800,
-          modify_price_remark:"含餐",
-          tran_price:2000,
-          tran_org:"大唐旅行社",
-          tran_remark:null,
-          delivery:null,
-          delivery_remark:null,
-        },
-        {
-          name:"戊",
-          count:5,
-          refer_price:{rp_name:"成人",rp_price:1350},
-          modify_price:-200,
-          final_price:1150,
-          modify_price_remark:"优惠",
-          tran_price:1000,
-          tran_org:"中国青年旅行社",
-          tran_remark:null,
-          delivery:100,
-          delivery_remark:"车费",
-        },
-        {
-          name:"甲",
-          count:1,
-          refer_price:{rp_name:"成人",rp_price:270},
-          modify_price:10,
-          final_price:280,
-          modify_price_remark:"含餐",
-          tran_price:null,
-          tran_org:null,
-          tran_remark:null,
-          delivery:null,
-          delivery_remark:null,
-        },
-        {
-          name:"乙",
-          count:1,
-          refer_price:{rp_name:"车住",rp_price:160},
-          modify_price:30,
-          final_price:190,
-          modify_price_remark:"法门寺电瓶车",
-          tran_price:null,
-          tran_org:null,
-          tran_remark:null,
-          delivery:20,
-          delivery_remark:"车费",
-        },
-        {
-          name:"丙",
-          count:1,
-          refer_price:{rp_name:"车费",rp_price:130},
-          modify_price:10,
-          final_price:140,
-          modify_price_remark:"含餐",
-          tran_price:100,
-          tran_org:"大唐旅行社",
-          tran_remark:null,
-          delivery:20,
-          delivery_remark:"车费",
-        },
-        {
-          name:"丁",
-          count:10,
-          refer_price:{rp_name:"成人",rp_price:2700},
-          modify_price:100,
-          final_price:2800,
-          modify_price_remark:"含餐",
-          tran_price:2000,
-          tran_org:"大唐旅行社",
-          tran_remark:null,
-          delivery:null,
-          delivery_remark:null,
-        },
-        {
-          name:"戊",
-          count:5,
-          refer_price:{rp_name:"成人",rp_price:1350},
-          modify_price:-200,
-          final_price:1150,
-          modify_price_remark:"优惠",
-          tran_price:1000,
-          tran_org:"中国青年旅行社",
-          tran_remark:null,
-          delivery:100,
-          delivery_remark:"车费",
-        },
-        {
-          name:"甲",
-          count:1,
-          refer_price:{rp_name:"成人",rp_price:270},
-          modify_price:10,
-          final_price:280,
-          modify_price_remark:"含餐",
-          tran_price:null,
-          tran_org:null,
-          tran_remark:null,
-          delivery:null,
-          delivery_remark:null,
-        },
-        {
-          name:"乙",
-          count:1,
-          refer_price:{rp_name:"车住",rp_price:160},
-          modify_price:30,
-          final_price:190,
-          modify_price_remark:"法门寺电瓶车",
-          tran_price:null,
-          tran_org:null,
-          tran_remark:null,
-          delivery:20,
-          delivery_remark:"车费",
-        },
-        {
-          name:"丙",
-          count:1,
-          refer_price:{rp_name:"车费",rp_price:130},
-          modify_price:10,
-          final_price:140,
-          modify_price_remark:"含餐",
-          tran_price:100,
-          tran_org:"大唐旅行社",
-          tran_remark:null,
-          delivery:20,
-          delivery_remark:"车费",
-        },
-        {
-          name:"丁",
-          count:10,
-          refer_price:{rp_name:"成人",rp_price:2700},
-          modify_price:100,
-          final_price:2800,
-          modify_price_remark:"含餐",
-          tran_price:2000,
-          tran_org:"大唐旅行社",
-          tran_remark:null,
-          delivery:null,
-          delivery_remark:null,
-        },
-        {
-          name:"戊",
-          count:5,
-          refer_price:{rp_name:"成人",rp_price:1350},
-          modify_price:-200,
-          final_price:1150,
-          modify_price_remark:"优惠",
-          tran_price:1000,
-          tran_org:"中国青年旅行社",
-          tran_remark:null,
-          delivery:100,
-          delivery_remark:"车费",
-        },
-      ],
+      // post_data:{},
+      data_list:[],
+      tourist:[]
     }
   },
+  components: {
+    CustomeAlert,
+  },
   methods: {
-    doAdd(e){
-      // console.log(e)
-      if (e.type == 'click' || e.keyCode == 13) {
-        this.list.push(
-          {
-            title:this.todo,
-            checked:false,
-          }
-        );
-      this.todo='';
-      }
-      this.saveList();
+    choice(groupid){
+      // console.log(zuid)
     },
-    doDel(delKey){
-      this.list.splice(delKey,1 );
-      this.saveList();
+    doDeleGroup(localGroupId, groupid){
+      var api='http://127.0.0.1:9090/acct/agencies/';
+      console.log(api);
+      var params = new URLSearchParams();
+      params.append("req_method","DELETE");
+      params.append("tokenID",Sstorage.get('tokenID'));
+      params.append("pk",groupid);
+      Axios.post(api, params).then((response)=>{
+        console.log(response);
+        if(response.data.status_flag){
+          console.log(response);
+          this.alertMsg={
+            'stateFlag':'alert-success',
+            'msgConten':'删除成功！',
+          }
+          this.alertState=true;
+          this.count_all-=1;
+          this.data_list.splice(localGroupId,1)
+          setTimeout(()=>{
+            this.alertState=false;
+          },2000);
+        }else{
+          console.log(response);
+          this.alertMsg={
+            'stateFlag':'alert-danger',
+            'msgConten':'删除失败！',
+          }
+          this.alertState=true;
+          setTimeout(()=>{
+            this.alertState=false;
+          },2000);
+        }})
+        .catch((error)=>{
+          console.log(error);
+        });
+    },
+    updateGroup(groupContent){
+      this.group.groupName=groupContent.name;
+      this.group.groupRemark=groupContent.remark;
+    },
+    doUpdateGroup(localGroupId, groupid){
+      const api='http://127.0.0.1:9090/acct/agencies/';
+      if(InputCheck.namecheck(this.group.groupName)){
+        this.alertMsg={
+            'stateFlag':'alert-danger',
+            'msgConten':'组织名称不能为空或空格',
+        }
+        this.alertState=true;
+        setTimeout(()=>{
+          this.alertState=false;
+        },2000);
+        return 1;
+      }
+      var params = new URLSearchParams();
+      params.append("req_method","UPDATE");
+      params.append("name",this.group.groupName);
+      params.append("remark",this.group.groupRemark);
+      params.append("tokenID",Sstorage.get('tokenID'));
+      params.append("pk",groupid);
+      params.append("local_name",Sstorage.get('localname'));
+      Axios.post(api, params).then((response)=>{
+        if(response.data.status_flag){
+          console.log(response);
+          this.alertMsg={
+            'stateFlag':'alert-success',
+            'msgConten':'修改成功！',
+          }
+          this.alertState=true;
+          // console.log(response.data.result)
+          this.data_list.splice(localGroupId,1,response.data.result);
+          setTimeout(()=>{
+            this.alertState=false;
+            // this
+          },2000);
+        }else{
+          console.log(response);
+          if("error : name should be unique" === response.data.status_flag){
+            this.alertMsg={
+            'stateFlag':'alert-danger',
+            'msgConten':'修改失败，组织名称已经存在！',
+            };
+          }else{
+            this.alertMsg={
+              'stateFlag':'alert-danger',
+              'msgConten':'修改失败！',
+            };
+          }
+          this.alertState=true;
+          setTimeout(()=>{
+            this.alertState=false;
+            // this
+          },2000);
+        }})
+        .catch((error)=>{
+          console.log(error);
+        });
+    },
+    addGroup(){
+      this.group.groupName="";
+      this.group.groupRemark="";
+    },
+    doAddGroup(e){
+      const api='http://127.0.0.1:9090/acct/agencies/';
+      if (e.type == 'click' || e.keyCode == 13) {
+        // console.log(this.username,this.password);
+        if(InputCheck.namecheck(this.group.groupName)){
+          this.alertMsg={
+              'stateFlag':'alert-danger',
+              'msgConten':'组织名称不能为空或空格',
+          }
+          this.alertState=true;
+          setTimeout(()=>{
+            this.alertState=false;
+          },2000);
+          return 1;
+        }
+        var params = new URLSearchParams();
+        params.append("req_method","ADD");
+        params.append("tokenID",Sstorage.get('tokenID'));
+        params.append("name",this.group.groupName);
+        params.append("remark",this.group.groupRemark);
+        params.append("local_name",Sstorage.get('localname'));
+        Axios.post(api, params).then((response)=>{
+          if(response.data.status_flag){
+            console.log(response);
+            this.alertMsg={
+              'stateFlag':'alert-success',
+              'msgConten':'添加成功！',
+            }
+            this.alertState=true;
+            this.count_all+=1;
+            this.data_list.push(response.data.result)
+            setTimeout(()=>{
+              this.alertState=false;
+              // this
+            },2000);
+          }else{
+            console.log(response);
+            this.alertMsg={
+              'stateFlag':'alert-danger',
+              'msgConten':'添加失败！',
+            }
+            this.alertState=true;
+            setTimeout(()=>{
+              this.alertState=false;
+              // this
+            },2000);
+          }})
+          .catch((error)=>{
+            console.log(error);
+          });
+      }
     },
     saveList(){
       Storage.set('list', this.list);
       // localStorage.setItem('list', JSON.stringify(this.list));
+    },
+    postTest(flag){
+      const api='http://127.0.0.1:9090/acct/get_json/';
+      // var post_data={"id":123,"title":"this is 中文"};
+
+      var params = new URLSearchParams();
+      params.append('id', 1234325456); 
+      if(flag){
+        params.append('id', 156); 
+      }
+      params.append('title', 'this is 中文');
+      Axios.post(api, params)
+        .then(function (response) {
+          alert(response.data.result);
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      // alert("POST test");
     }
   },
   mounted() {
     // var list = JSON.parse(localStorage.getItem('list'));
-      
-    // var api="http://127.0.0.1:9090/acct/request_form/6";
-    var api='http://www.phonegap100.com/appapi.php?a=getPortalList&catid=20&page=2';
-    Axios.get(api).then((response)=>{
-        // console.log(response);
-        this.test_list=response.data.result;
+    
+    const api='http://127.0.0.1:9090/acct/lineprices/';
+    var params = new URLSearchParams();
+    params.append("req_method","GET");
+    params.append("userID",Sstorage.get('userID'));
+    params.append("local_name",Sstorage.get('localname'));
+    params.append("tokenID",Sstorage.get('tokenID'));
+    Axios.post(api, params).then((response)=>{
+        this.data_list=response.data.result;
+        this.count_all=response.data.result.length;
+        console.log(this.data_list)
+        // setTimeout(()=>{
+        //   this.data_list.splice(0,1)
+        //   console.log(this.data_list)
+        // },5000);
+        
+        // console.log(typeof(response.data.result));
+        // this.test_list=response.data.result;
       }).catch((error)=>{
-        console.log(error);
+        // console.log(error);
       })
   }
 }
@@ -332,5 +390,8 @@ export default {
 .ho-pad{
   padding-top: 28px;
   padding-bottom: 28px;
+}
+#product{
+  margin-bottom: 2%;
 }
 </style>
