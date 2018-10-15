@@ -1,5 +1,5 @@
 <template>
-  <div class="col" id="products">
+  <div class="col" id="groups">
     <CustomeAlert v-if="alertState" v-bind:alertmsg="alertMsg" />
     <!-- <div class="alert alert-success" role="alert">
       A simple success alert—check it out!
@@ -43,40 +43,8 @@
                <td v-bind:id="item.id">{{item.remark}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
-                  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" v-bind:data-target='"#updateGroup"+item.id' v-on:click="updateGroup(item)">编辑</button>
+                  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="update(index, item)">编辑</button>
                   <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" v-bind:data-target='"#deleteConfirm"+item.id'>删除</button>
-                </div>
-                <div class="modal fade" role="dialog" v-bind:id='"updateGroup"+item.id'>
-                  <div class="modal-dialog modal-md modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">修改组团社</h5>
-                        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button> -->
-                      </div>
-                      <div class="modal-body">
-                        <div class="input-group mb-3">
-                          <div class="input-group-prepend">
-                            <span class="input-group-text" id="groupName">组团社名称</span>
-                          </div>
-                          <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" v-model="group.groupName">
-                        </div>
-                        <small>{{group.groupNames}}</small>
-                        <div class="input-group">
-                          <div class="input-group-prepend">
-                            <span class="input-group-text">备注</span>
-                          </div>
-                          <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.groupRemark"></textarea>
-                        </div>
-                        <small>{{group.groupRemark}}</small>
-                      </div>
-                      <div class="modal-footer">
-                        <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doUpdateGroup(index, item.id)">保存</button>
-                        <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
-                      </div>
-                    </div>
-                  </div>
                 </div>
                 <div class="modal fade" role="dialog" v-bind:id='"deleteConfirm"+item.id'>
                   <div class="modal-dialog modal-sm">
@@ -91,7 +59,7 @@
                         <p>Modal body text goes here.</p>
                       </div> -->
                       <div class="modal-footer">
-                        <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDeleGroup(index, item.id)">确认</button>
+                        <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDelete(index, item.id)">确认</button>
                         <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
                       </div>
                     </div>
@@ -103,12 +71,12 @@
       </table>
     </div>
     <div class="row align-items-end">
-      <div class="col"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addGroup" v-on:click="addGroup($event)">新增组团社</button></div>
-      <div class="modal fade" role="dialog" id="addGroup">
+      <div class="col"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="add()">新增组团社</button></div>
+      <div class="modal fade" role="dialog" id="editPage">
         <div class="modal-dialog modal-md modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">新增组团社</h5>
+              <h5 class="modal-title">{{editPage.title}}</h5>
               <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button> -->
@@ -116,21 +84,21 @@
             <div class="modal-body">
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="groupName">组团社名称</span>
+                  <span class="input-group-text" id="name">组团社名称</span>
                 </div>
-                <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" v-model="group.groupName">
+                <input type="text" class="form-control" id="nameInput" aria-describedby="name" v-model="group.name">
               </div>
-              <small>{{group.groupName}}</small>
+              <small>{{group.name}}</small>
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text">备注</span>
                 </div>
-                <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.groupRemark"></textarea>
+                <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.remark"></textarea>
               </div>
-              <small>{{group.groupRemark}}</small>
+              <small>{{group.remark}}</small>
             </div>
             <div class="modal-footer">
-              <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doAddGroup($event)">保存</button>
+              <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doSave()">保存</button>
               <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
             </div>
           </div>
@@ -156,58 +124,57 @@ export default {
     return {
       count_all:null,
       alertState:false,
-      alertMsg:null,
+      alertMsg:{
+        stateFlag:null,
+        msgConten:null,
+      },
       group:{
-        groupName:null,
-        groupRemark:null,
+        name:null,
+        remark:null,
       },
-      order:{
-        dj_name:"百恒国际旅行社",
-        zt_name:"光大旅行社",
-        dd_number:"CTSQD-0001",
-        xl_name:"西安北线二日游（淡季）",
-        def_price: 8888,
-        dd_date:"2018-8.31"
+      editPage:{
+        title:null,
+        methods:null,
+        id:null,
+        localId:null,
       },
-      // post_data:{},
+      api:'http://127.0.0.1:9090/acct/lineprices/',
       data_list:[],
-      tourist:[]
     }
   },
   components: {
     CustomeAlert,
   },
   methods: {
-    choice(groupid){
+    choice(id){
       // console.log(zuid)
     },
-    doDeleGroup(localGroupId, groupid){
-      var api='http://127.0.0.1:9090/acct/agencies/';
-      console.log(api);
+    doDelete(localId, id){
+
       var params = new URLSearchParams();
       params.append("req_method","DELETE");
       params.append("tokenID",Sstorage.get('tokenID'));
-      params.append("pk",groupid);
-      Axios.post(api, params).then((response)=>{
+      params.append("pk",id);
+      Axios.post(this.api, params).then((response)=>{
         console.log(response);
         if(response.data.status_flag){
           console.log(response);
-          this.alertMsg={
-            'stateFlag':'alert-success',
-            'msgConten':'删除成功！',
-          }
+
+          this.alertMsg.stateFlag="alert-success";
+          this.alertMsg.msgConten="删除成功！";
+
           this.alertState=true;
           this.count_all-=1;
-          this.data_list.splice(localGroupId,1)
+          this.data_list.splice(localId,1)
           setTimeout(()=>{
             this.alertState=false;
           },2000);
         }else{
           console.log(response);
-          this.alertMsg={
-            'stateFlag':'alert-danger',
-            'msgConten':'删除失败！',
-          }
+
+          this.alertMsg.stateFlag="alert-danger";
+          this.alertMsg.msgConten="删除失败！";
+
           this.alertState=true;
           setTimeout(()=>{
             this.alertState=false;
@@ -217,16 +184,26 @@ export default {
           console.log(error);
         });
     },
-    updateGroup(groupContent){
-      this.group.groupName=groupContent.name;
-      this.group.groupRemark=groupContent.remark;
+    update(localId, groupContent){
+      this.group.name=groupContent.name;
+      this.group.remark=groupContent.remark;
+      this.editPage.title="修改线路报价单";
+      this.editPage.methods="UPDATE";
+      this.editPage.id=groupContent.id;
+      this.editPage.localId=localId;
     },
-    doUpdateGroup(localGroupId, groupid){
-      const api='http://127.0.0.1:9090/acct/agencies/';
-      if(InputCheck.namecheck(this.group.groupName)){
+    add(){
+      this.group.name="";
+      this.group.remark="";
+      this.editPage.title="新增线路报价单";
+      this.editPage.methods="ADD";
+      this.editPage.localId=null;
+    },
+    doSave(){
+      if(InputCheck.namecheck(this.group.name)){
         this.alertMsg={
             'stateFlag':'alert-danger',
-            'msgConten':'组织名称不能为空或空格',
+            'msgConten':'线路报价单名称不能为空或空格',
         }
         this.alertState=true;
         setTimeout(()=>{
@@ -235,38 +212,48 @@ export default {
         return 1;
       }
       var params = new URLSearchParams();
-      params.append("req_method","UPDATE");
-      params.append("name",this.group.groupName);
-      params.append("remark",this.group.groupRemark);
+      params.append("req_method",this.editPage.methods);
+      
+      if(null !== this.editPage.localId){
+        params.append("pk",this.editPage.id);
+      }
+
+      params.append("name",this.group.name);
+      params.append("remark",this.group.remark);
+      
       params.append("tokenID",Sstorage.get('tokenID'));
-      params.append("pk",groupid);
       params.append("local_name",Sstorage.get('localname'));
-      Axios.post(api, params).then((response)=>{
+
+      Axios.post(this.api, params).then((response)=>{
         if(response.data.status_flag){
           console.log(response);
-          this.alertMsg={
-            'stateFlag':'alert-success',
-            'msgConten':'修改成功！',
+          this.alertMsg.stateFlag="alert-success";
+
+          // console.log(response.data.result)
+          console.log(this.editPage.localId)
+          if(null !== this.editPage.localId){
+            this.data_list.splice(this.editPage.localId,1,response.data.result);
+            this.alertMsg.msgConten="修改成功！";
+          }else{
+            this.count_all+=1;
+            this.data_list.push(response.data.result)
+            this.alertMsg.msgConten="添加成功！";
           }
           this.alertState=true;
-          // console.log(response.data.result)
-          this.data_list.splice(localGroupId,1,response.data.result);
           setTimeout(()=>{
             this.alertState=false;
             // this
           },2000);
         }else{
           console.log(response);
-          if("error : name should be unique" === response.data.status_flag){
-            this.alertMsg={
+          this.alertMsg={
             'stateFlag':'alert-danger',
-            'msgConten':'修改失败，组织名称已经存在！',
-            };
+            'msgConten':'修改失败！',
+          }
+          if(this.editPage.localId){
+            this.alertMsg.msgConten="修改失败！";
           }else{
-            this.alertMsg={
-              'stateFlag':'alert-danger',
-              'msgConten':'修改失败！',
-            };
+            this.alertMsg.msgConten="添加失败！";
           }
           this.alertState=true;
           setTimeout(()=>{
@@ -278,107 +265,18 @@ export default {
           console.log(error);
         });
     },
-    addGroup(){
-      this.group.groupName="";
-      this.group.groupRemark="";
-    },
-    doAddGroup(e){
-      const api='http://127.0.0.1:9090/acct/agencies/';
-      if (e.type == 'click' || e.keyCode == 13) {
-        // console.log(this.username,this.password);
-        if(InputCheck.namecheck(this.group.groupName)){
-          this.alertMsg={
-              'stateFlag':'alert-danger',
-              'msgConten':'组织名称不能为空或空格',
-          }
-          this.alertState=true;
-          setTimeout(()=>{
-            this.alertState=false;
-          },2000);
-          return 1;
-        }
-        var params = new URLSearchParams();
-        params.append("req_method","ADD");
-        params.append("tokenID",Sstorage.get('tokenID'));
-        params.append("name",this.group.groupName);
-        params.append("remark",this.group.groupRemark);
-        params.append("local_name",Sstorage.get('localname'));
-        Axios.post(api, params).then((response)=>{
-          if(response.data.status_flag){
-            console.log(response);
-            this.alertMsg={
-              'stateFlag':'alert-success',
-              'msgConten':'添加成功！',
-            }
-            this.alertState=true;
-            this.count_all+=1;
-            this.data_list.push(response.data.result)
-            setTimeout(()=>{
-              this.alertState=false;
-              // this
-            },2000);
-          }else{
-            console.log(response);
-            this.alertMsg={
-              'stateFlag':'alert-danger',
-              'msgConten':'添加失败！',
-            }
-            this.alertState=true;
-            setTimeout(()=>{
-              this.alertState=false;
-              // this
-            },2000);
-          }})
-          .catch((error)=>{
-            console.log(error);
-          });
-      }
-    },
-    saveList(){
-      Storage.set('list', this.list);
-      // localStorage.setItem('list', JSON.stringify(this.list));
-    },
-    postTest(flag){
-      const api='http://127.0.0.1:9090/acct/get_json/';
-      // var post_data={"id":123,"title":"this is 中文"};
-
-      var params = new URLSearchParams();
-      params.append('id', 1234325456); 
-      if(flag){
-        params.append('id', 156); 
-      }
-      params.append('title', 'this is 中文');
-      Axios.post(api, params)
-        .then(function (response) {
-          alert(response.data.result);
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      // alert("POST test");
-    }
   },
   mounted() {
-    // var list = JSON.parse(localStorage.getItem('list'));
-    
-    const api='http://127.0.0.1:9090/acct/lineprices/';
+
     var params = new URLSearchParams();
     params.append("req_method","GET");
     params.append("userID",Sstorage.get('userID'));
     params.append("local_name",Sstorage.get('localname'));
     params.append("tokenID",Sstorage.get('tokenID'));
-    Axios.post(api, params).then((response)=>{
+    Axios.post(this.api, params).then((response)=>{
         this.data_list=response.data.result;
         this.count_all=response.data.result.length;
         console.log(this.data_list)
-        // setTimeout(()=>{
-        //   this.data_list.splice(0,1)
-        //   console.log(this.data_list)
-        // },5000);
-        
-        // console.log(typeof(response.data.result));
-        // this.test_list=response.data.result;
       }).catch((error)=>{
         // console.log(error);
       })
@@ -391,7 +289,7 @@ export default {
   padding-top: 28px;
   padding-bottom: 28px;
 }
-#product{
+#groups{
   margin-bottom: 2%;
 }
 </style>
