@@ -37,7 +37,7 @@
                <td v-bind:id="item.id">{{item.remark}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
-                  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editGroup" v-on:click="updateGroup(index, item)">编辑</button>
+                  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="update(index, item)">编辑</button>
                   <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" v-bind:data-target='"#deleteConfirm"+item.id'>删除</button>
                 </div>
                 <div class="modal fade" role="dialog" v-bind:id='"deleteConfirm"+item.id'>
@@ -53,7 +53,7 @@
                         <p>Modal body text goes here.</p>
                       </div> -->
                       <div class="modal-footer">
-                        <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDeleGroup(index, item.id)">确认</button>
+                        <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDelete(index, item.id)">确认</button>
                         <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
                       </div>
                     </div>
@@ -65,12 +65,12 @@
       </table>
     </div>
     <div class="row align-items-end">
-      <div class="col"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#editGroup" v-on:click="addGroup()">新增组团社</button></div>
-      <div class="modal fade" role="dialog" id="editGroup">
+      <div class="col"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="add()">新增组团社</button></div>
+      <div class="modal fade" role="dialog" id="editPage">
         <div class="modal-dialog modal-md modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">{{editGroup.title}}</h5>
+              <h5 class="modal-title">{{editPage.title}}</h5>
               <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button> -->
@@ -78,21 +78,21 @@
             <div class="modal-body">
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="groupName">组团社名称</span>
+                  <span class="input-group-text" id="name">组团社名称</span>
                 </div>
-                <input type="text" class="form-control" id="groupNameInput" aria-describedby="groupName" v-model="group.groupName">
+                <input type="text" class="form-control" id="nameInput" aria-describedby="name" v-model="group.name">
               </div>
-              <small>{{group.groupName}}</small>
+              <small>{{group.name}}</small>
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text">备注</span>
                 </div>
-                <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.groupRemark"></textarea>
+                <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.remark"></textarea>
               </div>
-              <small>{{group.groupRemark}}</small>
+              <small>{{group.remark}}</small>
             </div>
             <div class="modal-footer">
-              <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doSaveGroup()">保存</button>
+              <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doSave()">保存</button>
               <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
             </div>
           </div>
@@ -123,15 +123,16 @@ export default {
         msgConten:null,
       },
       group:{
-        groupName:null,
-        groupRemark:null,
-      },
-      editGroup:{
         name:null,
-        methods:null,
-        groupId:null,
-        localGroupId:null,
+        remark:null,
       },
+      editPage:{
+        title:null,
+        methods:null,
+        id:null,
+        localId:null,
+      },
+      api:'http://127.0.0.1:9090/acct/agencies/',
       data_list:[],
     }
   },
@@ -139,17 +140,16 @@ export default {
     CustomeAlert,
   },
   methods: {
-    choice(groupid){
+    choice(id){
       // console.log(zuid)
     },
-    doDeleGroup(localGroupId, groupid){
-      var api='http://127.0.0.1:9090/acct/agencies/';
-      console.log(api);
+    doDelete(localId, id){
+      // var api='http://127.0.0.1:9090/acct/agencies/';
       var params = new URLSearchParams();
       params.append("req_method","DELETE");
       params.append("tokenID",Sstorage.get('tokenID'));
-      params.append("pk",groupid);
-      Axios.post(api, params).then((response)=>{
+      params.append("pk",id);
+      Axios.post(this.api, params).then((response)=>{
         console.log(response);
         if(response.data.status_flag){
           console.log(response);
@@ -159,7 +159,7 @@ export default {
 
           this.alertState=true;
           this.count_all-=1;
-          this.data_list.splice(localGroupId,1)
+          this.data_list.splice(localId,1)
           setTimeout(()=>{
             this.alertState=false;
           },2000);
@@ -178,24 +178,24 @@ export default {
           console.log(error);
         });
     },
-    updateGroup(localId, groupContent){
-      this.group.groupName=groupContent.name;
-      this.group.groupRemark=groupContent.remark;
-      this.editGroup.name="修改组团社";
-      this.editGroup.methods="UPDATE";
-      this.editGroup.groupId=groupContent.id;
-      this.editGroup.localGroupId=localId;
+    update(localId, groupContent){
+      this.group.name=groupContent.name;
+      this.group.remark=groupContent.remark;
+      this.editPage.title="修改组团社";
+      this.editPage.methods="UPDATE";
+      this.editPage.id=groupContent.id;
+      this.editPage.localId=localId;
     },
-    addGroup(){
-      this.group.groupName="";
-      this.group.groupRemark="";
-      this.editGroup.name="新增组团社";
-      this.editGroup.methods="ADD";
-      this.editGroup.localGroupId=null;
+    add(){
+      this.group.name="";
+      this.group.remark="";
+      this.editPage.title="新增组团社";
+      this.editPage.methods="ADD";
+      this.editPage.localId=null;
     },
-    doSaveGroup(){
-      const api='http://127.0.0.1:9090/acct/agencies/';
-      if(InputCheck.namecheck(this.group.groupName)){
+    doSave(){
+      // const api='http://127.0.0.1:9090/acct/agencies/';
+      if(InputCheck.namecheck(this.group.name)){
         this.alertMsg={
             'stateFlag':'alert-danger',
             'msgConten':'组织名称不能为空或空格',
@@ -207,27 +207,27 @@ export default {
         return 1;
       }
       var params = new URLSearchParams();
-      params.append("req_method",this.editGroup.methods);
+      params.append("req_method",this.editPage.methods);
       
-      if(null !== this.editGroup.localGroupId){
-        params.append("pk",this.editGroup.groupId);
+      if(null !== this.editPage.localId){
+        params.append("pk",this.editPage.id);
       }
 
-      params.append("name",this.group.groupName);
-      params.append("remark",this.group.groupRemark);
+      params.append("name",this.group.name);
+      params.append("remark",this.group.remark);
       
       params.append("tokenID",Sstorage.get('tokenID'));
       params.append("local_name",Sstorage.get('localname'));
 
-      Axios.post(api, params).then((response)=>{
+      Axios.post(this.api, params).then((response)=>{
         if(response.data.status_flag){
           console.log(response);
           this.alertMsg.stateFlag="alert-success";
 
           // console.log(response.data.result)
-          console.log(this.editGroup.localGroupId)
-          if(null !== this.editGroup.localGroupId){
-            this.data_list.splice(this.editGroup.localGroupId,1,response.data.result);
+          console.log(this.editPage.localId)
+          if(null !== this.editPage.localId){
+            this.data_list.splice(this.editPage.localId,1,response.data.result);
             this.alertMsg.msgConten="修改成功！";
           }else{
             this.count_all+=1;
@@ -245,7 +245,7 @@ export default {
             'stateFlag':'alert-danger',
             'msgConten':'修改失败！',
           }
-          if(this.editGroup.localGroupId){
+          if(this.editPage.localId){
             this.alertMsg.msgConten="修改失败！";
           }else{
             this.alertMsg.msgConten="添加失败！";
@@ -264,13 +264,13 @@ export default {
   mounted() {
     // var list = JSON.parse(localStorage.getItem('list'));
     
-    const api='http://127.0.0.1:9090/acct/agencies/';
+    // const api='http://127.0.0.1:9090/acct/agencies/';
     var params = new URLSearchParams();
     params.append("req_method","GET");
     params.append("userID",Sstorage.get('userID'));
     params.append("local_name",Sstorage.get('localname'));
     params.append("tokenID",Sstorage.get('tokenID'));
-    Axios.post(api, params).then((response)=>{
+    Axios.post(this.api, params).then((response)=>{
         this.data_list=response.data.result;
         this.count_all=response.data.result.length;
         console.log(this.data_list)
