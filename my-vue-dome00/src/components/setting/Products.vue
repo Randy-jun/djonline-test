@@ -44,27 +44,9 @@
                <td>
                 <div class="btn-group btn-group-sm">
                   <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="update(index, item)">编辑</button>
-                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" v-bind:data-target='"#deleteConfirm"+item.id'>删除</button>
+                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteConfirm" v-on:click="del(index, item.id)">删除</button>
                 </div>
-                <div class="modal fade" role="dialog" v-bind:id='"deleteConfirm"+item.id'>
-                  <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">确认删除吗？</h5>
-                        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button> -->
-                      </div>
-                      <!-- <div class="modal-body">
-                        <p>Modal body text goes here.</p>
-                      </div> -->
-                      <div class="modal-footer">
-                        <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDelete(index, item.id)">确认</button>
-                        <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                
               </td>
             </tr>
          </tbody>
@@ -72,35 +54,50 @@
     </div>
     <div class="row align-items-end">
       <div class="col"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="add()">新增组团社</button></div>
-      <div class="modal fade" role="dialog" id="editPage">
-        <div class="modal-dialog modal-md modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">{{editPage.title}}</h5>
-              <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button> -->
-            </div>
-            <div class="modal-body">
-              <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="name">组团社名称</span>
-                </div>
-                <input type="text" class="form-control" id="nameInput" aria-describedby="name" v-model="group.name">
+    </div>
+    <!-- TODO:还没有做成线路报价单的样式 -->
+    <div class="modal fade" role="dialog" id="editPage">
+      <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{editPage.title}}</h5>
+            <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button> -->
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="name">组团社名称</span>
               </div>
-              <small>{{group.name}}</small>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">备注</span>
-                </div>
-                <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.remark"></textarea>
+              <input type="text" class="form-control" id="nameInput" aria-describedby="name" v-model="group.name">
+            </div>
+            <small>{{group.name}}</small>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">备注</span>
               </div>
-              <small>{{group.remark}}</small>
+              <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.remark"></textarea>
             </div>
-            <div class="modal-footer">
-              <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doSave()">保存</button>
-              <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
-            </div>
+            <small>{{group.remark}}</small>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doSave()">保存</button>
+            <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- TODO:还没有做成线路报价单的样式 -->
+    <div class="modal fade" role="dialog" id="deleteConfirm">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">确认删除吗？</h5>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDel()">确认</button>
+            <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
           </div>
         </div>
       </div>
@@ -138,6 +135,10 @@ export default {
         id:null,
         localId:null,
       },
+      delete:{
+        id:null,
+        localId:null,
+      },
       api:'http://127.0.0.1:9090/acct/lineprices/',
       data_list:[],
     }
@@ -149,12 +150,16 @@ export default {
     choice(id){
       // console.log(zuid)
     },
-    doDelete(localId, id){
+    del(localId, id){
+      this.delete.id=id;
+      this.delete.localId=localId;
+    },
+    doDel(){
 
       var params = new URLSearchParams();
       params.append("req_method","DELETE");
       params.append("tokenID",Sstorage.get('tokenID'));
-      params.append("pk",id);
+      params.append("pk",this.delete.id);
       Axios.post(this.api, params).then((response)=>{
         console.log(response);
         if(response.data.status_flag){
@@ -165,7 +170,7 @@ export default {
 
           this.alertState=true;
           this.count_all-=1;
-          this.data_list.splice(localId,1)
+          this.data_list.splice(this.delete.localId ,1);
           setTimeout(()=>{
             this.alertState=false;
           },2000);
