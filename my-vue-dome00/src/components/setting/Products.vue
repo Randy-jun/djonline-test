@@ -61,30 +61,21 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{editPage.title}}</h5>
+            <div>
+              <button class="btn btn-success btn-sm" style="margin-right:10px" data-dismiss="modal" v-on:click="doSave()">保存</button>
+              <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
+            </div>
             <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button> -->
           </div>
           <div class="modal-body">
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="name">组团社名称</span>
-              </div>
-              <input type="text" class="form-control" id="nameInput" aria-describedby="name" v-model="group.name">
-            </div>
-            <small>{{group.name}}</small>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">备注</span>
-              </div>
-              <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.remark"></textarea>
-            </div>
-            <small>{{group.remark}}</small>
+
           </div>
-          <div class="modal-footer">
+          <!-- <div class="modal-footer">
             <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doSave()">保存</button>
             <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -125,9 +116,12 @@ export default {
         stateFlag:null,
         msgConten:null,
       },
-      group:{
+      product:{
+        id:null,
         name:null,
         remark:null,
+        prices:[],
+        details:null,
       },
       editPage:{
         title:null,
@@ -155,7 +149,6 @@ export default {
       this.delete.localId=localId;
     },
     doDel(){
-
       var params = new URLSearchParams();
       params.append("req_method","DELETE");
       params.append("tokenID",Sstorage.get('tokenID'));
@@ -189,13 +182,33 @@ export default {
           console.log(error);
         });
     },
-    update(localId, groupContent){
-      this.group.name=groupContent.name;
-      this.group.remark=groupContent.remark;
-      this.editPage.title="修改线路报价单";
-      this.editPage.methods="UPDATE";
+    update(localId, productContent){
       this.editPage.id=groupContent.id;
       this.editPage.localId=localId;
+
+      var params = new URLSearchParams();
+      params.append("req_method","GET_SINGLE");
+      
+      params.append("pk",groupContent.id);
+      
+      params.append("tokenID",Sstorage.get('tokenID'));
+      params.append("local_name",Sstorage.get('localname'));
+
+      // TODO:等待确认后端数据格式
+      Axios.post(this.api, params).then((response)=>{
+        this.product.prices=response.data.result;
+        this.count_all=response.data.result.length;
+        console.log(this.data_list)
+      }).catch((error)=>{
+        // console.log(error);
+      })
+      // TODO:等待确认后端数据格式
+      this.product.id=productContent.id;
+      this.product.name=productContent.name;
+      this.product.remark=productContent.remark;
+
+      this.editPage.title="修改线路报价单";
+      this.editPage.methods="UPDATE";
     },
     add(){
       this.group.name="";
