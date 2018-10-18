@@ -228,13 +228,25 @@ def line_list(request):
             return JsonResponse({'result': serializer.validated_data, 'status_flag':True, 'status_string':'Update Success','result_count':1})
         return JsonResponse(serializer.errors, status=200)
 
-    if request.method =='POST' and request.data['req_method'] == 'DELETE':
+    if request.method == 'POST' and request.data['req_method'] == 'DELETE':
         try:
             line = Line_Price_t.objects.get(pk=request.data['pk'])
         except Agency_t.DoesNotExist:
             return HttpResponse(status=200)
         line.delete()
         return JsonResponse({'status_flag': True, "status_string": "Delete Success!"}, status=200)
+        
+    if request.method == 'POST' and request.data['req_method'] == 'GETONE':
+        try:
+            line_price = Line_Price_t.objects.get(pk=request.data['pk'])
+            ref_prices = Ref_Price_t.objects.filter(
+                line_price_fk__id=line_price.id)
+            serializer = Line_Price_tSerializer(line_price)
+            serializer2 = Ref_Price_tSerializer(ref_prices,many=True)
+            result ={'line_price':serializer.data,'ref_prices':serializer2.data}
+        except Line_Price_t.DoesNotExist:
+            return HttpResponse(status=200)
+        return JsonResponse({'result':result,'status_flag': True, "status_string": "Get one item Success!"}, status=200)
         
 
 @api_view(['GET', 'PUT', 'DELETE'])
