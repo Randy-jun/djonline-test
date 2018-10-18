@@ -200,7 +200,8 @@ def line_list(request):
         serializer = Line_Price_tSerializer(line_prices, many=True)
         for i in serializer.data:
             if i['id']:
-                i['top3_ref_data']=top3_ref_data[i['id']]
+                for j in range(0, len(top3_ref_data[i['id']])):
+                    i['top3_ref_data'+str(j)]=top3_ref_data[i['id']][j]
         return Response({'result': serializer.data, 'item_num': item_num,
                          'user': request.user.username,  'status_flag': True, 'status_string': 'Success'})
 
