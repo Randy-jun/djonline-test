@@ -37,9 +37,9 @@
                <td>{{index + 1}}</td>
                <td v-bind:id="item.id" >{{item.id}}</td>
                <td v-bind:id="item.id">{{item.name}} </td>
-               <td v-bind:id="item.id">{{item.top3_ref_data[0]}} </td>
-               <td v-bind:id="item.id">{{item.top3_ref_data[1]}} </td>
-               <td v-bind:id="item.id">{{item.top3_ref_data[2]}} </td>
+               <td v-bind:id="item.id">{{item.top3_ref_data0}} </td>
+               <td v-bind:id="item.id">{{item.top3_ref_data1}} </td>
+               <td v-bind:id="item.id">{{item.top3_ref_data2}} </td>
                <td v-bind:id="item.id">{{item.remark}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
@@ -70,7 +70,13 @@
             </button> -->
           </div>
           <div class="modal-body">
-
+            <div>{{product.id}}</div>
+            <div>{{product.name}}</div>
+            <div>{{product.remark}}</div>
+            <div>{{product.detail}}</div>
+            <div v-for="(item, index) in product.prices">
+              {{index+1}} : {{item.id}} : {{item.kind}} : {{item.line_price_fk}} : {{item.price}}
+            </div>
           </div>
           <!-- <div class="modal-footer">
             <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doSave()">保存</button>
@@ -121,7 +127,7 @@ export default {
         name:null,
         remark:null,
         prices:[],
-        details:null,
+        detail:null,
       },
       editPage:{
         title:null,
@@ -183,26 +189,31 @@ export default {
         });
     },
     update(localId, productContent){
-      this.editPage.id=groupContent.id;
+      this.editPage.id=productContent.id;
       this.editPage.localId=localId;
 
       var params = new URLSearchParams();
-      params.append("req_method","GET_SINGLE");
+      // params.append("req_method","GET_SINGLE");
+      params.append("req_method","GETONE");
       
-      params.append("pk",groupContent.id);
+      params.append("pk",productContent.id);
       
       params.append("tokenID",Sstorage.get('tokenID'));
       params.append("local_name",Sstorage.get('localname'));
 
-      // TODO:等待确认后端数据格式
       Axios.post(this.api, params).then((response)=>{
-        this.product.prices=response.data.result;
+        console.log(response)
+        // this.product.id=response.data.result.line_price.id;
+        // this.product.name=response.data.result.line_price.name;
+        // this.product.remark=response.data.result.line_price.remark;
+        this.product.detail=response.data.result.line_price.detail;
+
+        this.product.prices=response.data.result.ref_prices;
         this.count_all=response.data.result.length;
-        console.log(this.data_list)
+
       }).catch((error)=>{
         // console.log(error);
       })
-      // TODO:等待确认后端数据格式
       this.product.id=productContent.id;
       this.product.name=productContent.name;
       this.product.remark=productContent.remark;
