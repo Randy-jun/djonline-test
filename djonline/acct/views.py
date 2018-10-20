@@ -201,7 +201,7 @@ def line_list(request):
         for i in serializer.data:
             if i['id']:
                 for j in range(0, len(top3_ref_data[i['id']])):
-                    i['top3_ref_data'+str(j)]=top3_ref_data[i['id']][j]
+                    i['top3_ref_data'+str(j)]=top3_ref_data[i['id']][j]['kind']+':'+str(top3_ref_data[i['id']][j]['price'])
         return Response({'result': serializer.data, 'item_num': item_num,
                          'user': request.user.username,  'status_flag': True, 'status_string': 'Success'})
 
