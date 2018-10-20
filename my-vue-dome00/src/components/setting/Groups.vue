@@ -219,7 +219,7 @@ export default {
       params.append("remark",this.group.remark);
       
       params.append("tokenID",Sstorage.get('tokenID'));
-      params.append("local_name",Sstorage.get('localname'));
+      params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
 
       Axios.post(this.api, params).then((response)=>{
         if(response.data.status_flag){
@@ -270,7 +270,7 @@ export default {
     var params = new URLSearchParams();
     params.append("req_method","GET");
     params.append("userID",Sstorage.get('userID'));
-    params.append("local_name",Sstorage.get('localname'));
+    params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
     params.append("tokenID",Sstorage.get('tokenID'));
     Axios.post(this.api, params).then((response)=>{
         this.data_list=response.data.result;

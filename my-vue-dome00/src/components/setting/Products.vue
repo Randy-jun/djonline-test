@@ -199,7 +199,7 @@ export default {
       params.append("pk",productContent.id);
       
       params.append("tokenID",Sstorage.get('tokenID'));
-      params.append("local_name",Sstorage.get('localname'));
+      params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
 
       Axios.post(this.api, params).then((response)=>{
         console.log(response)
@@ -300,15 +300,16 @@ export default {
     var params = new URLSearchParams();
     params.append("req_method","GET");
     params.append("userID",Sstorage.get('userID'));
-    params.append("local_name",Sstorage.get('localname'));
+    params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
     params.append("tokenID",Sstorage.get('tokenID'));
     Axios.post(this.api, params).then((response)=>{
-        this.data_list=response.data.result;
-        this.count_all=response.data.result.length;
-        console.log(this.data_list)
-      }).catch((error)=>{
-        // console.log(error);
-      })
+      console.log(response);
+      this.data_list=response.data.result;
+      this.count_all=response.data.result.length;
+      console.log(this.data_list)
+    }).catch((error)=>{
+      // console.log(error);
+    })
   }
 }
 </script>
