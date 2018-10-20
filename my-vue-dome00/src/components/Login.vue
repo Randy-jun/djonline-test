@@ -65,9 +65,12 @@ export default {
             console.log(response);
             this.show_F=false;
             this.show_S=true;
-            Sstorage.set('nickname', response.data.NickName);
-            Sstorage.set('localname', response.data.DJName);
+            Sstorage.set('nickName', response.data.NickName);
             Sstorage.set('userID', response.data.userID);
+            
+            Sstorage.set('localName', response.data.DJName);
+            Sstorage.set('localAgencyFk', response.data.local_agency_fk);
+            
             Sstorage.set('tokenID', response.data.tokenID);
             //  console.log(response);
             setTimeout(()=>{
