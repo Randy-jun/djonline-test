@@ -37,7 +37,7 @@ def user_login(request):
             if user.is_active:
                 login(request, user)
                 sessionId = ""  # request.session.get('_auth_user_hash',0)
-                request.session['local_name'] = user.last_name
+                request.session['local_agency_fk'] = user.last_name
                 # return HttpResponseRedirect(reverse('index'))
                 return JsonResponse({"is_login": True, "login_result_string": "Success", "NickName": user.first_name, "DJName": user.last_name, "sessionId": sessionId})
             else:
@@ -61,10 +61,10 @@ def user_login(request):
             if user.password == password:
                 user.token = uuid.uuid4().hex
                 user.is_logged = True
-                request.session['local_name'] = user.local_name
+                request.session['local_agency_fk'] = user.local_agency_fk.id
                 request.session['tokenID'] = user.token
                 user.save()
-                return JsonResponse({"isLogin": True, "loginResultString": "Success", "NickName": user.nick_name, "DJName": user.local_name, "tokenID": user.token, "userID":user.id})
+                return JsonResponse({"isLogin": True, "loginResultString": "Success", "NickName": user.nick_name, "DJName": user.local_agency_fk.name, "local_agency_fk":user.local_agency_fk.id, "tokenID": user.token, "userID":user.id})
             else:
                 return JsonResponse({"isLogin": False, "loginResultString": "Invalid login details supplied.","user":user.name,"password":user.password})
         else:
@@ -73,9 +73,11 @@ def user_login(request):
         return render(request, 'login.html', {})
 
 def auth_token(userID,token):
-    user = DjUser_t.objects.get(id=userID)
-    if user:
-        user.token == token
+    try:
+        user = DjUser_t.objects.get(id=userID)
+    except:
+        return False
+    if user and user.token == token:
         return True
     else:
         return False
@@ -103,20 +105,31 @@ def user_logout(request,userID):
     except:
         return JsonResponse({"isLogin": False, "loginResultString": "Successfully logged out."}, status=200)
 
+def check_token(func):
+    def inner(request, **kwargs):
+        user_id = request.data['user_id']
+        token = request.data['token']
+        if auth_token(user_id, token):
+            result = func(request, **kwargs)
+            return result
+        else:
+            return JsonResponse({'msg':'unauthorized access'}, status =200)
+    return inner
+
 
 
 @api_view(['GET', 'POST'])
 def orz_list(request):
     if request.method == 'GET':
      
-        agencies = Agency_t.objects.filter(local_name='中国国际旅行社')
+        agencies = Agency_t.objects.filter(local_agency_fk=1)
         serializer = Agency_tSerializer(agencies, many=True)
         item_num = len(agencies)
         return JsonResponse({'result': serializer.data, 'item_num': item_num}, safe=False)
 
     if request.method == 'POST' and request.data['req_method'] == 'GET' : 
-        local_name = request.data['local_name']    
-        agencies = Agency_t.objects.filter(local_name=local_name)
+        local_agency_fk = request.data['local_agency_fk']    
+        agencies = Agency_t.objects.filter(local_agency_fk=local_agency_fk)
         serializer = Agency_tSerializer(agencies, many=True)
         item_num = len(agencies)
         return JsonResponse({'result': serializer.data, 'item_num': item_num, 'token':get_token(1),'status_flag':True,'stauts_string':'get data'}, safe=False, )
@@ -125,7 +138,7 @@ def orz_list(request):
         serializer = Agency_tSerializer(data=request.data)
         if serializer.is_valid():
             item = Agency_t.objects.filter(
-                name=serializer.validated_data['name'], local_name=serializer.validated_data['local_name'])
+                name=serializer.validated_data['name'], local_agency_fk=serializer.validated_data['local_agency_fk'])
             if len(item) != 0:
                 return JsonResponse({'result': serializer.data, 'status_flag': False, 'status_string': 'error : name should be unique'}, status=200)
             serializer.save()
@@ -140,7 +153,7 @@ def orz_list(request):
         serializer = Agency_tSerializer(agency,data=request.data,partial=True)
         if serializer.is_valid():
             item = Agency_t.objects.filter(
-                name=serializer.validated_data['name'], local_name=serializer.validated_data['local_name'])
+                name=serializer.validated_data['name'], local_agency_fk=serializer.validated_data['local_agency_fk'])
             if len(item) != 0:
                 return JsonResponse({'result': serializer.data, 'status_flag': False, 'status_string': 'error : name should be unique'}, status=200)            
             serializer.save()
@@ -182,12 +195,12 @@ def orz_detail(request, pk):
         return JsonResponse({'status_flag': True, "status_string": "Delete Success!"}, status=200)
 
 
-@csrf_exempt
 @api_view(['GET', 'POST'])
+#@check_token
 def line_list(request):
-    local_name = request.data['local_name']
+    local_agency_fk = request.data['local_agency_fk']
     if request.method == 'POST' and request.data['req_method'] == 'GET':
-        line_prices = Line_Price_t.objects.filter(local_name=local_name)
+        line_prices = Line_Price_t.objects.filter(local_agency_fk=local_agency_fk)
         item_num = len(line_prices)
         top3_ref_data = {}
         for line in line_prices:
@@ -196,7 +209,7 @@ def line_list(request):
             top3_ref_data[line.id] = Ref_Price_tSerializer(
                 top3_price, many=True).data
 
-        ref_prices = Ref_Price_t.objects.filter(local_name=local_name)
+        ref_prices = Ref_Price_t.objects.filter(local_agency_fk=local_agency_fk)
         serializer = Line_Price_tSerializer(line_prices, many=True)
         for i in serializer.data:
             if i['id']:
@@ -211,7 +224,7 @@ def line_list(request):
             
             serializer.save()
             return Response({'result': serializer.data, 'status_flag': True, 'status_string': 'Success'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_200_BAD_REQUEST)
+        return Response(serializer.errors, status=200)
 
     if request.method =='POST' and request.data['req_method'] == 'UPDATE':       
         try:
@@ -221,7 +234,7 @@ def line_list(request):
         serializer = Line_Price_tSerializer(data=request.data,partial=True)
         if serializer.is_valid():
             item = Line_Price_t.objects.filter(
-                name=serializer.validated_data['name'], local_name=serializer.validated_data['local_name'])
+                name=serializer.validated_data['name'], local_agency_fk=serializer.validated_data['local_agency_fk'])
             if len(item) != 0:
                 return JsonResponse({'result': serializer.data, 'status_flag': False, 'status_string': 'error : name should be unique'}, status=200)
             serializer.save()
@@ -275,9 +288,9 @@ def line_detail(request, pk):
 
 @api_view(['GET', 'POST'])
 def application_list(request):
-    local_name = request.data['local_name']
+    local_agency_fk = request.data['local_agency_fk']
     if request.method == 'GET':
-        application_list = Application_t.objects.filter(local_name=local_name)
+        application_list = Application_t.objects.filter(local_agency_fk=local_agency_fk)
         serializer = Application_tSerializer(application_list, many=True)
         return Response({'result': serializer.data})
 
@@ -292,9 +305,9 @@ def application_list(request):
 @api_view(['GET', 'POST'])
 @ensure_csrf_cookie
 def tourist_list(request):
-    local_name = request.data['local_name']
+    local_agency_fk = request.data['local_agency_fk']
     if request.method == 'GET':
-        tourist_list = Tourist_t.objects.filter(local_name=local_name)
+        tourist_list = Tourist_t.objects.filter(local_agency_fk=local_agency_fk)
         serializer = Tourist_tSerializer(tourist_list, many=True)
         return Response({'result': serializer.data})
 
@@ -369,23 +382,36 @@ class Ref_PriceList(APIView):
         serializer = Ref_Price_tSerializer(refP, many=True)
         return Response({'result': serializer.data})
 
+    def get_by_kind(self, kind, local_agency_fk):
+        refP = Ref_Price_t.objects.filter(kind=kind,local_agency_fk__id=local_agency_fk)
+        if len(refP)>0:
+            return True
+        else:
+            return False
+
+
+    
     def post(self, request, format=None):
         if request.data['req_method'] == 'ADD':
             serializer = Ref_Price_tSerializer(data=request.data)
+            if self.get_by_kind(request.data['kind'],request.data['local_agency_fk']):
+                return Response({'status_flag':False,'status_string':'Kind should be unique'}, status=200)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_200_BAD_REQUEST)
-        if request.data['req_method'] == 'GET':#get refprice by line_price_pk and local_name
-            refP = Ref_Price_t.objects.filter(local_name=request.data['local_name']).filter(line_price_fk__id=request.data['line_price_pk'])
+            return Response(serializer.errors, status=200)
+        if request.data['req_method'] == 'GET':#get refprice by line_price_pk and local_agency_fk
+            refP = Ref_Price_t.objects.filter(local_agency_fk=request.data['local_agency_fk']).filter(line_price_fk__id=request.data['line_price_pk'])
             serializer = Ref_Price_tSerializer(refP, many=True)
             return Response({'result': serializer.data, 'item_num':len(refP),'status_flag':True, 'status_string':'Successfully get {0} ref_price item'.format(len(refP))})
 
         if request.data['req_method'] == 'DELETE':
-            pk = request.data['pk']
-            refP = self.get_object(pk)
+            try:
+                refP = Ref_Price_t.objects.get(pk=request.data['pk'])
+            except Ref_Price_t.DoesNotExist:
+                return JsonResponse({'result': '', 'status_flag':False, 'status_string':'Item did not exist','result_count':0})            
             refP.delete()
-            return Response({'status_flag':True,'status_string':'Successfully deleted !'}, status=status.HTTP_200_NO_CONTENT)
+            return Response({'status_flag':True,'status_string':'Successfully deleted !'}, status=200)
 
         if request.data['req_method'] == 'UPDATE':
             try:
