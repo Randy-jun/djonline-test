@@ -37,8 +37,11 @@
                <td v-bind:id="item.id">{{item.remark}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
-                  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="update(index, item)">编辑</button>
-                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteConfirm" v-on:click="del(index, item.id)">删除</button>
+                  <button type="button" v-show="item.isEdit" class="btn btn-success btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="doUpdate1(index, item)">保存</button>
+                  <button type="button" v-if="item.isEdit" class="btn btn-second btn-sm" data-toggle="modal" data-target="#deleteConfirm" v-on:click="cancelEdit(index, item.id)">取消</button>
+                  <!-- <button type="button" v-if="!item.isEdit" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="update(index, item)">编辑</button> -->
+                  <button type="button" v-if="!item.isEdit" class="btn btn-primary btn-sm" v-on:click="update(index, item)">{{item.isEdit?'保存':"修改"}}</button>
+                  <button type="button" v-if="!item.isEdit" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteConfirm" v-on:click="del(index, item.id)">删除</button>
                 </div>
               </td>
             </tr>
@@ -121,6 +124,7 @@ export default {
         remark:null,
       },
       editPage:{
+        isUpdate:true,
         title:null,
         methods:null,
         id:null,
@@ -183,12 +187,21 @@ export default {
     update(localId, groupContent){
       this.group.name=groupContent.name;
       this.group.remark=groupContent.remark;
+
+      this.$set(this.data_list[localId], "isEdite", this.data_list[localId].isEdite = true)
+      this.data_list[localId].isEdite = true
+      // console.log(this.data_list[localId]);
+      console.log(this.data_list);
+      // console.log(groupContent)
+
+      this.editPage.isUpdate=true;
       this.editPage.title="修改组团社";
       this.editPage.methods="UPDATE";
       this.editPage.id=groupContent.id;
       this.editPage.localId=localId;
     },
     add(){
+      this.editPage.isUpdate=false;
       this.group.name="";
       this.group.remark="";
       this.editPage.title="新增组团社";
@@ -272,10 +285,13 @@ export default {
     params.append("userID",Sstorage.get('userID'));
     params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
     params.append("tokenID",Sstorage.get('tokenID'));
-    Axios.post(this.api, params).then((response)=>{
+    Axios.post(this.api, params).then((response) => {
         this.data_list=response.data.result;
-        this.count_all=response.data.result.length;
-        console.log(this.data_list)
+        this.count_all=response.data.item_num;
+        console.log(this.data_list);
+        this.data_list.forEach(item => {
+          item.isEdite=false;
+        });
         // setTimeout(()=>{
         //   this.data_list.splice(0,1)
         //   console.log(this.data_list)
@@ -283,7 +299,7 @@ export default {
         
         // console.log(typeof(response.data.result));
         // this.test_list=response.data.result;
-      }).catch((error)=>{
+      }).catch((error) => {
         // console.log(error);
       })
   }

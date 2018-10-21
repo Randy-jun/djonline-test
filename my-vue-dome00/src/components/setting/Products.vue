@@ -4,7 +4,7 @@
     <!-- <div class="alert alert-success" role="alert">
       A simple success alert—check it out!
     </div> -->
-    <small>总共: <span class="font-italic font-weight-bold">{{count_all}}</span> 条记录</small>
+    <small>总共: <span class="font-italic font-weight-bold">{{countAll}}</span> 条记录</small>
     <div class="row">
       <table class="table table-hover table-responsive-lg">
          <thead class="thead-lights">
@@ -35,12 +35,12 @@
                 </div>
                </td> -->
                <td>{{index + 1}}</td>
-               <td v-bind:id="item.id" >{{item.id}}</td>
-               <td v-bind:id="item.id">{{item.name}} </td>
-               <td v-bind:id="item.id">{{item.top3_ref_data0}} </td>
-               <td v-bind:id="item.id">{{item.top3_ref_data1}} </td>
-               <td v-bind:id="item.id">{{item.top3_ref_data2}} </td>
-               <td v-bind:id="item.id">{{item.remark}}</td>
+               <td>{{item.id}}</td>
+               <td>{{item.name}} </td>
+               <td>{{item.top3_ref_data0}}</td>
+               <td>{{item.top3_ref_data1}}</td>
+               <td>{{item.top3_ref_data2}}</td>
+               <td>{{item.remark}}</td>
                <td>
                 <div class="btn-group btn-group-sm">
                   <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="update(index, item)">编辑</button>
@@ -57,11 +57,16 @@
     </div>
     <!-- TODO:还没有做成线路报价单的样式 -->
     <div class="modal fade" role="dialog" id="editPage">
-      <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">{{editPage.title}}</h5>
-            <div>
+            <div v-if="editPage.isUpdate" class="col">
+              <h5 class="modal-title">线路报价单ID:{{product.id}}</h5>
+            </div>
+            <div class="col">
+              <h5 class="modal-title">{{editPage.title}}</h5>
+            </div>
+            <div class="col pull-right">
               <button class="btn btn-success btn-sm" style="margin-right:10px" data-dismiss="modal" v-on:click="doSave()">保存</button>
               <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
             </div>
@@ -70,18 +75,44 @@
             </button> -->
           </div>
           <div class="modal-body">
-            <div>{{product.id}}</div>
-            <div>{{product.name}}</div>
-            <div>{{product.remark}}</div>
-            <div>{{product.detail}}</div>
-            <div v-for="(item, index) in product.prices">
-              {{index+1}} : {{item.id}} : {{item.kind}} : {{item.line_price_fk}} : {{item.price}}
+            <div class="row">
+              <div class="col">线路名称:{{product.name}}</div>
+              <div class="col">备注:{{product.remark}}</div>
+            </div>
+            <small>总共: <span class="font-italic font-weight-bold">{{countOne}}</span> 条记录</small>
+            <div class="row">
+              <table class="table table-hover table-responsive-lg">
+                <thead class="thead-lights">
+                    <tr>
+                      <th>档位</th>
+                      <th>名称</th>
+                      <th>报价</th>
+                      <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- key 要写到后面才可以 -->
+                    <tr v-for="(item, index) in product.prices">
+                      <td>{{item.id}}</td>
+                      <td>{{item.kind}} </td>
+                      <td>{{item.price}}</td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="updateOne(index, item)">编辑</button>
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteConfirm" v-on:click="delOne(index, item.id)">删除</button>
+                        </div>
+                        
+                      </td>
+                    </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          <!-- <div class="modal-footer">
-            <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doSave()">保存</button>
-            <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
-          </div> -->
+          <div class="modal-footer">
+            {{product.detail}}
+            <!-- <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doSave()">保存</button>
+            <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button> -->
+          </div>
         </div>
       </div>
     </div>
@@ -116,7 +147,8 @@ export default {
   },
   data() {
     return {
-      count_all:null,
+      countAll:0,
+      countOne:0,
       alertState:false,
       alertMsg:{
         stateFlag:null,
@@ -130,6 +162,7 @@ export default {
         detail:null,
       },
       editPage:{
+        isUpdate:true,
         title:null,
         methods:null,
         id:null,
@@ -168,7 +201,7 @@ export default {
           this.alertMsg.msgConten="删除成功！";
 
           this.alertState=true;
-          this.count_all-=1;
+          this.countAll-=1;
           this.data_list.splice(this.delete.localId ,1);
           setTimeout(()=>{
             this.alertState=false;
@@ -189,6 +222,7 @@ export default {
         });
     },
     update(localId, productContent){
+      this.editPage.isUpdate=true;
       this.editPage.id=productContent.id;
       this.editPage.localId=localId;
 
@@ -209,7 +243,7 @@ export default {
         this.product.detail=response.data.result.line_price.detail;
 
         this.product.prices=response.data.result.ref_prices;
-        this.count_all=response.data.result.length;
+        this.countOne=response.data.ref_prices.length;
 
       }).catch((error)=>{
         // console.log(error);
@@ -224,6 +258,8 @@ export default {
     add(){
       this.group.name="";
       this.group.remark="";
+
+      this.editPage.isUpdate=false;
       this.editPage.title="新增线路报价单";
       this.editPage.methods="ADD";
       this.editPage.localId=null;
@@ -264,7 +300,7 @@ export default {
             this.data_list.splice(this.editPage.localId,1,response.data.result);
             this.alertMsg.msgConten="修改成功！";
           }else{
-            this.count_all+=1;
+            this.countAll+=1;
             this.data_list.push(response.data.result)
             this.alertMsg.msgConten="添加成功！";
           }
@@ -305,7 +341,7 @@ export default {
     Axios.post(this.api, params).then((response)=>{
       console.log(response);
       this.data_list=response.data.result;
-      this.count_all=response.data.result.length;
+      this.countAll=response.data.item_num;
       console.log(this.data_list)
     }).catch((error)=>{
       // console.log(error);
