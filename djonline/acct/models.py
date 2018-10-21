@@ -14,6 +14,9 @@ class Agency_t(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = ('name', 'local_agency_fk')
+
 # 线路报价表 remark备注；detail详细报价
 
 # User_table
@@ -28,6 +31,9 @@ class DjUser_t(models.Model):
 
     def __str__(self):
         return self.name+'-'+self.nick_name+ '-'+self.local_agency_fk.name
+    
+    class Meta:
+        unique_together = ('name', 'local_agency_fk')
 
 
 class Line_Price_t(models.Model):
@@ -38,6 +44,9 @@ class Line_Price_t(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = ('name', 'local_agency_fk')
 
 
 # 参考报价表
@@ -51,6 +60,9 @@ class Ref_Price_t(models.Model):
 
     def __str__(self):
         return self.kind+'-'+str(self.price)+'-'+self.line_price_fk.name+'-'+self.local_agency_fk.name
+
+    class Meta:
+        unique_together = ('kind', 'local_agency_fk', 'line_price_fk')
 
 # 出团申请单
 # data出团日期；loca_agency_fk地接社名称；angency_fk组团社名称；line_name_fk线路名称

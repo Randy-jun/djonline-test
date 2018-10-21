@@ -150,11 +150,11 @@ def orz_list(request):
             agency = Agency_t.objects.get(pk=request.data['pk'])
         except Agency_t.DoesNotExist:
             return JsonResponse(serializer.errors, status=200)
-        serializer = Agency_tSerializer(agency,data=request.data,partial=True)
+        serializer = Agency_tSerializer(agency, data=request.data,partial=True)
         if serializer.is_valid():
             item = Agency_t.objects.filter(
                 name=serializer.validated_data['name'], local_agency_fk=serializer.validated_data['local_agency_fk'])
-            if len(item) != 0:
+            if len(item)!=0 and item[0].id != agency.id:
                 return JsonResponse({'result': serializer.data, 'status_flag': False, 'status_string': 'error : name should be unique'}, status=200)            
             serializer.save()
             serializer.validated_data['id'] = agency.id
@@ -401,7 +401,10 @@ class Ref_PriceList(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=200)
         if request.data['req_method'] == 'GET':#get refprice by line_price_pk and local_agency_fk
-            refP = Ref_Price_t.objects.filter(local_agency_fk=request.data['local_agency_fk']).filter(line_price_fk__id=request.data['line_price_pk'])
+            try:
+                refP = Ref_Price_t.objects.filter(local_agency_fk=request.data['local_agency_fk']).filter(line_price_fk__id=request.data['line_price_fk'])
+            except KeyError:
+                return Response({'status_flag':False,'status_string':'key error'}, status=200)
             serializer = Ref_Price_tSerializer(refP, many=True)
             return Response({'result': serializer.data, 'item_num':len(refP),'status_flag':True, 'status_string':'Successfully get {0} ref_price item'.format(len(refP))})
 
