@@ -14,7 +14,12 @@ class Agency_t(models.Model):
     def __str__(self):
         return self.name
 
-# 线路报价表 remark备注；detail详细报价
+    class Meta:
+        unique_together = ('name', 'local_agency_fk')
+        verbose_name = "组织信息 (Agency_t)"
+        verbose_name_plural = "组织信息表 (Agency_t)"
+
+
 
 # User_table
 class DjUser_t(models.Model):
@@ -28,8 +33,13 @@ class DjUser_t(models.Model):
 
     def __str__(self):
         return self.name+'-'+self.nick_name+ '-'+self.local_agency_fk.name
+    
+    class Meta:
+        unique_together = ('name', 'local_agency_fk')
+        verbose_name = "用户信息 (DjUser_t)"
+        verbose_name_plural = "用户信息表 (DjUser_t)"
 
-
+# 线路报价表 remark备注；detail详细报价
 class Line_Price_t(models.Model):
     name = models.CharField(max_length=64)
     remark = models.CharField(max_length=128, blank=True)
@@ -38,6 +48,11 @@ class Line_Price_t(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = ('name', 'local_agency_fk')
+        verbose_name = "线路报价 (Line_Price_t)"
+        verbose_name_plural = "线路报价表 (Line_Price_t)"
 
 
 # 参考报价表
@@ -51,6 +66,11 @@ class Ref_Price_t(models.Model):
 
     def __str__(self):
         return self.kind+'-'+str(self.price)+'-'+self.line_price_fk.name+'-'+self.local_agency_fk.name
+
+    class Meta:
+        unique_together = ('kind', 'local_agency_fk', 'line_price_fk')
+        verbose_name = "参考报价 (Ref_Price_t)"
+        verbose_name_plural = "参考报价表 (Ref_Price_t)"
 
 # 出团申请单
 # data出团日期；loca_agency_fk地接社名称；angency_fk组团社名称；line_name_fk线路名称
@@ -67,6 +87,10 @@ class Application_t(models.Model):
 
     def __str__(self):
         return self.agency_fk.name+'-'+self.line_name_fk.name+'-'+str(self.date)
+
+    class Meta:
+        verbose_name = "出团申请单 (Application_t)"
+        verbose_name_plural = "出团申请单表 (Application_t)"
 
 
 class Tourist_t(models.Model):  # 游客表
@@ -90,6 +114,10 @@ class Tourist_t(models.Model):  # 游客表
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "游客信息 (Tourist_t)"
+        verbose_name_plural = "游客信息表 (Tourist_t)"
+
 
 class Settlement_t(models.Model):  # 结算表
     price = models.FloatField()  # 结算金额
@@ -104,3 +132,7 @@ class Settlement_t(models.Model):  # 结算表
 
     def __str__(self):
         return self.application_t.name+'-'+self.rec_angency_fk.name+'-'+self.pay_angecy_fk.name+'-'+self.kind+'-'+self.local_agency_fk.name
+
+    class Meta:
+        verbose_name = "结算信息 (Settlement_t)"
+        verbose_name_plural = "结算信息表 (Settlement_t)"
