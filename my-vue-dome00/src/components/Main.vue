@@ -1,33 +1,24 @@
 <template>
-  <div class="container-fluid">
-    <Header msg="Financial Management Systems Software" />
-      <div class="row">
-        <Asider msg="This is Asider!" />
-        <Home msg="This is Home!"/>
-      </div>
-      <Footer msg="This is Footer!" />
+  <div class="col">
+    <MainList msg="This is MainList!"/>
+
   </div>
 </template>
 
 <script>
 
-import Header from './Header.vue'
-import Asider from './Asider.vue'
-import Home from './Home.vue'
-import Footer from './Footer.vue'
+import MainList from './MainList.vue'
+import MainDetails from './MainDetails.vue'
 
 export default {
-  name: 'app',
   data() {
     return {
-      msg: "login!",
+      msg: "Testing!",
     }
   },
   components: {
-    Header,
-    Asider,
-    Home,
-    Footer,
+    MainList,
+    MainDetails,
   }
 }
 </script>

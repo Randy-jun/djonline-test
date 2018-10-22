@@ -1,24 +1,39 @@
 <template>
-  <div class="col">
-    <HomeList msg="This is Home!"/>
-    <!-- <HomeDetails msg="This is Home!"/> -->
+  <div>
+    <el-header>
+      <Header msg="Financial Management Systems Software" />
+    </el-header>
+    <el-aside>
+      <Asider msg="This is Asider!" />
+    </el-aside>
+    <el-main>
+      <Main msg="This is Main!"/>
+    </el-main>
+    <el-footer>
+      <Footer msg="This is Footer!" />
+    </el-footer>
   </div>
 </template>
 
 <script>
 
-import HomeList from './HomeList.vue'
-import HomeDetails from './HomeDetails.vue'
+import Header from './Header.vue'
+import Asider from './Asider.vue'
+import Main from './Main.vue'
+import Footer from './Footer.vue'
 
 export default {
+  name: 'app',
   data() {
     return {
-      msg: "Testing!",
+      msg: "login!",
     }
   },
   components: {
-    HomeList,
-    HomeDetails,
+    Header,
+    Asider,
+    Main,
+    Footer,
   }
 }
 </script>

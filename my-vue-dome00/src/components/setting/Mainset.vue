@@ -10,7 +10,7 @@
 
 import Groups from './Groups.vue'
 import Products from './Products.vue'
-import SettingHome from './SettingHome.vue'
+import SettingMain from './SettingMain.vue'
 
 export default {
   data() {
@@ -21,7 +21,7 @@ export default {
   components: {
     Groups,
     Products,
-    SettingHome,
+    SettingMain,
   }
 }
 </script>

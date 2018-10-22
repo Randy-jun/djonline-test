@@ -3,7 +3,7 @@
     <Headerset msg="Financial Management Systems Software Headerset" />
       <div class="row">
         <Asiderset msg="This is Asiderset!" />
-        <Homeset msg="This is Homeset!"/>
+        <Mainset msg="This is Mainset!"/>
       </div>
       <Footerset msg="This is Footerset!" />
   </div>
@@ -13,7 +13,7 @@
 
 import Headerset from './Headerset.vue'
 import Asiderset from './Asiderset.vue'
-import Homeset from './Homeset.vue'
+import Mainset from './Mainset.vue'
 import Footerset from './Footerset.vue'
 
 export default {
@@ -26,7 +26,7 @@ export default {
   components: {
     Headerset,
     Asiderset,
-    Homeset,
+    Mainset,
     Footerset,
   }
 }

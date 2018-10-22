@@ -12,12 +12,12 @@ export default new Router({
       component: Login
     },
     {
-      path: '/main',
-      name: 'main',
+      path: '/home',
+      name: 'Home',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "mains" */ './components/Main.vue'),
+      component: () => import(/* webpackChunkName: "Home" */ '@/components/Home.vue'),
     },
     {
       path: '/setting',
@@ -25,16 +25,16 @@ export default new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "setting" */ './components/setting/Setting.vue'),
+      component: () => import(/* webpackChunkName: "setting" */ '@/components/setting/Setting.vue'),
       children: [{
         path: 'groups',
-        component: () => import(/* webpackChunkName: "setting/groups" */ './components/setting/Groups.vue'),
+        component: () => import(/* webpackChunkName: "setting/groups" */ '@/components/setting/Groups.vue'),
       }, {
         path: 'products',
-        component: () => import(/* webpackChunkName: "setting/products" */ './components/setting/Products.vue'),
+        component: () => import(/* webpackChunkName: "setting/products" */ '@/components/setting/Products.vue'),
       },{
         path: '/',
-        component: () => import(/* webpackChunkName: "setting/settinghome" */ './components/setting/SettingHome.vue'),
+        component: () => import(/* webpackChunkName: "setting/settingMain" */ '@/components/setting/SettingMain.vue'),
       }],
     }
   ]

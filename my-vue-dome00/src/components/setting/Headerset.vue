@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     goback(){
-      this.$router.replace({ path: '/main' })
+      this.$router.replace({ path: '/home' })
     },
   },
   mounted() {
