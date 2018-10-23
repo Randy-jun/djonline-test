@@ -328,8 +328,4 @@ export default {
 </script>
 
 <style scoped>
-.ho-pad{
-  padding-top: 28px;
-  padding-bottom: 28px;
-}
 </style>

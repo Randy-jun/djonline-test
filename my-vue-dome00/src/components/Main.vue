@@ -1,7 +1,6 @@
 <template>
   <div class="col">
     <MainList msg="This is MainList!"/>
-
   </div>
 </template>
 
@@ -24,7 +23,5 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-}
+
 </style>

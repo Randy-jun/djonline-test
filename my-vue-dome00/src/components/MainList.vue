@@ -1,38 +1,20 @@
 <template>
-  <div class="col">
-    <div class="row">
-      <table class="table table-hover table-responsive-lg">
-         <thead class="thead-lights">
-            <tr>
-               <th>AID</th>
-               <th>标题</th>
-               <th>Details/Edit/Del</th>
-            </tr>
-         </thead>
-         <tbody v-for="(item,key) in data_list" v-bind:key='item.aid'>
-            <!-- key 要写到后面才可以 -->
-            <tr>
-               <td>{{item.id}}</td>
-               <td>{{item.name}}</td>
-               <td>
-                <div class="btn-group btn-group-sm">
-                  <button type="button" class="btn btn-primary" v-bind:value="'#a'+key">Details</button>
-                  <button type="button" class="btn btn-warnings">Edit</button>
-                  <button type="button" class="btn btn-danger">Del</button>
-                </div>
-              </td>
-            </tr>
-         </tbody>
-      </table>
-      <div class="row">
-        <div class="col-2"><button class="btn btn-default" v-on:click="doAdd($event)">添加</button></div>
-      </div>
-    </div>
-    <div class="row">
-        <div class="col"><button class="btn btn-success" v-on:click="postTest(true)">POST test</button></div>
-        <div class="col"><button class="btn btn-danger" v-on:click="postTest(false)">POST test</button></div>
-    </div>
-  </div>
+<div>
+  <el-row :gutter=20 v-for="m in 3" :key="m">
+    <el-col :span=6 v-for="n in 4" :key="n">
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span><h4>应用 {{m}}-{{n}}</h4></span>
+          <!-- <el-button style="float: right; padding: 3px 0" type="text">X</el-button> -->
+        </div>
+        <div class="el-icon-message">
+          <span></span>
+          <!-- <i class="el-icon-message"></i>           -->
+        </div>
+      </el-card>
+    </el-col>
+  </el-row>
+</div>
 </template>
 
 <script>
@@ -119,8 +101,13 @@ export default {
 </script>
 
 <style scoped>
-.ho-pad{
-  padding-top: 28px;
-  padding-bottom: 28px;
-}
+.el-row {
+    margin-top: 20px;
+    /* &:last-child {
+      margin-bottom: 0;
+    } */
+  }
+  .el-col {
+    border-radius: 4px;
+  }
 </style>

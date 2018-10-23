@@ -17,6 +17,9 @@
         </el-col>
       </el-row>      
     </el-main>
+    <el-footer>
+      <h5>Powered by Vue.js and Bootstrap!</h5>
+    </el-footer>
   </el-container>
 </template>
 

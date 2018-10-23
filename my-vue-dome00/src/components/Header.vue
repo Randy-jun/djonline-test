@@ -1,10 +1,14 @@
 <template>
-  <nav class="navbar navbar-light bg-light">
-    <span class="navbar-brand"><h1>DJonline</h1></span>
-      <div class="col-auto">
-      <small>{{nickname}} | {{djname}} | <a class="badge badge-second" v-on:click="setting()">设置</a></small>
-      </div>
-  </nav>
+  <el-row>
+    <el-row type="flex" align="bottom" justify="center">
+      <el-col :span=20>
+        <h1>DJonline</h1>
+      </el-col>
+      <el-col :span=4>
+        {{nickname}} | {{djname}} | <a class="badge badge-second" v-on:click="setting()">设置</a>
+      </el-col>
+    </el-row>
+  </el-row>
 </template>
 
 <script>
@@ -35,8 +39,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.hp{
-    padding-top: 30px;
-    padding-bottom: 18px;
-}
 </style>
