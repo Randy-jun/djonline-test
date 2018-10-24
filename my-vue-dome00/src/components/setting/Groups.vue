@@ -1,102 +1,30 @@
 <template>
-  <div class="col" id="groups">
-    <CustomeAlert v-if="alertState" v-bind:alertmsg="alertMsg" />
-    <!-- <div class="alert alert-success" role="alert">
-      A simple success alert—check it out!
-    </div> -->
-    <small>总共: <span class="font-italic font-weight-bold">{{count_all}}</span> 条记录</small>
-    <div class="row">
-      <table class="table table-hover table-responsive-lg">
-         <thead class="thead-lights">
-            <tr>
-               <!-- <th>
-                 <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" v-on:change="choiceall()" id="allCheck">
-                  <label class="custom-control-label" for="allCheck">全选</label>
-                </div>
-               </th> -->
-               <th>序号</th>
-               <th>组团社ID</th>
-               <th>组团社名称</th>
-               <th>备注</th>
-               <th>操作</th>
-            </tr>
-         </thead>
-         <tbody>
-            <!-- key 要写到后面才可以 -->
-            <tr v-for="(item, index) in data_list">
-              <!-- <td>
-                 <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" v-on:change="choiceall()" v-bind:id="item.id">
-                  <label class="custom-control-label" v-bind:for="item.id"></label>
-                </div>
-               </td> -->
-               <td>{{index + 1}}</td>
-               <td v-bind:id="item.id" >{{item.id}}</td>
-               <td v-bind:id="item.id">{{item.name}} </td>
-               <td v-bind:id="item.id">{{item.remark}}</td>
-               <td>
-                <div class="btn-group btn-group-sm">
-                  <button type="button" v-show="item.isEdit" class="btn btn-success btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="doUpdate1(index, item)">保存</button>
-                  <button type="button" v-if="item.isEdit" class="btn btn-second btn-sm" data-toggle="modal" data-target="#deleteConfirm" v-on:click="cancelEdit(index, item.id)">取消</button>
-                  <!-- <button type="button" v-if="!item.isEdit" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="update(index, item)">编辑</button> -->
-                  <button type="button" v-if="!item.isEdit" class="btn btn-primary btn-sm" v-on:click="update(index, item)">{{item.isEdit?'保存':"修改"}}</button>
-                  <button type="button" v-if="!item.isEdit" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteConfirm" v-on:click="del(index, item.id)">删除</button>
-                </div>
-              </td>
-            </tr>
-         </tbody>
-      </table>
-    </div>
-    <div class="row align-items-end">
-      <div class="col"><button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#editPage" v-on:click="add()">新增组团社</button></div>
-    </div>
-    <div class="modal fade" role="dialog" id="editPage">
-      <div class="modal-dialog modal-md modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{editPage.title}}</h5>
-            <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button> -->
-          </div>
-          <div class="modal-body">
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="name">组团社名称</span>
-              </div>
-              <input type="text" class="form-control" id="nameInput" aria-describedby="name" v-model="group.name">
-            </div>
-            <small>{{group.name}}</small>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">备注</span>
-              </div>
-              <textarea class="form-control" aria-label="备注" placeholder="备注内容请保持在120字以内..." v-model="group.remark"></textarea>
-            </div>
-            <small>{{group.remark}}</small>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-success btn-sm" data-dismiss="modal" v-on:click="doSave()">保存</button>
-            <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal fade" role="dialog" id="deleteConfirm">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">确认删除吗？</h5>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="doDel()">确认</button>
-            <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <el-row>
+    <el-col :span=24>
+      <el-table :data="group.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}">
+        <el-table-column type="index"></el-table-column>
+        <!-- <el-table-column v-for="(v,i) in group.columns" :prop="v.field" :label="v.title" :sortable="v.sortable"> -->
+        <el-table-column v-for="(value, key) in group.columns" :prop="value.field" :label="value.title">
+          <template slot-scope="scope">
+            <span v-if="scope.row.isSet">
+              <el-input size="mini" placeholder="请输入内容" v-model="group.currentRow[value.field]">
+              </el-input>
+            </span>
+            <span v-else>{{scope.row[value.field]}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="100">
+          <template slot-scope="scope">
+            <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="currentRowChange(scope.row,scope.$index,true)">
+                {{scope.row.isSet?'保存':"修改"}}
+            </span>
+            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;">删除</span>
+            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="currentRowChange(scope.row,scope.$index,false)">取消</span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-col>   
+  </el-row>
 </template>
 
 <script>
@@ -113,13 +41,23 @@ export default {
   },
   data() {
     return {
+      group: {
+        currentRow: null,//选中行   
+        columns: [
+          { field: "id", title: "编号", width: 150 },
+          { field: "name", title: "组织名称", width: 120 },
+          { field: "remark", title: "备注", width: 220 },
+        ],
+        // tempData: [],
+        data: [],
+      },
       count_all:null,
       alertState:false,
       alertMsg:{
         stateFlag:null,
         msgConten:null,
       },
-      group:{
+      group1:{
         name:null,
         remark:null,
       },
@@ -144,6 +82,13 @@ export default {
   methods: {
     choice(id){
       // console.log(zuid)
+    },
+    handleCurrentChange(val){
+      this.group.currentRow = val;
+      console.log(this.group.currentRow);
+    },
+    currentRowChange(rowContent,index,isset){
+      console.log(rowContent,index,isset);
     },
     del(localId, id){
       this.delete.localId=localId;
@@ -185,8 +130,8 @@ export default {
         });
     },
     update(localId, groupContent){
-      this.group.name=groupContent.name;
-      this.group.remark=groupContent.remark;
+      this.group1.name=groupContent.name;
+      this.group1.remark=groupContent.remark;
 
       this.$set(this.data_list[localId], "isEdite", this.data_list[localId].isEdite = true)
       this.data_list[localId].isEdite = true
@@ -202,8 +147,8 @@ export default {
     },
     add(){
       this.editPage.isUpdate=false;
-      this.group.name="";
-      this.group.remark="";
+      this.group1.name="";
+      this.group1.remark="";
       this.editPage.title="新增组团社";
       this.editPage.methods="ADD";
       this.editPage.localId=null;
@@ -286,22 +231,23 @@ export default {
     params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
     params.append("tokenID",Sstorage.get('tokenID'));
     Axios.post(this.api, params).then((response) => {
-        this.data_list=response.data.result;
-        this.count_all=response.data.item_num;
-        console.log(this.data_list);
-        this.data_list.forEach(item => {
-          item.isEdite=false;
-        });
-        // setTimeout(()=>{
-        //   this.data_list.splice(0,1)
-        //   console.log(this.data_list)
-        // },5000);
-        
-        // console.log(typeof(response.data.result));
-        // this.test_list=response.data.result;
-      }).catch((error) => {
-        // console.log(error);
-      })
+      this.group.data=response.data.result;
+      // this.count_all=response.data.item_num;
+      this.group.data.forEach(item => {
+        item.isSet=false;
+        // this.group.data.push(item)
+      });
+      console.log(this.group.data);
+      // setTimeout(()=>{
+      //   this.data_list.splice(0,1)
+      //   console.log(this.data_list)
+      // },5000);
+      
+      // console.log(typeof(response.data.result));
+      // this.test_list=response.data.result;
+    }).catch((error) => {
+      // console.log(error);
+    })
   }
 }
 </script>

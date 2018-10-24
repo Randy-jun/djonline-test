@@ -18,7 +18,7 @@
       </el-row>      
     </el-main>
     <el-footer>
-      <h5>Powered by Vue.js and Bootstrap!</h5>
+      <p>Powered by Vue.js and Bootstrap!</p>
     </el-footer>
   </el-container>
 </template>

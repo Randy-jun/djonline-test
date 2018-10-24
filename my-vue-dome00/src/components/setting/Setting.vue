@@ -1,12 +1,20 @@
 <template>
-  <div class="container-fluid">
-    <Headerset msg="Financial Management Systems Software Headerset" />
-      <div class="row">
+  <el-container>
+    <el-header>
+      <Headerset msg="Financial Management Systems Software Headerset" />
+    </el-header>
+    <el-container>
+      <el-aside>
         <Asiderset msg="This is Asiderset!" />
+      </el-aside>
+      <el-main>
         <Mainset msg="This is Mainset!"/>
-      </div>
+      </el-main>
+    </el-container>
+    <el-footer>
       <Footerset msg="This is Footerset!" />
-  </div>
+    </el-footer>
+  </el-container>
 </template>
 
 <script>

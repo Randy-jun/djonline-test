@@ -40,11 +40,15 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #home{
   height: 100vh;
   /* width: 100%; */
 }
+/* .el-header{
+  margin-top: 20px;
+  margin-bottom: 20px;
+} */
 /* #app {
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 } */

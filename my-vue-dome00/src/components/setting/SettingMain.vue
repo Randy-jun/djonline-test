@@ -1,14 +1,19 @@
 <template>
-  <div class="col">
-    <div class="row jumbotron ho-pad">
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">地接社名称：</h5><a class="card-text">{{order.dj_name}}</a></div></div>
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">组团社名称：</h5><a class="card-text">{{order.zt_name}}</a></div></div>
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">单据编号：</h5><a class="card-text">{{order.dd_number}}</a></div></div>
-      <div class="w-100"></div>
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">线路名称：</h5><a class="card-text">{{order.xl_name}}</a></div></div>
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">默认报价：</h5><a class="card-text">{{order.def_price}}</a></div></div>
-      <div class="col card text-center"><div class="card-body"><h5 class="card-title">出团日期：</h5><a class="card-text">{{order.dd_date}}</a></div></div>
-    </div>
+  <div>
+    <el-row :gutter=20 v-for="m in 3" :key="m">
+      <el-col :span=6 v-for="n in 4" :key="n">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span><h4>管理首页 {{m}}-{{n}}</h4></span>
+            <!-- <el-button style="float: right; padding: 3px 0" type="text">X</el-button> -->
+          </div>
+          <div class="el-icon-setting">
+            <span></span>
+            <!-- <i class="el-icon-message"></i>           -->
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 

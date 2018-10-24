@@ -1,10 +1,11 @@
 <template>
   <el-row>
-    <el-radio-group v-model="isCollapse">
+    <!-- <el-radio-group v-model="isCollapse">
       <el-radio :border="true" :label="false" size="mini" >展开</el-radio>
       <el-radio :border="true" :label="true" size="mini" >收起</el-radio>
-    </el-radio-group>
-    <el-menu default-active="1-4-1" class="el-menu-vertical" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+    </el-radio-group> -->
+    <!-- <el-menu default-active="1-4-1" class="el-menu-vertical" @open="handleOpen" @close="handleClose" :collapse="isCollapse"> -->
+    <el-menu class="el-menu-vertical" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
       <el-submenu index="1">
         <template slot="title">
           <i class="el-icon-location"></i>
@@ -74,8 +75,11 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.el-row{
+  
+}
 .el-menu-vertical:not(.el-menu--collapse) {
-    /* width: 200px; */
-    min-height: 400px;
-  }
+  /* width: 200px; */
+  min-height: 400px;
+}
 </style>

@@ -1,7 +1,5 @@
 <template>
-  <div class="jumbotron text-center" style="margin-bottom:0">
-    <p class="text-monospace">{{ footer }}</p>
-  </div>
+    <p>{{ footer }}</p>
 </template>
 
 <script>

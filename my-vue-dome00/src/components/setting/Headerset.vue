@@ -1,10 +1,14 @@
 <template>
-  <nav class="navbar navbar-light bg-light">
-    <span class="navbar-brand"><h1>DJonline</h1></span>
-      <div class="col-auto">
-      <small>{{nickname}} | {{djname}} | <a class="badge badge-second" v-on:click="goback()">返回</a></small>
-      </div>
-  </nav>
+  <el-row>
+    <el-row>
+      <el-col :span=20>
+        <h1>DJonline</h1>
+      </el-col>
+      <el-col :span=4>
+        <small>{{nickname}} | {{djname}} | <a class="el-icon-back" v-on:click="goback()">返回</a></small>
+      </el-col>
+    </el-row>
+  </el-row>
 </template>
 
 <script>

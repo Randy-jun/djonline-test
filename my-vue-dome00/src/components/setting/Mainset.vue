@@ -1,9 +1,7 @@
 <template>
-  <div class="col">
-    <router-view/>
-    <!-- <HomeList msg="This is Home!"/> -->
-    <!-- <HomeDetails msg="This is Home!"/> -->
-  </div>
+  <router-view/>
+  <!-- <HomeList msg="This is Home!"/> -->
+  <!-- <HomeDetails msg="This is Home!"/> -->
 </template>
 
 <script>

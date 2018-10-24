@@ -1,11 +1,11 @@
 <template>
   <el-row>
-    <el-row type="flex" align="bottom" justify="center">
+    <el-row>
       <el-col :span=20>
         <h1>DJonline</h1>
       </el-col>
       <el-col :span=4>
-        {{nickname}} | {{djname}} | <a class="badge badge-second" v-on:click="setting()">设置</a>
+       <small>{{nickname}} | {{djname}} | <a class="badge badge-second el-icon-setting" v-on:click="setting()">设置</a></small>
       </el-col>
     </el-row>
   </el-row>
@@ -39,4 +39,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 </style>
