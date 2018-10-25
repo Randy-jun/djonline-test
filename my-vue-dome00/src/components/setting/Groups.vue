@@ -1,29 +1,34 @@
 <template>
   <el-row>
     <el-col :span=24>
-      <el-table :data="group.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}">
-        <el-table-column type="index"></el-table-column>
+      <el-table :data="group.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
+        <!-- <el-table :data="group.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
+        <!-- <el-table :data="group.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
+        <el-table-column type="index" width="100"></el-table-column>
         <!-- <el-table-column v-for="(v,i) in group.columns" :prop="v.field" :label="v.title" :sortable="v.sortable"> -->
-        <el-table-column v-for="(value, key) in group.columns" :prop="value.field" :label="value.title">
+        <el-table-column v-for="(value, key) in group.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
           <template slot-scope="scope">
             <span v-if="scope.row.isSet">
-              <el-input size="mini" placeholder="请输入内容" v-model="group.currentRow[value.field]">
-              </el-input>
+              <span v-if='value.field != "id"'><el-input size="mini" placeholder="请输入内容" v-model="group.currentRow[value.field]"></el-input></span>
+              <span v-else>{{scope.row[value.field]}}</span>
             </span>
             <span v-else>{{scope.row[value.field]}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100">
+        <el-table-column label="操作" width="150">
           <template slot-scope="scope">
-            <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="currentRowChange(scope.row,scope.$index,true)">
+            <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="currentRowChange(scope.row,scope.$index,false)">
                 {{scope.row.isSet?'保存':"修改"}}
             </span>
             <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;">删除</span>
-            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="currentRowChange(scope.row,scope.$index,false)">取消</span>
+            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="currentRowChange(scope.row,scope.$index,true)">取消</span>
           </template>
         </el-table-column>
       </el-table>
-    </el-col>   
+    </el-col>
+    <el-col :span=24>
+      <div class="el-table-add-row" style="width: 99.2%;" @click="doAdd()"><span class="el-icon-circle-plus-outline">添加新的组织机构</span></div>
+    </el-col>
   </el-row>
 </template>
 
@@ -32,7 +37,7 @@
 import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
 import InputCheck from '@/module/inputcheck.js';
-import CustomeAlert from  '@/components/sysinfo/CustomAlert.vue';
+// import CustomeAlert from  '@/components/sysinfo/CustomAlert.vue';
 
 export default {
   name: 'Home',
@@ -44,9 +49,9 @@ export default {
       group: {
         currentRow: null,//选中行   
         columns: [
-          { field: "id", title: "编号", width: 150 },
-          { field: "name", title: "组织名称", width: 120 },
-          { field: "remark", title: "备注", width: 220 },
+          { field: "id", title: "编号", width: 150, sortable: true },
+          { field: "name", title: "组织名称", width: 320, sortable: true },
+          { field: "remark", title: "备注", width: 320, sortable: false },
         ],
         // tempData: [],
         data: [],
@@ -77,18 +82,61 @@ export default {
     }
   },
   components: {
-    CustomeAlert,
+    // CustomeAlert,
   },
   methods: {
     choice(id){
       // console.log(zuid)
     },
-    handleCurrentChange(val){
-      this.group.currentRow = val;
-      console.log(this.group.currentRow);
+    // handleCurrentChange(selectRow){
+    //   this.group.currentRow = selectRow;
+    //   console.log(this.group.currentRow);
+    // },
+    currentRowChange(rowContent,index,isCancel){
+      console.log(rowContent,index,isCancel);
+      console.log(this.group.data)
+      //点击修改、保存,判断是否已经保存所有操作
+      for (let item of this.group.data) {
+        if (item.isSet && (item.id != rowContent.id)) {
+          this.$message.warning("请先保存当前编辑项!");
+          return false;
+        }
+      }
+      //是否是取消操作
+      if (isCancel) {
+        if (null === this.group.currentRow.id) {
+          console.log(this.group.currentRow.id)
+          this.group.data.splice(index, 1);
+        }
+        return rowContent.isSet = !rowContent.isSet;
+      }
+      if (rowContent.isSet) {
+        (function () {
+            let tempData = JSON.parse(JSON.stringify(this.group.currentRow));
+            for (let k in tempData) rowContent[k] = tempData[k];
+            this.$message({
+                type: 'success',
+                message: "保存成功!"
+            });
+            //然后这边重新读取表格数据
+            // app.readMasterUser();
+            rowContent.isSet = false;
+        })();
+      }else{
+        // this.group.currentRow = JSON.parse(JSON.stringify(rowContent));
+        this.group.currentRow = JSON.parse(JSON.stringify(rowContent));
+        // console.log(this.group.currentRow)
+        rowContent.isSet = true;
+      }
     },
-    currentRowChange(rowContent,index,isset){
-      console.log(rowContent,index,isset);
+    doAdd(){
+      for (let item of this.group.data) {
+        if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
+      }
+      let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
+      this.group.data.push(tempAddData);
+      this.group.currentRow = JSON.parse(JSON.stringify(tempAddData));
+      // console.log(this.group.data)
     },
     del(localId, id){
       this.delete.localId=localId;
