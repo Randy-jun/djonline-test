@@ -93,40 +93,106 @@ export default {
     //   console.log(this.group.currentRow);
     // },
     currentRowChange(rowContent,index,isCancel){
-      console.log(rowContent,index,isCancel);
-      console.log(this.group.data)
       //点击修改、保存,判断是否已经保存所有操作
+      // console.log(rowContent, index, isCancel)
       for (let item of this.group.data) {
         if (item.isSet && (item.id != rowContent.id)) {
           this.$message.warning("请先保存当前编辑项!");
           return false;
         }
       }
-      //是否是取消操作
+      //是否为取消操作
       if (isCancel) {
-        if (null === this.group.currentRow.id) {
-          console.log(this.group.currentRow.id)
-          this.group.data.splice(index, 1);
-        }
-        return rowContent.isSet = !rowContent.isSet;
+        if (null === this.group.currentRow.id) return this.group.data.splice(index, 1);
+        rowContent.isSet = !rowContent.isSet;
+        return this.$set(this.group.data, index, rowContent)
       }
+
       if (rowContent.isSet) {
-        (function () {
-            let tempData = JSON.parse(JSON.stringify(this.group.currentRow));
-            for (let k in tempData) rowContent[k] = tempData[k];
-            this.$message({
+        // let tempData = JSON.parse(JSON.stringify(this.group.currentRow));
+
+        if(InputCheck.namecheck(this.group.currentRow.name)) return this.$message.warning("组织名称不能为空或空格!");
+
+        var params = new URLSearchParams();
+        
+        if(null !== this.group.currentRow.id){
+          params.append("pk",this.group.currentRow.id);
+          params.append("req_method",'UPDATE');
+        }else{
+          params.append("req_method",'ADD');
+        }
+        params.append("name",this.group.currentRow.name);
+        params.append("remark",this.group.currentRow.remark);
+        
+        params.append("tokenID",Sstorage.get('tokenID'));
+        params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
+
+        Axios.post(this.api, params).then((response)=>{
+          if(response.data.status_flag){
+            console.log(response);
+            let tempData = response.data.result;
+            console.log(tempData);
+            this.$set(tempData, 'isSet', false);
+            if(null !== this.group.currentRow.id){
+              this.group.data.splice(index,1,tempData);
+              this.$message({
                 type: 'success',
-                message: "保存成功!"
+                message: "修改成功！"
+              });
+            }else{
+              this.count_all+=1;
+              this.group.data.splice(index,1,tempData);
+              this.$message({
+                type: 'success',
+                message: "添加成功！"
+              });
+            }
+          }else{
+            console.log(response);
+
+            if(null !== this.group.currentRow.id){
+              this.$message({
+                type: 'error',
+                message: "修改失败！"
+              });
+            }else{
+              this.group.data.splice(index, 1);
+              this.$message({
+                type: 'error',
+                message: "添加失败！"
+              });
+            }
+          }})
+          .catch((error)=>{
+            console.log(error);
+            if(null !== this.group.currentRow.id) this.group.data.splice(index, 1);
+            this.$message({
+              type: 'error',
+              message: "保存失败！"
             });
-            //然后这边重新读取表格数据
-            // app.readMasterUser();
-            rowContent.isSet = false;
-        })();
+          });
+
+
+
+
+
+        /*
+        for (let k in tempData) rowContent[k] = tempData[k];
+        console.log(this.group.data)
+        return 0;
+        */
+        this.$message({
+            type: 'success',
+            message: "保存成功!"
+        });
+        //然后这边重新读取表格数据
+        // app.readMasterUser();
+        rowContent.isSet = false;
       }else{
-        // this.group.currentRow = JSON.parse(JSON.stringify(rowContent));
         this.group.currentRow = JSON.parse(JSON.stringify(rowContent));
-        // console.log(this.group.currentRow)
+        // this.group.currentRow = rowContent;
         rowContent.isSet = true;
+        this.$set(this.group.data, index, rowContent);
       }
     },
     doAdd(){
@@ -279,13 +345,15 @@ export default {
     params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
     params.append("tokenID",Sstorage.get('tokenID'));
     Axios.post(this.api, params).then((response) => {
-      this.group.data=response.data.result;
+      console.log(response)
+      this.count_all = response.data.item_num
+      this.group.data = response.data.result;
       // this.count_all=response.data.item_num;
       this.group.data.forEach(item => {
-        item.isSet=false;
-        // this.group.data.push(item)
+        this.$set(item, 'isSet', false);
       });
-      console.log(this.group.data);
+      // this.group.data = JSON.parse(JSON.stringify(this.group.data));
+      // console.log(this.group.data);s
       // setTimeout(()=>{
       //   this.data_list.splice(0,1)
       //   console.log(this.data_list)
