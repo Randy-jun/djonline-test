@@ -1,6 +1,7 @@
 <template>
   <el-row>
-    <el-col :span=24>
+    <el-row>
+    <!-- <el-col :span=24> -->
       <el-table :data="group.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
         <!-- <el-table :data="group.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
         <!-- <el-table :data="group.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
@@ -17,18 +18,29 @@
         </el-table-column>
         <el-table-column label="操作" width="150">
           <template slot-scope="scope">
-            <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="currentRowChange(scope.row,scope.$index,false)">
+            <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
                 {{scope.row.isSet?'保存':"修改"}}
             </span>
-            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;">删除</span>
-            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="currentRowChange(scope.row,scope.$index,true)">取消</span>
+            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="del(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
+            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,true)">取消</span>
           </template>
         </el-table-column>
       </el-table>
-    </el-col>
-    <el-col :span=24>
-      <div class="el-table-add-row" style="width: 99.2%;" @click="doAdd()"><span class="el-icon-circle-plus-outline">添加新的组织机构</span></div>
-    </el-col>
+    </el-row>
+    <el-row>
+      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新的组织机构</el-button>
+    </el-row>
+    <el-row>
+      <el-pagination  
+        v-on:size-change="handleSizeChange"
+        v-on:current-change="handleCurrentChange"
+        :current-page="currentPage4"
+        :page-sizes="[100, 200, 300, 400]"
+        :page-size="100"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="400">
+      </el-pagination>
+    </el-row>
   </el-row>
 </template>
 
@@ -56,29 +68,8 @@ export default {
         // tempData: [],
         data: [],
       },
-      count_all:null,
-      alertState:false,
-      alertMsg:{
-        stateFlag:null,
-        msgConten:null,
-      },
-      group1:{
-        name:null,
-        remark:null,
-      },
-      editPage:{
-        isUpdate:true,
-        title:null,
-        methods:null,
-        id:null,
-        localId:null,
-      },
-      delete:{
-        id:null,
-        localId:null,
-      },
       api:'http://127.0.0.1:9090/acct/agencies/',
-      data_list:[],
+      currentPage4: 4,
     }
   },
   components: {
@@ -156,7 +147,7 @@ export default {
                 message: "修改失败！"
               });
             }else{
-              this.group.data.splice(index, 1);
+              // this.group.data.splice(index, 1);
               this.$message({
                 type: 'error',
                 message: "添加失败！"
@@ -171,23 +162,17 @@ export default {
               message: "保存失败！"
             });
           });
-
-
-
-
-
         /*
         for (let k in tempData) rowContent[k] = tempData[k];
         console.log(this.group.data)
         return 0;
         */
-        this.$message({
-            type: 'success',
-            message: "保存成功!"
-        });
+        // this.$message({
+        //     type: 'success',
+        //     message: "保存成功!"
+        // });
         //然后这边重新读取表格数据
         // app.readMasterUser();
-        rowContent.isSet = false;
       }else{
         this.group.currentRow = JSON.parse(JSON.stringify(rowContent));
         // this.group.currentRow = rowContent;
@@ -204,136 +189,52 @@ export default {
       this.group.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.group.data)
     },
-    del(localId, id){
-      this.delete.localId=localId;
-      this.delete.id=id;
-    },
-    doDel(){
-      // var api='http://127.0.0.1:9090/acct/agencies/';
-      var params = new URLSearchParams();
-      params.append("req_method","DELETE");
-      params.append("tokenID",Sstorage.get('tokenID'));
-      params.append("pk",this.delete.id);
-      Axios.post(this.api, params).then((response)=>{
-        console.log(response);
-        if(response.data.status_flag){
+    del(rowContent, index){
+      this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        console.log(rowContent, index);
+        var params = new URLSearchParams();
+        params.append("req_method","DELETE");
+        params.append("tokenID",Sstorage.get('tokenID'));
+        params.append("pk",rowContent.id);
+
+        Axios.post(this.api, params).then((response)=>{
           console.log(response);
-
-          this.alertMsg.stateFlag="alert-success";
-          this.alertMsg.msgConten="删除成功！";
-
-          this.alertState=true;
-          this.count_all-=1;
-          this.data_list.splice(this.delete.localId,1)
-          setTimeout(()=>{
-            this.alertState=false;
-          },2000);
-        }else{
-          console.log(response);
-
-          this.alertMsg.stateFlag="alert-danger";
-          this.alertMsg.msgConten="删除失败！";
-
-          this.alertState=true;
-          setTimeout(()=>{
-            this.alertState=false;
-          },2000);
-        }})
-        .catch((error)=>{
-          console.log(error);
-        });
-    },
-    update(localId, groupContent){
-      this.group1.name=groupContent.name;
-      this.group1.remark=groupContent.remark;
-
-      this.$set(this.data_list[localId], "isEdite", this.data_list[localId].isEdite = true)
-      this.data_list[localId].isEdite = true
-      // console.log(this.data_list[localId]);
-      console.log(this.data_list);
-      // console.log(groupContent)
-
-      this.editPage.isUpdate=true;
-      this.editPage.title="修改组团社";
-      this.editPage.methods="UPDATE";
-      this.editPage.id=groupContent.id;
-      this.editPage.localId=localId;
-    },
-    add(){
-      this.editPage.isUpdate=false;
-      this.group1.name="";
-      this.group1.remark="";
-      this.editPage.title="新增组团社";
-      this.editPage.methods="ADD";
-      this.editPage.localId=null;
-    },
-    doSave(){
-      // const api='http://127.0.0.1:9090/acct/agencies/';
-      if(InputCheck.namecheck(this.group.name)){
-        this.alertMsg={
-            'stateFlag':'alert-danger',
-            'msgConten':'组织名称不能为空或空格',
-        }
-        this.alertState=true;
-        setTimeout(()=>{
-          this.alertState=false;
-        },2000);
-        return 1;
-      }
-      var params = new URLSearchParams();
-      params.append("req_method",this.editPage.methods);
-      
-      if(null !== this.editPage.localId){
-        params.append("pk",this.editPage.id);
-      }
-
-      params.append("name",this.group.name);
-      params.append("remark",this.group.remark);
-      
-      params.append("tokenID",Sstorage.get('tokenID'));
-      params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
-
-      Axios.post(this.api, params).then((response)=>{
-        if(response.data.status_flag){
-          console.log(response);
-          this.alertMsg.stateFlag="alert-success";
-
-          // console.log(response.data.result)
-          console.log(this.editPage.localId)
-          if(null !== this.editPage.localId){
-            this.data_list.splice(this.editPage.localId,1,response.data.result);
-            this.alertMsg.msgConten="修改成功！";
+          if(response.data.status_flag){
+            this.count_all-=1;
+            this.group.data.splice(index,1);
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
           }else{
-            this.count_all+=1;
-            this.data_list.push(response.data.result)
-            this.alertMsg.msgConten="添加成功！";
-          }
-          this.alertState=true;
-          setTimeout(()=>{
-            this.alertState=false;
-            // this
-          },2000);
-        }else{
-          console.log(response);
-          this.alertMsg={
-            'stateFlag':'alert-danger',
-            'msgConten':'修改失败！',
-          }
-          if(this.editPage.localId){
-            this.alertMsg.msgConten="修改失败！";
-          }else{
-            this.alertMsg.msgConten="添加失败！";
-          }
-          this.alertState=true;
-          setTimeout(()=>{
-            this.alertState=false;
-            // this
-          },2000);
-        }})
-        .catch((error)=>{
-          console.log(error);
-        });
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            });
+          }}).catch((error)=>{
+            console.log(error);
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            });
+          });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
     },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+    }
   },
   mounted() {
     // var list = JSON.parse(localStorage.getItem('list'));
