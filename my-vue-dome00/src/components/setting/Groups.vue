@@ -2,15 +2,15 @@
   <el-row>
     <el-row>
     <!-- <el-col :span=24> -->
-      <el-table :data="group.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
-        <!-- <el-table :data="group.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
-        <!-- <el-table :data="group.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
+      <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
+        <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
+        <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
         <el-table-column type="index" width="100"></el-table-column>
-        <!-- <el-table-column v-for="(v,i) in group.columns" :prop="v.field" :label="v.title" :sortable="v.sortable"> -->
-        <el-table-column v-for="(value, key) in group.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
+        <!-- <el-table-column v-for="(v,i) in table.columns" :prop="v.field" :label="v.title" :sortable="v.sortable"> -->
+        <el-table-column v-for="(value, key) in table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
           <template slot-scope="scope">
             <span v-if="scope.row.isSet">
-              <span v-if='value.field != "id"'><el-input size="mini" placeholder="请输入内容" v-model="group.currentRow[value.field]"></el-input></span>
+              <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
               <span v-else>{{scope.row[value.field]}}</span>
             </span>
             <span v-else>{{scope.row[value.field]}}</span>
@@ -58,12 +58,12 @@ export default {
   },
   data() {
     return {
-      group: {
+      table: {
         currentRow: null,//选中行   
         columns: [
-          { field: "id", title: "编号", width: 150, sortable: true },
-          { field: "name", title: "组织名称", width: 320, sortable: true },
-          { field: "remark", title: "备注", width: 320, sortable: false },
+          { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
+          { field: "name", title: "组织名称", width: 320, isEdit: true, sortable: true },
+          { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
         ],
         // tempData: [],
         data: [],
@@ -80,13 +80,13 @@ export default {
       // console.log(zuid)
     },
     // handleCurrentChange(selectRow){
-    //   this.group.currentRow = selectRow;
-    //   console.log(this.group.currentRow);
+    //   this.table.currentRow = selectRow;
+    //   console.log(this.table.currentRow);
     // },
     currentRowChange(rowContent,index,isCancel){
       //点击修改、保存,判断是否已经保存所有操作
       // console.log(rowContent, index, isCancel)
-      for (let item of this.group.data) {
+      for (let item of this.table.data) {
         if (item.isSet && (item.id != rowContent.id)) {
           this.$message.warning("请先保存当前编辑项!");
           return false;
@@ -94,26 +94,26 @@ export default {
       }
       //是否为取消操作
       if (isCancel) {
-        if (null === this.group.currentRow.id) return this.group.data.splice(index, 1);
+        if (null === this.table.currentRow.id) return this.table.data.splice(index, 1);
         rowContent.isSet = !rowContent.isSet;
-        return this.$set(this.group.data, index, rowContent)
+        return this.$set(this.table.data, index, rowContent)
       }
 
       if (rowContent.isSet) {
-        // let tempData = JSON.parse(JSON.stringify(this.group.currentRow));
+        // let tempData = JSON.parse(JSON.stringify(this.table.currentRow));
 
-        if(InputCheck.namecheck(this.group.currentRow.name)) return this.$message.warning("组织名称不能为空或空格!");
+        if(InputCheck.namecheck(this.table.currentRow.name)) return this.$message.warning("组织名称不能为空或空格!");
 
         var params = new URLSearchParams();
         
-        if(null !== this.group.currentRow.id){
-          params.append("pk",this.group.currentRow.id);
+        if(null !== this.table.currentRow.id){
+          params.append("pk",this.table.currentRow.id);
           params.append("req_method",'UPDATE');
         }else{
           params.append("req_method",'ADD');
         }
-        params.append("name",this.group.currentRow.name);
-        params.append("remark",this.group.currentRow.remark);
+        params.append("name",this.table.currentRow.name);
+        params.append("remark",this.table.currentRow.remark);
         
         params.append("tokenID",Sstorage.get('tokenID'));
         params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
@@ -124,15 +124,15 @@ export default {
             let tempData = response.data.result;
             console.log(tempData);
             this.$set(tempData, 'isSet', false);
-            if(null !== this.group.currentRow.id){
-              this.group.data.splice(index,1,tempData);
+            if(null !== this.table.currentRow.id){
+              this.table.data.splice(index,1,tempData);
               this.$message({
                 type: 'success',
                 message: "修改成功！"
               });
             }else{
               this.count_all+=1;
-              this.group.data.splice(index,1,tempData);
+              this.table.data.splice(index,1,tempData);
               this.$message({
                 type: 'success',
                 message: "添加成功！"
@@ -141,13 +141,13 @@ export default {
           }else{
             console.log(response);
 
-            if(null !== this.group.currentRow.id){
+            if(null !== this.table.currentRow.id){
               this.$message({
                 type: 'error',
                 message: "修改失败！"
               });
             }else{
-              // this.group.data.splice(index, 1);
+              // this.table.data.splice(index, 1);
               this.$message({
                 type: 'error',
                 message: "添加失败！"
@@ -156,7 +156,7 @@ export default {
           }})
           .catch((error)=>{
             console.log(error);
-            if(null !== this.group.currentRow.id) this.group.data.splice(index, 1);
+            if(null !== this.table.currentRow.id) this.table.data.splice(index, 1);
             this.$message({
               type: 'error',
               message: "保存失败！"
@@ -164,7 +164,7 @@ export default {
           });
         /*
         for (let k in tempData) rowContent[k] = tempData[k];
-        console.log(this.group.data)
+        console.log(this.table.data)
         return 0;
         */
         // this.$message({
@@ -174,20 +174,20 @@ export default {
         //然后这边重新读取表格数据
         // app.readMasterUser();
       }else{
-        this.group.currentRow = JSON.parse(JSON.stringify(rowContent));
-        // this.group.currentRow = rowContent;
+        this.table.currentRow = JSON.parse(JSON.stringify(rowContent));
+        // this.table.currentRow = rowContent;
         rowContent.isSet = true;
-        this.$set(this.group.data, index, rowContent);
+        this.$set(this.table.data, index, rowContent);
       }
     },
     doAdd(){
-      for (let item of this.group.data) {
+      for (let item of this.table.data) {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
       let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
-      this.group.data.push(tempAddData);
-      this.group.currentRow = JSON.parse(JSON.stringify(tempAddData));
-      // console.log(this.group.data)
+      this.table.data.push(tempAddData);
+      this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
+      // console.log(this.table.data)
     },
     del(rowContent, index){
       this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
@@ -205,7 +205,7 @@ export default {
           console.log(response);
           if(response.data.status_flag){
             this.count_all-=1;
-            this.group.data.splice(index,1);
+            this.table.data.splice(index,1);
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -248,13 +248,13 @@ export default {
     Axios.post(this.api, params).then((response) => {
       console.log(response)
       this.count_all = response.data.item_num
-      this.group.data = response.data.result;
+      this.table.data = response.data.result;
       // this.count_all=response.data.item_num;
-      this.group.data.forEach(item => {
+      this.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
       });
-      // this.group.data = JSON.parse(JSON.stringify(this.group.data));
-      // console.log(this.group.data);s
+      // this.table.data = JSON.parse(JSON.stringify(this.table.data));
+      // console.log(this.table.data);s
       // setTimeout(()=>{
       //   this.data_list.splice(0,1)
       //   console.log(this.data_list)
@@ -273,8 +273,5 @@ export default {
 .ho-pad{
   padding-top: 28px;
   padding-bottom: 28px;
-}
-#groups{
-  margin-bottom: 2%;
 }
 </style>
