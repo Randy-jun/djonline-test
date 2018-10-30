@@ -1,12 +1,13 @@
 <template>
   <el-row>
-    <el-row>
+    <!-- <el-row style="height:750px"> -->
+      <el-row>
     <!-- <el-col :span=24> -->
-      <el-scrollbar style="height:100%">
-        <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
+      <!-- <el-scrollbar style="height:100%"> -->
+        <el-table :data="table.data" height="750" style="width: 100%" highlight-current-row show-overflow-tooltip>
           <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
           <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
-          <el-table-column type="index" width="100"></el-table-column>
+          <el-table-column fixed type="index" width="100"></el-table-column>
           <!-- <el-table-column v-for="(v,i) in table.columns" :prop="v.field" :label="v.title" :sortable="v.sortable"> -->
           <el-table-column v-for="(value, key) in table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
             <template slot-scope="scope">
@@ -17,7 +18,7 @@
               <span v-else>{{scope.row[value.field]}}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="150">
+          <el-table-column fixed="right" label="操作" width="150">
             <template slot-scope="scope">
               <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
                   {{scope.row.isSet?'保存':"修改"}}
@@ -27,7 +28,7 @@
             </template>
           </el-table-column>
         </el-table>
-      </el-scrollbar>
+      <!-- </el-scrollbar> -->
     </el-row>
     <el-row>
       <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新的组织机构</el-button>
@@ -271,6 +272,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.el-scrollbar__wrap {
+  overflow-x: hidden;
+}
 </style>
