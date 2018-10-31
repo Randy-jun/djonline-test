@@ -226,10 +226,10 @@ export default {
             });
           });
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });          
+        // this.$message({
+        //   type: 'info',
+        //   message: '已取消删除'
+        // });          
       });
     },
     handleSizeChange(val) {
