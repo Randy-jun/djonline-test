@@ -48,9 +48,9 @@
     <el-dialog title="线路报价单" :visible.sync="dialogData.tableVisible">
       <el-row align="top">
         <el-col :span="8">
-          <span v-if="!dialogData.isAdd" style="font-size: 24px;"> 线路报价单ID:{{dialogData.Content.id}}fdsafdsaf</span>
+          <span v-if="!dialogData.isAdd" style="font-size: 24px;"> 线路报价单ID:{{dialogData.Content.id}}</span>
         </el-col>
-        <el-col :span="4" :offset="20">
+        <el-col :span="4" :offset="12">
           <el-button type="primary" style="cursor: pointer;" v-on:click="contentChangeDialog(false)">
             {{dialogData.isEdit?'保存':"修改"}}
           </el-button>
@@ -129,6 +129,7 @@ export default {
         tableVisible: false,
         isEdit: false,
         isAdd: false,
+        _Content: null,
         Content: {
           id: "",
           name: "",
@@ -355,10 +356,13 @@ export default {
       console.log(`当前页: ${val}`);
     },
     contentChangeDialog(isCancel){
+      console.log(this.dialogData.Content)
+      this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
       if(isCancel){
         if(!this.dialogData.isEdit){
 
         }else{
+          this.dialogData.Content = JSON.parse(JSON.stringify(this.dialogData._Content));;
           return this.$set(this.dialogData, 'isEdit', false)
         }
       }else{
