@@ -24,14 +24,14 @@
                   {{scope.row.isSet?'保存':"修改"}}
               </span>
               <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="del(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
-              <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="c(scope.row,scope.$index,true)">取消</span>
+              <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,true)">取消</span>
             </template>
           </el-table-column>
         </el-table>
       </el-scrollbar>
     </el-row>
     <el-row>
-      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新的组织机构</el-button>
+      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="dialogData.tableVisible =true,doAdd()">添加新的组织机构</el-button>
     </el-row>
     <el-row>
       <el-pagination  
@@ -47,17 +47,27 @@
     <el-row>
     <el-dialog title="线路报价单" :visible.sync="dialogData.tableVisible">
       <el-row align="top">
-        <el-col v-if="!dialogData.isAdd" :span="8">
-          <span style="font-size: 24px;"> 线路报价单ID:{{dialogData.Content.id}}fdsafdsaf</span>
+        <el-col :span="8">
+          <span v-if="!dialogData.isAdd" style="font-size: 24px;"> 线路报价单ID:{{dialogData.Content.id}}fdsafdsaf</span>
         </el-col>
-        <el-col :span="4" :offset="12">
-           <el-button type="primary">{{dialogData.isEdit?'保存':"修改"}}</el-button>
-           <el-button type="info">删除</el-button>
+        <el-col :span="4" :offset="20">
+          <el-button type="primary" style="cursor: pointer;" v-on:click="contentChangeDialog(false)">
+            {{dialogData.isEdit?'保存':"修改"}}
+          </el-button>
+          <el-button type="info" style="cursor: pointer;" v-on:click="contentChangeDialog(true)">
+            {{dialogData.isEdit?'取消':"删除"}}
+          </el-button>
         </el-col>
       </el-row>
       <el-row style="padding: 10px 10px">
-        <el-col :span="12">线路名称:{{dialogData.Content.name}}</el-col>
-        <el-col :span="12">备注:{{dialogData.Content.remark}}</el-col>
+        <el-col :gutter="20" :span="12">
+          <span v-if='dialogData.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="dialogData.Content.name"><template slot="prepend">线路名称:</template></el-input></span>
+          <span v-else>线路名称:{{dialogData.Content.name}}</span>
+        </el-col>
+        <el-col :span="12">
+          <span v-if='dialogData.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="dialogData.Content.remark"><template slot="prepend">备注:</template></el-input></span>
+          <span v-else>备注:{{dialogData.Content.remark}}</span>
+        </el-col>
       </el-row>
       <el-table :data="dialogData.table.data">
         <el-table-column type="index" width="100"></el-table-column>
@@ -66,17 +76,19 @@
         <el-table-column property="price" label="地址"></el-table-column>
         <el-table-column label="操作" width="200">
             <template slot-scope="scope">
-              <span v-if="!scope.row.isSet" class="el-tag el-tag el-tag--mini" style="cursor: pointer;" v-on:click="dialogData.tableVisible =true,currentRowModal(scope.row,scope.$index)">详细</span>
-              <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
+              <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
                   {{scope.row.isSet?'保存':"修改"}}
               </span>
-              <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="del(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
-              <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="c(scope.row,scope.$index,true)">取消</span>
+              <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="delDialog(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
+              <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,true)">取消</span>
             </template>
           </el-table-column>
       </el-table>
        <el-row>
-        <el-col :span="24">{{dialogData.Content.detail}}</el-col>
+        <el-col :span="24">
+          <span v-if='dialogData.isEdit'><el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="dialogData.Content.detail"></el-input></span>
+          <span v-else>{{dialogData.Content.detail}}</span>
+        </el-col>
       </el-row>
     </el-dialog>
     </el-row>
@@ -113,15 +125,15 @@ export default {
       api:'http://127.0.0.1:9090/acct/lineprices/',
       currentPage4: 4,
       dialogData:{
-        ContentId:null,
+        ContentId: "",
         tableVisible: false,
-        isEdit:false,
-        isAdd:false,
+        isEdit: false,
+        isAdd: false,
         Content: {
-          id: null,
-          name: null,
-          remark: null,
-          detail: null,
+          id: "",
+          name: "",
+          remark: "",
+          detail: "",
         },
         table: {
           countAll: null,
@@ -141,7 +153,7 @@ export default {
     // CustomeAlert,
   },
   methods: {
-    choice(id){
+    choice(){
       // console.log(zuid)
     },
     // handleCurrentChange(selectRow){
@@ -157,6 +169,9 @@ export default {
           return false;
         }
       }
+      let localID = index;
+      this.dialogData.isAdd = false;
+      this.dialogData.isEdit = false;
       var params = new URLSearchParams();
       // params.append("req_method","GET_SINGLE");
       params.append("req_method","GETONE");
@@ -177,7 +192,7 @@ export default {
         });
 
       }).catch((error)=>{
-        // console.log(error);
+        console.log(error);
       })
     },
     currentRowChange(rowContent,index,isCancel){
@@ -279,11 +294,18 @@ export default {
     },
     doAdd(){
       for (let item of this.table.data) {
-        if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
+        if (item.isSet){
+          this.$message.warning("请先保存当前编辑项!");
+          return this.$set(this.dialogData, 'tableVisible', false);
+        }
       }
-      let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
-      this.table.data.push(tempAddData);
-      this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
+      this.dialogData.isAdd = true;
+      this.dialogData.isEdit = true;
+      this.dialogData.Content = JSON.parse(JSON.stringify({id: null, "name": "", "remark": "", "detail": "",}));
+      this.dialogData.table.data = [];
+      this.dialogData.table.data.forEach(item => {
+        this.$set(item, 'isSet', false);
+      });
       // console.log(this.table.data)
     },
     del(rowContent, index){
@@ -331,7 +353,164 @@ export default {
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
-    }
+    },
+    contentChangeDialog(isCancel){
+      if(isCancel){
+        if(!this.dialogData.isEdit){
+
+        }else{
+          return this.$set(this.dialogData, 'isEdit', false)
+        }
+      }else{
+        return this.$set(this.dialogData, 'isEdit', true);
+      }
+    },
+    currentRowChangeDialog(rowContent,index,isCancel){
+      //点击修改、保存,判断是否已经保存所有操作
+      // console.log(rowContent, index, isCancel)
+      for (let item of this.table.data) {
+        if (item.isSet && (item.id != rowContent.id)) {
+          this.$message.warning("请先保存当前编辑项!");
+          return false;
+        }
+      }
+      //是否为取消操作
+      if (isCancel) {
+        if (null === this.table.currentRow.id) return this.table.data.splice(index, 1);
+        rowContent.isSet = !rowContent.isSet;
+        return this.$set(this.table.data, index, rowContent)
+      }
+
+      if (rowContent.isSet) {
+        // let tempData = JSON.parse(JSON.stringify(this.table.currentRow));
+
+        if(InputCheck.namecheck(this.table.currentRow.name)) return this.$message.warning("组织名称不能为空或空格!");
+
+        var params = new URLSearchParams();
+        
+        if(null !== this.table.currentRow.id){
+          params.append("pk",this.table.currentRow.id);
+          params.append("req_method",'UPDATE');
+        }else{
+          params.append("req_method",'ADD');
+        }
+        params.append("name",this.table.currentRow.name);
+        params.append("remark",this.table.currentRow.remark);
+        
+        params.append("tokenID",Sstorage.get('tokenID'));
+        params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
+
+        Axios.post(this.api, params).then((response)=>{
+          if(response.data.status_flag){
+            console.log(response);
+            let tempData = response.data.result;
+            console.log(tempData);
+            this.$set(tempData, 'isSet', false);
+            if(null !== this.table.currentRow.id){
+              this.table.data.splice(index,1,tempData);
+              this.$message({
+                type: 'success',
+                message: "修改成功！"
+              });
+            }else{
+              this.table.countAll+=1;
+              this.table.data.splice(index,1,tempData);
+              this.$message({
+                type: 'success',
+                message: "添加成功！"
+              });
+            }
+          }else{
+            console.log(response);
+
+            if(null !== this.table.currentRow.id){
+              this.$message({
+                type: 'error',
+                message: "修改失败！"
+              });
+            }else{
+              // this.table.data.splice(index, 1);
+              this.$message({
+                type: 'error',
+                message: "添加失败！"
+              });
+            }
+          }})
+          .catch((error)=>{
+            console.log(error);
+            if(null !== this.table.currentRow.id) this.table.data.splice(index, 1);
+            this.$message({
+              type: 'error',
+              message: "保存失败！"
+            });
+          });
+        /*
+        for (let k in tempData) rowContent[k] = tempData[k];
+        console.log(this.table.data)
+        return 0;
+        */
+        // this.$message({
+        //     type: 'success',
+        //     message: "保存成功!"
+        // });
+        //然后这边重新读取表格数据
+        // app.readMasterUser();
+      }else{
+        this.table.currentRow = JSON.parse(JSON.stringify(rowContent));
+        // this.table.currentRow = rowContent;
+        rowContent.isSet = true;
+        this.$set(this.table.data, index, rowContent);
+      }
+    },
+    doAddDialog(){
+      for (let item of this.table.data) {
+        if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
+      }
+      let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
+      this.table.data.push(tempAddData);
+      this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
+      // console.log(this.table.data)
+    },
+    delDialog(rowContent, index){
+      this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        console.log(rowContent, index);
+        var params = new URLSearchParams();
+        params.append("req_method","DELETE");
+        params.append("tokenID",Sstorage.get('tokenID'));
+        params.append("pk",rowContent.id);
+
+        Axios.post(this.api, params).then((response)=>{
+          console.log(response);
+          if(response.data.status_flag){
+            this.table.countAll-=1;
+            this.table.data.splice(index,1);
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+          }else{
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            });
+          }}).catch((error)=>{
+            console.log(error);
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            });
+          });
+      }).catch(() => {
+        // this.$message({
+        //   type: 'info',
+        //   message: '已取消删除'
+        // });          
+      });
+    },
   },
   mounted() {
     // var list = JSON.parse(localStorage.getItem('list'));
