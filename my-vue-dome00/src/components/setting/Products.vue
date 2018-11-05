@@ -41,21 +41,43 @@
         :page-sizes="[100, 200, 300, 400]"
         :page-size="100"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400">
+        :total="table.countAll">
       </el-pagination>
     </el-row>
     <el-row>
     <el-dialog title="线路报价单" :visible.sync="dialogData.tableVisible">
-      <el-row>
-        <el-col>
-          线路报价单ID:{{dialogData.}}
+      <el-row align="top">
+        <el-col v-if="!dialogData.isAdd" :span="8">
+          <span style="font-size: 24px;"> 线路报价单ID:{{dialogData.Content.id}}fdsafdsaf</span>
+        </el-col>
+        <el-col :span="4" :offset="12">
+           <el-button type="primary">{{dialogData.isEdit?'保存':"修改"}}</el-button>
+           <el-button type="info">删除</el-button>
         </el-col>
       </el-row>
+      <el-row style="padding: 10px 10px">
+        <el-col :span="12">线路名称:{{dialogData.Content.name}}</el-col>
+        <el-col :span="12">备注:{{dialogData.Content.remark}}</el-col>
+      </el-row>
       <el-table :data="dialogData.table.data">
+        <el-table-column type="index" width="100"></el-table-column>
         <el-table-column property="id" label="日期" width="150"></el-table-column>
         <el-table-column property="kind" label="姓名" width="200"></el-table-column>
         <el-table-column property="price" label="地址"></el-table-column>
+        <el-table-column label="操作" width="200">
+            <template slot-scope="scope">
+              <span v-if="!scope.row.isSet" class="el-tag el-tag el-tag--mini" style="cursor: pointer;" v-on:click="dialogData.tableVisible =true,currentRowModal(scope.row,scope.$index)">详细</span>
+              <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
+                  {{scope.row.isSet?'保存':"修改"}}
+              </span>
+              <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="del(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
+              <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="c(scope.row,scope.$index,true)">取消</span>
+            </template>
+          </el-table-column>
       </el-table>
+       <el-row>
+        <el-col :span="24">{{dialogData.Content.detail}}</el-col>
+      </el-row>
     </el-dialog>
     </el-row>
   </el-row>
@@ -75,6 +97,7 @@ export default {
   data() {
     return {
       table: {
+        countAll: null,
         currentRow: null,//选中行   
         columns: [
           { field: "id", title: "编号", width: 60, isEdit: false, sortable: true },
@@ -93,9 +116,15 @@ export default {
         ContentId:null,
         tableVisible: false,
         isEdit:false,
-        isAdd:null,
-        Content: null,
+        isAdd:false,
+        Content: {
+          id: null,
+          name: null,
+          remark: null,
+          detail: null,
+        },
         table: {
+          countAll: null,
           currentRow: null,
           columns: [
             { field: "id", title: "档位", width: 60, isEdit: false, sortable: true },
@@ -142,7 +171,7 @@ export default {
 
         this.dialogData.Content = response.data.result.line_price;
 
-        this.dialogData.table = response.data.result.ref_prices;
+        this.dialogData.table.data = response.data.result.ref_prices;
         this.dialogData.table.data.forEach(item => {
           this.$set(item, 'isSet', false);
         });
@@ -199,7 +228,7 @@ export default {
                 message: "修改成功！"
               });
             }else{
-              this.count_all+=1;
+              this.table.countAll+=1;
               this.table.data.splice(index,1,tempData);
               this.$message({
                 type: 'success',
@@ -272,7 +301,7 @@ export default {
         Axios.post(this.api, params).then((response)=>{
           console.log(response);
           if(response.data.status_flag){
-            this.count_all-=1;
+            this.table.countAll-=1;
             this.table.data.splice(index,1);
             this.$message({
               type: 'success',
@@ -314,10 +343,10 @@ export default {
     params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
     params.append("tokenID",Sstorage.get('tokenID'));
     Axios.post(this.api, params).then((response) => {
-      console.log(response)
-      this.count_all = response.data.item_num
+      // console.log(response)
+      this.table.countAll = response.data.item_num
       this.table.data = response.data.result;
-      // this.count_all=response.data.item_num;
+      // this.table.countAll=response.data.item_num;
       this.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
       });

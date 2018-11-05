@@ -41,7 +41,7 @@
         :page-sizes="[100, 200, 300, 400]"
         :page-size="100"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400">
+        :total="table.countAll">
       </el-pagination>
     </el-row>
   </el-row>
@@ -62,6 +62,7 @@ export default {
   data() {
     return {
       table: {
+        countAll: null,
         currentRow: null,//选中行   
         columns: [
           { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
@@ -134,7 +135,7 @@ export default {
                 message: "修改成功！"
               });
             }else{
-              this.count_all+=1;
+              this.table.countAll+=1;
               this.table.data.splice(index,1,tempData);
               this.$message({
                 type: 'success',
@@ -207,7 +208,7 @@ export default {
         Axios.post(this.api, params).then((response)=>{
           console.log(response);
           if(response.data.status_flag){
-            this.count_all-=1;
+            this.table.countAll-=1;
             this.table.data.splice(index,1);
             this.$message({
               type: 'success',
@@ -250,9 +251,9 @@ export default {
     params.append("tokenID",Sstorage.get('tokenID'));
     Axios.post(this.api, params).then((response) => {
       console.log(response)
-      this.count_all = response.data.item_num
+      this.table.countAll = response.data.item_num
       this.table.data = response.data.result;
-      // this.count_all=response.data.item_num;
+      // this.table.countAll=response.data.item_num;
       this.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
       });
