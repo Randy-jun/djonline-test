@@ -48,7 +48,7 @@
     <el-dialog title="线路报价单" :visible.sync="dialogData.tableVisible">
       <el-row align="top">
         <el-col :span="8">
-          <span v-if="!dialogData.isAdd" style="font-size: 24px;"> 线路报价单ID:{{dialogData.Content.id}}</span>
+          <span v-if="!dialogData.isAdd" style="font-size: 24px;"> 线路报价单ID:{{dialogData._Content.id}}</span>
         </el-col>
         <el-col :span="4" :offset="12">
           <el-button type="primary" style="cursor: pointer;" v-on:click="contentChangeDialog(false)">
@@ -61,12 +61,12 @@
       </el-row>
       <el-row style="padding: 10px 10px">
         <el-col :gutter="20" :span="12">
-          <span v-if='dialogData.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="dialogData.Content.name"><template slot="prepend">线路名称:</template></el-input></span>
-          <span v-else>线路名称:{{dialogData.Content.name}}</span>
+          <span v-if='dialogData.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="dialogData._Content.name"><template slot="prepend">线路名称:</template></el-input></span>
+          <span v-else>线路名称:{{dialogData._Content.name}}</span>
         </el-col>
         <el-col :span="12">
-          <span v-if='dialogData.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="dialogData.Content.remark"><template slot="prepend">备注:</template></el-input></span>
-          <span v-else>备注:{{dialogData.Content.remark}}</span>
+          <span v-if='dialogData.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="dialogData._Content.remark"><template slot="prepend">备注:</template></el-input></span>
+          <span v-else>备注:{{dialogData._Content.remark}}</span>
         </el-col>
       </el-row>
       <el-table :data="dialogData.table.data">
@@ -86,8 +86,8 @@
       </el-table>
        <el-row>
         <el-col :span="24">
-          <span v-if='dialogData.isEdit'><el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="dialogData.Content.detail"></el-input></span>
-          <span v-else>{{dialogData.Content.detail}}</span>
+          <span v-if='dialogData.isEdit'><el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="dialogData._Content.detail"></el-input></span>
+          <span v-else>{{dialogData._Content.detail}}</span>
         </el-col>
       </el-row>
     </el-dialog>
@@ -129,13 +129,13 @@ export default {
         tableVisible: false,
         isEdit: false,
         isAdd: false,
-        _Content: null,
-        Content: {
+        _Content: {
           id: "",
           name: "",
           remark: "",
           detail: "",
         },
+        Content: null,
         table: {
           countAll: null,
           currentRow: null,
@@ -186,6 +186,8 @@ export default {
         console.log(response)
 
         this.dialogData.Content = response.data.result.line_price;
+        // this.dialogData._Content = this.dialogData.Content;
+        this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
 
         this.dialogData.table.data = response.data.result.ref_prices;
         this.dialogData.table.data.forEach(item => {
@@ -302,7 +304,8 @@ export default {
       }
       this.dialogData.isAdd = true;
       this.dialogData.isEdit = true;
-      this.dialogData.Content = JSON.parse(JSON.stringify({id: null, "name": "", "remark": "", "detail": "",}));
+      this.dialogData._Content = JSON.parse(JSON.stringify({id: null, "name": "", "remark": "", "detail": "",}));
+      // this.dialogData.Content = JSON.parse(JSON.stringify(this.dialogData._Content));
       this.dialogData.table.data = [];
       this.dialogData.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
@@ -357,13 +360,18 @@ export default {
     },
     contentChangeDialog(isCancel){
       console.log(this.dialogData.Content)
-      this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
+      // this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
       if(isCancel){
+        console.log(this.dialogData.isAdd)
         if(!this.dialogData.isEdit){
-
+          console.log("dsadsa");
         }else{
-          this.dialogData.Content = JSON.parse(JSON.stringify(this.dialogData._Content));;
-          return this.$set(this.dialogData, 'isEdit', false)
+          if (this.dialogData.isAdd){
+            return this.$set(this.dialogData, 'tableVisible', false);
+          } else {
+            this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));;
+            return this.$set(this.dialogData, 'isEdit', false);
+          }
         }
       }else{
         return this.$set(this.dialogData, 'isEdit', true);
