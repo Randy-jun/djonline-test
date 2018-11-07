@@ -71,18 +71,27 @@
       </el-row>
       <el-table :data="dialogData.table.data">
         <el-table-column type="index" width="100"></el-table-column>
-        <el-table-column property="id" label="日期" width="150"></el-table-column>
-        <el-table-column property="kind" label="姓名" width="200"></el-table-column>
-        <el-table-column property="price" label="地址"></el-table-column>
+        <el-table-column v-for="(value, key) in dialogData.table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
+          <template slot-scope="scope">
+            <span v-if="scope.row.isSet">
+              <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
+              <span v-else>{{scope.row[value.field]}}</span>
+            </span>
+            <span v-else>{{scope.row[value.field]}}</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column property="id" label="编号" width="150"></el-table-column>
+        <el-table-column property="kind" label="名称" width="200"></el-table-column>
+        <el-table-column property="price" label="报价"></el-table-column> -->
         <el-table-column label="操作" width="200">
-            <template slot-scope="scope">
-              <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
-                  {{scope.row.isSet?'保存':"修改"}}
-              </span>
-              <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="delDialog(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
-              <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,true)">取消</span>
-            </template>
-          </el-table-column>
+          <template slot-scope="scope">
+            <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
+                {{scope.row.isSet?'保存':"修改"}}
+            </span>
+            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="delDialog(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
+            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,true)">取消</span>
+          </template>
+        </el-table-column>
       </el-table>
        <el-row>
         <el-col :span="24">
@@ -142,7 +151,7 @@ export default {
           columns: [
             { field: "id", title: "档位", width: 60, isEdit: false, sortable: true },
             { field: "kind", title: "名称", width: 320, isEdit: true, sortable: true },
-            { field: "price", title: "报价", width: 320, isEdit: false, sortable: false },
+            { field: "price", title: "报价", width: 320, isEdit: true, sortable: true },
           ],
           data:[],
         }
@@ -292,7 +301,8 @@ export default {
         this.table.currentRow = JSON.parse(JSON.stringify(rowContent));
         // this.table.currentRow = rowContent;
         rowContent.isSet = true;
-        this.$set(this.table.data, index, rowContent);
+        // this.$set(this.table.data, index, rowContent);
+        this.table.data.splice(index, 1, rowContent);
       }
     },
     doAdd(){
@@ -379,8 +389,8 @@ export default {
     },
     currentRowChangeDialog(rowContent,index,isCancel){
       //点击修改、保存,判断是否已经保存所有操作
-      // console.log(rowContent, index, isCancel)
-      for (let item of this.table.data) {
+      console.log(rowContent, index, isCancel)
+      for (let item of this.dialogData.table.data) {
         if (item.isSet && (item.id != rowContent.id)) {
           this.$message.warning("请先保存当前编辑项!");
           return false;
@@ -388,26 +398,26 @@ export default {
       }
       //是否为取消操作
       if (isCancel) {
-        if (null === this.table.currentRow.id) return this.table.data.splice(index, 1);
+        if (null === this.dialogData.table.currentRow.id) return this.dialogData.table.data.splice(index, 1);
         rowContent.isSet = !rowContent.isSet;
-        return this.$set(this.table.data, index, rowContent)
+        return this.$set(this.dialogData.table.data, index, rowContent)
       }
 
       if (rowContent.isSet) {
         // let tempData = JSON.parse(JSON.stringify(this.table.currentRow));
 
-        if(InputCheck.namecheck(this.table.currentRow.name)) return this.$message.warning("组织名称不能为空或空格!");
+        if(InputCheck.namecheck(this.dialogData.table.currentRow.name)) return this.$message.warning("报价名称不能为空或空格!");
 
         var params = new URLSearchParams();
         
         if(null !== this.table.currentRow.id){
-          params.append("pk",this.table.currentRow.id);
+          params.append("pk",this.dialogData.table.currentRow.id);
           params.append("req_method",'UPDATE');
         }else{
           params.append("req_method",'ADD');
         }
-        params.append("name",this.table.currentRow.name);
-        params.append("remark",this.table.currentRow.remark);
+        params.append("name",this.dialogData.table.currentRow.name);
+        params.append("remark",this.dialogData.table.currentRow.remark);
         
         params.append("tokenID",Sstorage.get('tokenID'));
         params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
@@ -418,15 +428,15 @@ export default {
             let tempData = response.data.result;
             console.log(tempData);
             this.$set(tempData, 'isSet', false);
-            if(null !== this.table.currentRow.id){
-              this.table.data.splice(index,1,tempData);
+            if(null !== this.dialogData.table.currentRow.id){
+              this.dialogData.table.data.splice(index,1,tempData);
               this.$message({
                 type: 'success',
                 message: "修改成功！"
               });
             }else{
-              this.table.countAll+=1;
-              this.table.data.splice(index,1,tempData);
+              this.dialogData.table.countAll+=1;
+              this.dialogData.table.data.splice(index,1,tempData);
               this.$message({
                 type: 'success',
                 message: "添加成功！"
@@ -435,7 +445,7 @@ export default {
           }else{
             console.log(response);
 
-            if(null !== this.table.currentRow.id){
+            if(null !== this.dialogData.ble.currentRow.id){
               this.$message({
                 type: 'error',
                 message: "修改失败！"
@@ -450,7 +460,7 @@ export default {
           }})
           .catch((error)=>{
             console.log(error);
-            if(null !== this.table.currentRow.id) this.table.data.splice(index, 1);
+            if(null !== this.dialogData.table.currentRow.id) this.dialogData.table.data.splice(index, 1);
             this.$message({
               type: 'error',
               message: "保存失败！"
@@ -468,10 +478,13 @@ export default {
         //然后这边重新读取表格数据
         // app.readMasterUser();
       }else{
-        this.table.currentRow = JSON.parse(JSON.stringify(rowContent));
+        
+        this.dialogData.table.currentRow = JSON.parse(JSON.stringify(rowContent));
         // this.table.currentRow = rowContent;
         rowContent.isSet = true;
-        this.$set(this.table.data, index, rowContent);
+        // this.$set(this.dialogData.table.data, index, rowContent);
+        console.log(this.dialogData.table.data)
+        return this.dialogData.table.data.splice(index, 1, rowContent);
       }
     },
     doAddDialog(){

@@ -181,7 +181,8 @@ export default {
         this.table.currentRow = JSON.parse(JSON.stringify(rowContent));
         // this.table.currentRow = rowContent;
         rowContent.isSet = true;
-        this.$set(this.table.data, index, rowContent);
+        // this.$set(this.table.data, index, rowContent);
+        this.table.data.splice(index, 1, rowContent)
       }
     },
     doAdd(){
