@@ -1,6 +1,7 @@
 <template>
   <el-row>
     <el-row style="height:750px">
+    <div>{{dialogData.table.data}}</div>
     <!-- <el-col :span=24> -->
       <el-scrollbar style="height:100%">
         <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
@@ -74,7 +75,7 @@
         <el-table-column v-for="(value, key) in dialogData.table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
           <template slot-scope="scope">
             <span v-if="scope.row.isSet">
-              <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
+              <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="dialogData.table.currentRow[value.field]"></el-input></span>
               <span v-else>{{scope.row[value.field]}}</span>
             </span>
             <span v-else>{{scope.row[value.field]}}</span>
@@ -88,11 +89,14 @@
             <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
                 {{scope.row.isSet?'保存':"修改"}}
             </span>
-            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="delDialog(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
+            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini"  style="cursor: pointer;" v-on:click="delDialog(scope.row,scope.$index)">删除</span>
             <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,true)">取消</span>
           </template>
         </el-table-column>
       </el-table>
+      <el-row>
+        <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAddDialog()">添加新的组织机构</el-button>
+      </el-row>
        <el-row>
         <el-col :span="24">
           <span v-if='dialogData.isEdit'><el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="dialogData._Content.detail"></el-input></span>
@@ -194,15 +198,14 @@ export default {
       Axios.post(this.api, params).then((response)=>{
         console.log(response)
 
-        this.dialogData.Content = response.data.result.line_price;
+        this.dialogData.Content = JSON.parse(JSON.stringify(response.data.result.line_price));
         // this.dialogData._Content = this.dialogData.Content;
         this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
 
-        this.dialogData.table.data = response.data.result.ref_prices;
+        this.dialogData.table.data = JSON.parse(JSON.stringify(response.data.result.ref_prices));
         this.dialogData.table.data.forEach(item => {
           this.$set(item, 'isSet', false);
         });
-
       }).catch((error)=>{
         console.log(error);
       })
@@ -211,10 +214,7 @@ export default {
       //点击修改、保存,判断是否已经保存所有操作
       // console.log(rowContent, index, isCancel)
       for (let item of this.table.data) {
-        if (item.isSet && (item.id != rowContent.id)) {
-          this.$message.warning("请先保存当前编辑项!");
-          return false;
-        }
+        if (item.isSet && (item.id != rowContent.id)) return this.$message.warning("请先保存当前编辑项!");
       }
       //是否为取消操作
       if (isCancel) {
@@ -303,6 +303,7 @@ export default {
         rowContent.isSet = true;
         // this.$set(this.table.data, index, rowContent);
         this.table.data.splice(index, 1, rowContent);
+        return true;
       }
     },
     doAdd(){
@@ -390,10 +391,10 @@ export default {
     currentRowChangeDialog(rowContent,index,isCancel){
       //点击修改、保存,判断是否已经保存所有操作
       console.log(rowContent, index, isCancel)
+      console.log(rowContent)
       for (let item of this.dialogData.table.data) {
         if (item.isSet && (item.id != rowContent.id)) {
-          this.$message.warning("请先保存当前编辑项!");
-          return false;
+          return this.$message.warning("请先保存当前编辑项!");;
         }
       }
       //是否为取消操作
@@ -478,22 +479,19 @@ export default {
         //然后这边重新读取表格数据
         // app.readMasterUser();
       }else{
-        
-        this.dialogData.table.currentRow = JSON.parse(JSON.stringify(rowContent));
-        // this.table.currentRow = rowContent;
+        this.dialogData.table.currentRow = JSON.parse(JSON.stringify(rowContent)); 
         rowContent.isSet = true;
-        // this.$set(this.dialogData.table.data, index, rowContent);
-        console.log(this.dialogData.table.data)
-        return this.dialogData.table.data.splice(index, 1, rowContent);
+        this.dialogData.table.data.splice(index, 1, rowContent);
+        return true;
       }
     },
     doAddDialog(){
-      for (let item of this.table.data) {
+      for (let item of this.dialogData.table.data) {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
-      let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
-      this.table.data.push(tempAddData);
-      this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
+      let tempAddData = {id: null, "kind": "", "price": "", "isSet": true,};
+      this.dialogData.table.data.push(tempAddData);
+      this.dialogData.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
     },
     delDialog(rowContent, index){
@@ -554,8 +552,8 @@ export default {
       this.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
       });
-      // this.table.data = JSON.parse(JSON.stringify(this.table.data));
-      // console.log(this.table.data);s
+      this.table.data = JSON.parse(JSON.stringify(this.table.data));
+      // console.log(this.table.data);
       // setTimeout(()=>{
       //   this.data_list.splice(0,1)
       //   console.log(this.data_list)
