@@ -1,7 +1,6 @@
 <template>
   <el-row>
     <el-row style="height:750px">
-    <div>{{dialogData.table.data}}</div>
     <!-- <el-col :span=24> -->
       <el-scrollbar style="height:100%">
         <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
@@ -390,12 +389,8 @@ export default {
     },
     currentRowChangeDialog(rowContent,index,isCancel){
       //点击修改、保存,判断是否已经保存所有操作
-      console.log(rowContent, index, isCancel)
-      console.log(rowContent)
       for (let item of this.dialogData.table.data) {
-        if (item.isSet && (item.id != rowContent.id)) {
-          return this.$message.warning("请先保存当前编辑项!");;
-        }
+        if (item.isSet && (item.id != rowContent.id)) return this.$message.warning("请先保存当前编辑项!");
       }
       //是否为取消操作
       if (isCancel) {
