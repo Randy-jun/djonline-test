@@ -225,7 +225,7 @@ export default {
       if (rowContent.isSet) {
         // let tempData = JSON.parse(JSON.stringify(this.table.currentRow));
 
-        if(InputCheck.namecheck(this.table.currentRow.name)) return this.$message.warning("组织名称不能为空或空格!");
+        if(InputCheck.namecheck(this.table.currentRow.name)) return this.$message.warning("线路名称不能为空或空格!");
 
         var params = new URLSearchParams();
         
@@ -237,6 +237,7 @@ export default {
         }
         params.append("name",this.table.currentRow.name);
         params.append("remark",this.table.currentRow.remark);
+        params.append("detail",this.table.currentRow.detail);
         
         params.append("tokenID",Sstorage.get('tokenID'));
         params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
@@ -548,7 +549,7 @@ export default {
         this.$set(item, 'isSet', false);
       });
       this.table.data = JSON.parse(JSON.stringify(this.table.data));
-      // console.log(this.table.data);
+      console.log(this.table.data);
       // setTimeout(()=>{
       //   this.data_list.splice(0,1)
       //   console.log(this.data_list)
