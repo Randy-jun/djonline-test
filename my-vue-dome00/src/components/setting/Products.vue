@@ -23,7 +23,7 @@
               <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
                   {{scope.row.isSet?'保存':"修改"}}
               </span>
-              <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="del(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
+              <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="doDel(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
               <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,true)">取消</span>
             </template>
           </el-table-column>
@@ -88,7 +88,7 @@
             <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
                 {{scope.row.isSet?'保存':"修改"}}
             </span>
-            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini"  style="cursor: pointer;" v-on:click="delDialog(scope.row,scope.$index)">删除</span>
+            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini"  style="cursor: pointer;" v-on:click="doDelDialog(scope.row,scope.$index)">删除</span>
             <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,true)">取消</span>
           </template>
         </el-table-column>
@@ -323,7 +323,7 @@ export default {
       });
       // console.log(this.table.data)
     },
-    del(rowContent, index){
+    doDel(rowContent, index){
       this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -490,7 +490,7 @@ export default {
       this.dialogData.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
     },
-    delDialog(rowContent, index){
+    doDelDialog(rowContent, index){
       this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -499,8 +499,10 @@ export default {
         console.log(rowContent, index);
         var params = new URLSearchParams();
         params.append("req_method","DELETE");
+        // params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
         params.append("tokenID",Sstorage.get('tokenID'));
         params.append("pk",rowContent.id);
+        console.log(rowContent.id)
 
         Axios.post(this.api, params).then((response)=>{
           console.log(response);
