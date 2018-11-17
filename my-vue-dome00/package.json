@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "element-ui": "^2.4.9",
+    "element-ui": "^2.4.10",
     "jquery": "^3.3.1",
     "popper.js": "^1.14.5",
     "vue": "^2.5.17",
