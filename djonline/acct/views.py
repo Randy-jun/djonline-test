@@ -198,8 +198,9 @@ def orz_detail(request, pk):
 @api_view(['GET', 'POST'])
 #@check_token
 def line_list(request):
-    local_agency_fk = request.data['local_agency_fk']
+    
     if request.method == 'POST' and request.data['req_method'] == 'GET':
+        local_agency_fk = request.data['local_agency_fk']
         line_prices = Line_Price_t.objects.filter(local_agency_fk=local_agency_fk)
         item_num = len(line_prices)
         top3_ref_data = {}
@@ -230,13 +231,9 @@ def line_list(request):
         try:
             line = Line_Price_t.objects.get(pk=request.data['pk'])
         except Line_Price_t.DoesNotExist:
-            return HttpResponse(status=200)
-        serializer = Line_Price_tSerializer(data=request.data,partial=True)
-        if serializer.is_valid():
-            item = Line_Price_t.objects.filter(
-                name=serializer.validated_data['name'], local_agency_fk=serializer.validated_data['local_agency_fk'])
-            if len(item) != 0:
-                return JsonResponse({'result': serializer.data, 'status_flag': False, 'status_string': 'error : name should be unique'}, status=200)
+            return Response({'error_message':'item does not exist'})
+        serializer = Line_Price_tSerializer(line, data=request.data, partial=True)
+        if serializer.is_valid():           
             serializer.save()
             serializer.validated_data['id'] = line.id
             return JsonResponse({'result': serializer.validated_data, 'status_flag':True, 'status_string':'Update Success','result_count':1})
@@ -263,27 +260,7 @@ def line_list(request):
         return JsonResponse({'result':result,'status_flag': True, "status_string": "Get one item Success!"}, status=200)
         
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def line_detail(request, pk):
-    try:
-        line = Line_Price_t.objects.get(pk=pk)
-    except Line_Price_t.DoesNotExist:
-        return Response(status=status.HTTP_200_NOTFOUND)
 
-    if request.method == 'GET':
-        serializer = Line_Price_tSerializer(line)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = Line_Price_tSerializer(line, data=request.data)
-        if serializer.is_valid:
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_200_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        line.delete()
-        return Response({'status_flag': True, 'status_string': 'Success'}, status=status.HTTP_200_NO_CONTENT)
 
 
 @api_view(['GET', 'POST'])
@@ -393,13 +370,22 @@ class Ref_PriceList(APIView):
     
     def post(self, request, format=None):
         if request.data['req_method'] == 'ADD':
-            serializer = Ref_Price_tSerializer(data=request.data)
-            if self.get_by_kind(request.data['kind'],request.data['local_agency_fk']):
-                return Response({'status_flag':False,'status_string':'Kind should be unique'}, status=200)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=200)
+            #serializer = Ref_Price_tSerializer(data=request.data['data_to_add'],many=True)
+            '''for data in request.data['data_to_add']:
+                if self.get_by_kind(data['kind'],data['local_agency_fk']):
+                    return Response({'status_flag':False,'status_string':'Kind should be unique'}, status=200,'kind':data['kind'],'local_agency_fk')'''
+            added_num = 0
+            status = []
+            for data in request.data['data_to_add']:
+                serializer = Ref_Price_tSerializer(data=data)
+                if serializer.is_valid():
+                    serializer.save()
+                    status.append(serializer.data['kind']+' added successfully')
+                    added_num = added_num+1
+                else:
+                    status.append('add '+serializer.data['kind']+' failed, error message: '+str(serializer.errors))
+            return Response({'added_num':added_num,'failed_num':len(request.data['data_to_add'])-added_num,'status':status})
+
         if request.data['req_method'] == 'GET':#get refprice by line_price_pk and local_agency_fk
             try:
                 refP = Ref_Price_t.objects.filter(local_agency_fk=request.data['local_agency_fk']).filter(line_price_fk__id=request.data['line_price_fk'])
@@ -421,7 +407,7 @@ class Ref_PriceList(APIView):
                 refP = Ref_Price_t.objects.get(pk=request.data['pk'])
             except Ref_Price_t.DoesNotExist:
                 return JsonResponse({'result': '', 'status_flag':False, 'status_string':'Item did not exist','result_count':0})
-            serializer = Ref_Price_tSerializer(refP, data=request.data,partial=True)
+            serializer = Ref_Price_tSerializer(refP, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return JsonResponse({'result': serializer.validated_data, 'status_flag':True, 'status_string':'Update Success','result_count':1})

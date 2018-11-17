@@ -47,7 +47,7 @@ class Line_Price_t(models.Model):
     local_agency_fk = models.ForeignKey(Agency_t,on_delete=models.PROTECT,default=1)
 
     def __str__(self):
-        return self.name
+        return str(self.id) + self.name
 
     class Meta:
         unique_together = ('name', 'local_agency_fk')
@@ -65,7 +65,7 @@ class Ref_Price_t(models.Model):
     local_agency_fk = models.ForeignKey(Agency_t,on_delete=models.PROTECT,default=1)
 
     def __str__(self):
-        return self.kind+'-'+str(self.price)+'-'+self.line_price_fk.name+'-'+self.local_agency_fk.name
+        return str(self.id)+'-'+self.kind+'-'+str(self.price)+'-'+self.line_price_fk.name+'-'+self.local_agency_fk.name
 
     class Meta:
         unique_together = ('kind', 'local_agency_fk', 'line_price_fk')

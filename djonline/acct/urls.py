@@ -12,11 +12,11 @@ urlpatterns = [
 
     
     path('agencies/',views.orz_list,name='orz_list'),
-    path('agency/<int:pk>/',views.orz_detail,name='orz_detail'),
+    #path('agency/<int:pk>/',views.orz_detail,name='orz_detail'),
     path('lineprices/',views.line_list,name='line_list'),
-    path('lineprice/<int:pk>/',views.line_detail,name='line_detail'),
+    #path('lineprice/<int:pk>/',views.line_detail,name='line_detail'),
     path('refprices/',views.Ref_PriceList.as_view(),name='PriceList'),
-    path('refdetail/<int:pk>/',views.Ref_PriceDetail.as_view(),name='PriceDetail'),
+    #path('refdetail/<int:pk>/',views.Ref_PriceDetail.as_view(),name='PriceDetail'),
     path('applications/',views.application_list,name='application_list'),
     path('tourists/',views.tourist_list,name='tourist_list'),
     
