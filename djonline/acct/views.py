@@ -376,7 +376,7 @@ class Ref_PriceList(APIView):
                     return Response({'status_flag':False,'status_string':'Kind should be unique'}, status=200,'kind':data['kind'],'local_agency_fk')'''
             added_num = 0
             status = []
-            for data in request.data['data_to_add']:
+            for data in request.data['data_to_add'].values():
                 serializer = Ref_Price_tSerializer(data=data)
                 if serializer.is_valid():
                     serializer.save()
