@@ -438,12 +438,16 @@ export default {
               this.table.data.splice(this.dialogData.localID,1,tempData);
 
               this.dialogData.ContentId = tempData.id;
+              let tempAddData = [];
               this.dialogData.table.data.forEach(item => {
                 this.$set(item, 'user_id',Sstorage.get('userID'));
                 this.$set(item, 'token',Sstorage.get('tokenID'));
                 this.$set(item, 'local_agency_fk',Sstorage.get('localAgencyFk'));
                 this.$set(item, 'line_price_fk', this.dialogData.ContentId);
+                tempAddData.push(JSON.stringify(item));
               });
+              console.log(tempAddData);
+              return 0;
               // let arry2dict = {};
               // this.dialogData.table.data.forEach(item => {
               //   console.log(item);
