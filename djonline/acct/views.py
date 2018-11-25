@@ -18,7 +18,7 @@ from rest_framework.views import APIView
 
 from acct.serializers import Agency_tSerializer, Line_Price_tSerializer, Ref_Price_tSerializer, Application_tSerializer, Tourist_tSerializer, Settlement_tSerializer
 
-import datetime,uuid
+import datetime,uuid,json
 # Create your views here.
 
 
@@ -361,7 +361,7 @@ class Ref_PriceList(APIView):
 
     def get_by_kind(self, kind, local_agency_fk):
         refP = Ref_Price_t.objects.filter(kind=kind,local_agency_fk__id=local_agency_fk)
-        if len(refP)>0:
+        if len(refP) > 0:
             return True
         else:
             return False
@@ -370,15 +370,17 @@ class Ref_PriceList(APIView):
     
     def post(self, request, format=None):
         print(type(request.data['data_to_add']),request.data['data_to_add'])
-        for i in request.data['data_to_add']:
-            print(type(i),i)
+        add_data = json.loads(request.data['data_to_add'])
+        print(type(add_data), add_data)
+        for i in add_data:
+            print(type(i), i)
             #print(i.values(), i.keys())
         if request.data['req_method'] == 'ADD':
-            serializer = Ref_Price_tSerializer(data=request.data['data_to_add'],many=True)
+            serializer = Ref_Price_tSerializer(data=add_data, many=True)
            
             added_num = 0
             status = []
-            for data in request.data['data_to_add']:
+            for data in add_data:
                 serializer = Ref_Price_tSerializer(data=data)
                 if serializer.is_valid():
                     serializer.save()
