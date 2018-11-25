@@ -369,21 +369,21 @@ class Ref_PriceList(APIView):
 
     
     def post(self, request, format=None):
+        '''for i in request.data['data_to_add']:
+            print(i)'''
         if request.data['req_method'] == 'ADD':
-            #serializer = Ref_Price_tSerializer(data=request.data['data_to_add'],many=True)
-            '''for data in request.data['data_to_add']:
-                if self.get_by_kind(data['kind'],data['local_agency_fk']):
-                    return Response({'status_flag':False,'status_string':'Kind should be unique'}, status=200,'kind':data['kind'],'local_agency_fk')'''
+            serializer = Ref_Price_tSerializer(data=request.data['data_to_add'],many=True)
+           
             added_num = 0
             status = []
-            for data in request.data['data_to_add'].values():
+            for data in request.data['data_to_add']:
                 serializer = Ref_Price_tSerializer(data=data)
                 if serializer.is_valid():
                     serializer.save()
                     status.append(serializer.data['kind']+' added successfully')
                     added_num = added_num+1
                 else:
-                    status.append('add '+serializer.data['kind']+' failed, error message: '+str(serializer.errors))
+                    status.append('add '+serializer.data['kind'] +'failed, error message: '+str(serializer.errors))
             return Response({'added_num':added_num,'failed_num':len(request.data['data_to_add'])-added_num,'status':status})
 
         if request.data['req_method'] == 'GET':#get refprice by line_price_pk and local_agency_fk
