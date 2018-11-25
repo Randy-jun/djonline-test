@@ -386,7 +386,7 @@ export default {
           if (this.dialogData.isAdd){
             return this.$set(this.dialogData, 'tableVisible', false);
           } else {
-            this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));;
+            this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
             return this.$set(this.dialogData, 'isEdit', false);
           }
         }
@@ -446,7 +446,7 @@ export default {
               });
               var paramsData = new URLSearchParams();
               paramsData.append("req_method",'ADD');
-              paramsData.append("data_to_add",this.dialogData.table.data);
+              paramsData.append("data_to_add",JSON.parse(JSON.stringify(this.dialogData.table.data)));
               console.log(this.dialogData.table.data)
               Axios.post(this.refApi , paramsData).then((response)=>{
                 if(response.data.status_flag){
