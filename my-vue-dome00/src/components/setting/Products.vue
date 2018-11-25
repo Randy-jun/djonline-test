@@ -444,9 +444,16 @@ export default {
                 this.$set(item, 'local_agency_fk',Sstorage.get('localAgencyFk'));
                 this.$set(item, 'line_price_fk', this.dialogData.ContentId);
               });
+              // let arry2dict = {};
+              // this.dialogData.table.data.forEach(item => {
+              //   console.log(item);
+              // });
+              // return 0;
+
               var paramsData = new URLSearchParams();
               paramsData.append("req_method",'ADD');
-              paramsData.append("data_to_add",JSON.stringify(this.dialogData.table.data));
+              // paramsData.append("data_to_add",JSON.stringify(this.dialogData.table.data));
+              paramsData.append("data_to_add",this.dialogData.table.data);
               console.log(this.dialogData.table.data)
               Axios.post(this.refApi , paramsData).then((response)=>{
                 if(response.data.status_flag){
