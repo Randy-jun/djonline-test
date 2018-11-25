@@ -369,8 +369,10 @@ class Ref_PriceList(APIView):
 
     
     def post(self, request, format=None):
-        '''for i in request.data['data_to_add']:
-            print(i)'''
+        print(type(request.data['data_to_add']),request.data['data_to_add'])
+        for i in request.data['data_to_add']:
+            print(type(i),i)
+            #print(i.values(), i.keys())
         if request.data['req_method'] == 'ADD':
             serializer = Ref_Price_tSerializer(data=request.data['data_to_add'],many=True)
            
