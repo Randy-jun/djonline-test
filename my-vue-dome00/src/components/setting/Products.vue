@@ -446,8 +446,8 @@ export default {
                 this.$set(item, 'line_price_fk', this.dialogData.ContentId);
                 tempAddData.push(JSON.stringify(item));
               });
-              console.log(tempAddData);
-              return 0;
+              // console.log(tempAddData);
+              // return 0;
               // let arry2dict = {};
               // this.dialogData.table.data.forEach(item => {
               //   console.log(item);
@@ -457,7 +457,7 @@ export default {
               var paramsData = new URLSearchParams();
               paramsData.append("req_method",'ADD');
               // paramsData.append("data_to_add",JSON.stringify(this.dialogData.table.data));
-              paramsData.append("data_to_add",this.dialogData.table.data);
+              paramsData.append("data_to_add",tempAddData);
               console.log(this.dialogData.table.data)
               Axios.post(this.refApi , paramsData).then((response)=>{
                 if(response.data.status_flag){
