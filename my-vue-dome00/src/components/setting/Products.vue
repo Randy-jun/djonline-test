@@ -438,13 +438,11 @@ export default {
               this.table.data.splice(this.dialogData.localID,1,tempData);
 
               this.dialogData.ContentId = tempData.id;
-              let tempAddData = [];
               this.dialogData.table.data.forEach(item => {
                 this.$set(item, 'user_id',Sstorage.get('userID'));
                 this.$set(item, 'token',Sstorage.get('tokenID'));
                 this.$set(item, 'local_agency_fk',Sstorage.get('localAgencyFk'));
                 this.$set(item, 'line_price_fk', this.dialogData.ContentId);
-                tempAddData.push(JSON.stringify(item));
               });
               // console.log(tempAddData);
               // return 0;
@@ -457,7 +455,7 @@ export default {
               var paramsData = new URLSearchParams();
               paramsData.append("req_method",'ADD');
               // paramsData.append("data_to_add",JSON.stringify(this.dialogData.table.data));
-              paramsData.append("data_to_add",tempAddData);
+              paramsData.append("data_to_add",this.dialogData.table.data);
               console.log(this.dialogData.table.data)
               Axios.post(this.refApi , paramsData).then((response)=>{
                 if(response.data.status_flag){
@@ -606,8 +604,8 @@ export default {
       for (let item of this.dialogData.table.data) {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
-      let tempAddData = {id: null, "kind": "", "name": "", "price": "", "isSet": true,};
-      this.dialogData.table.data.push(tempAddData);
+      let tempAddData = {"id": null, "kind": "", "name": "", "price": "", "isSet": true,};
+      this.dialogData.table.data.push(JSON.parse(JSON.stringify(tempAddData)));
       this.dialogData.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
     },
