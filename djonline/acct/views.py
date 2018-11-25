@@ -370,7 +370,7 @@ class Ref_PriceList(APIView):
     
     def post(self, request, format=None):
         print(type(request.data['data_to_add']),request.data['data_to_add'])
-        add_data = request.data['data_to_add'] #json.loads(request.data['data_to_add'])
+        add_data = request.data['data_to_add']
         print(type(add_data), add_data)
         for i in add_data:
             print(type(i), i)
