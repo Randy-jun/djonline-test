@@ -446,7 +446,7 @@ export default {
               });
               var paramsData = new URLSearchParams();
               paramsData.append("req_method",'ADD');
-              paramsData.append("data_to_add",JSON.parse(JSON.stringify(this.dialogData.table.data)));
+              paramsData.append("data_to_add",JSON.stringify(this.dialogData.table.data));
               console.log(this.dialogData.table.data)
               Axios.post(this.refApi , paramsData).then((response)=>{
                 if(response.data.status_flag){
