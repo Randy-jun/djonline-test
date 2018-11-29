@@ -94,7 +94,7 @@
         </el-table-column>
       </el-table>
       <el-row>
-        <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAddDialog()">添加新的组织机构</el-button>
+        <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAddDialog()">添加新的线路报价单</el-button>
       </el-row>
        <el-row>
         <el-col :span="24">
@@ -402,8 +402,10 @@ export default {
         if(null !== this.dialogData._Content.id){
           params.append("pk",this.dialogData._Content.id);
           params.append("req_method",'UPDATE');
+          console.log("UPDATE")
         }else{
           params.append("req_method",'ADD');
+          console.log("ADD")
           if(0 == this.dialogData.table.data.length){
             this.$message({
               type: 'warning',
@@ -421,7 +423,9 @@ export default {
         params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
         
         Axios.post(this.api, params).then((response)=>{
+          console.log("================");
           console.log(response);
+          console.log("================");
           if(response.data.status_flag){
             
             let tempData = response.data.result;
@@ -438,26 +442,27 @@ export default {
               this.table.data.splice(this.dialogData.localID,1,tempData);
 
               this.dialogData.ContentId = tempData.id;
-              this.dialogData.table.data.forEach(item => {
+              let data2Add = {};
+              
+              this.dialogData.table.data.forEach((item,index) => {
                 this.$set(item, 'user_id',Sstorage.get('userID'));
                 this.$set(item, 'token',Sstorage.get('tokenID'));
                 this.$set(item, 'local_agency_fk',Sstorage.get('localAgencyFk'));
                 this.$set(item, 'line_price_fk', this.dialogData.ContentId);
+                data2Add[index] = JSON.stringify(item);
               });
-              // console.log(tempAddData);
-              // return 0;
-              // let arry2dict = {};
-              // this.dialogData.table.data.forEach(item => {
-              //   console.log(item);
-              // });
-              // return 0;
+              console.log(data2Add)
+              console.log("dsadsadsadsad")
 
               var paramsData = new URLSearchParams();
               paramsData.append("req_method",'ADD');
               // paramsData.append("data_to_add",JSON.stringify(this.dialogData.table.data));
-              paramsData.append("data_to_add",this.dialogData.table.data);
-              console.log(this.dialogData.table.data)
+              paramsData.append("data_to_add",JSON.stringify(data2Add));
+
+              console.log(paramsData.getAll("data_to_add"));
+              // console.log(this.dialogData.table.data)
               Axios.post(this.refApi , paramsData).then((response)=>{
+                console.log(response);
                 if(response.data.status_flag){
                   console.log(response);
                   this.$message({
