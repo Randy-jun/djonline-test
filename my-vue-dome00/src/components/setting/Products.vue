@@ -1,6 +1,7 @@
 <template>
   <el-row>
-    <el-row style="height:750px">
+    <!-- <el-row style="height:750px"> -->
+    <el-row>
     <!-- <el-col :span=24> -->
       <el-scrollbar style="height:100%">
         <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
@@ -70,7 +71,7 @@
         </el-col>
       </el-row>
       <el-table :data="dialogData.table.data">
-        <el-table-column type="index" width="100"></el-table-column>
+        <el-table-column type="index" width="100">档位</el-table-column>
         <el-table-column v-for="(value, key) in dialogData.table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
           <template slot-scope="scope">
             <span v-if="scope.row.isSet">
@@ -154,9 +155,8 @@ export default {
           countAll: null,
           currentRow: null,
           columns: [
-            { field: "id", title: "编号", width: 60, isEdit: false, sortable: true },
-            { field: "kind", title: "档位", width: 320, isEdit: true, sortable: true },
-            { field: "name", title: "名称", width: 320, isEdit: true, sortable: true },
+            //{ field: "id", title: "编号", width: 60, isEdit: false, sortable: true },
+            { field: "kind", title: "名称", width: 320, isEdit: true, sortable: true },
             { field: "price", title: "报价", width: 320, isEdit: true, sortable: true },
           ],
           data:[],
@@ -423,9 +423,7 @@ export default {
         params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
         
         Axios.post(this.api, params).then((response)=>{
-          console.log("================");
           console.log(response);
-          console.log("================");
           if(response.data.status_flag){
             
             let tempData = response.data.result;
@@ -440,10 +438,9 @@ export default {
             }else{
               this.table.countAll+=1;
               this.table.data.splice(this.dialogData.localID,1,tempData);
-
               this.dialogData.ContentId = tempData.id;
+
               let data2Add = {};
-              
               this.dialogData.table.data.forEach((item,index) => {
                 this.$set(item, 'user_id',Sstorage.get('userID'));
                 this.$set(item, 'token',Sstorage.get('tokenID'));
@@ -451,25 +448,27 @@ export default {
                 this.$set(item, 'line_price_fk', this.dialogData.ContentId);
                 data2Add[index] = JSON.stringify(item);
               });
-              console.log(data2Add)
-              console.log("dsadsadsadsad")
 
               var paramsData = new URLSearchParams();
               paramsData.append("req_method",'ADD');
               // paramsData.append("data_to_add",JSON.stringify(this.dialogData.table.data));
               paramsData.append("data_to_add",JSON.stringify(data2Add));
-
-              console.log(paramsData.getAll("data_to_add"));
-              // console.log(this.dialogData.table.data)
+              // console.log(paramsData.getAll("data_to_add"));
               Axios.post(this.refApi , paramsData).then((response)=>{
                 console.log(response);
-                if(response.data.status_flag){
-                  console.log(response);
+                if(0 == response.data.failed_num){
                   this.$message({
                     type: 'success',
                     message: "添加成功！"
                   });
-              }})
+                  this.$set(this.dialogData, 'tableVisible', false);
+                }else{
+                  this.$message({
+                    type: 'error',
+                    message: "修改失败！"
+                  });
+                }
+              })
               .catch((error)=>{
                 this.$message({
                   type: 'error',
@@ -521,7 +520,7 @@ export default {
         if(InputCheck.namecheck(this.dialogData.table.currentRow.name)) return this.$message.warning("报价名称不能为空或空格!");
 
         if(this.dialogData.isAdd){
-          let tempData = JSON.parse(JSON.stringify({id: null, "kind": this.dialogData.table.currentRow.kind, "name": this.dialogData.table.currentRow.name, "price": this.dialogData.table.currentRow.price, "isSet": false,}));
+          let tempData = JSON.parse(JSON.stringify({id: null, "kind": this.dialogData.table.currentRow.kind, "price": this.dialogData.table.currentRow.price, "isSet": false,}));
           console.log(tempData)
           this.dialogData.table.countAll+=1;
           this.dialogData.table.data.splice(index,1,tempData)
@@ -609,7 +608,7 @@ export default {
       for (let item of this.dialogData.table.data) {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
-      let tempAddData = {"id": null, "kind": "", "name": "", "price": "", "isSet": true,};
+      let tempAddData = {"id": null, "kind": "", "price": "", "isSet": true,};
       this.dialogData.table.data.push(JSON.parse(JSON.stringify(tempAddData)));
       this.dialogData.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)

@@ -4,7 +4,7 @@
       <el-row>
     <!-- <el-col :span=24> -->
       <!-- <el-scrollbar style="height:100%"> -->
-        <el-table :data="table.data" height="750" style="width: 100%" highlight-current-row show-overflow-tooltip>
+        <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
           <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
           <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
           <el-table-column fixed type="index" width="100"></el-table-column>
