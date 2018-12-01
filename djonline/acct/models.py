@@ -88,6 +88,10 @@ class Application_t(models.Model):
     def __str__(self):
         return self.agency_fk.name+'-'+self.line_name_fk.name+'-'+str(self.date)
 
+    def caculate_income(self,app_pk):
+        app = self.objects.get(pk=app_pk)
+
+
     class Meta:
         verbose_name = "出团申请单 (Application_t)"
         verbose_name_plural = "出团申请单表 (Application_t)"
@@ -113,6 +117,57 @@ class Tourist_t(models.Model):  # 游客表
 
     def __str__(self):
         return self.name
+
+    def caculate_final_price_sum(self, app_pk):
+        '''计算基础业务总金额'''
+        tourists = self.objects.filter(application_fk__id=app_pk)
+        base_biz_sum = 0
+        for i in tourists:
+            base_biz = i.final_price-i.agent_price
+            base_biz_sum = base_biz_sum+base_biz
+        return base_biz_sum
+
+    def caculate_agent_price_sum(self, app_pk):
+        '''计算代收金额'''
+        tourists = self.objects.filter(application_fk__id=app_pk)
+        agent_price_sum = 0
+        for i in tourists:
+            if i.trans_agency != 0:#没有发生调拨业务
+                agent_price_sum = agent_price_sum+i.agent_price
+        return agent_price_sum
+
+    def caculate_trans_price_sum_by_trans_agency(self, app_pk, trans_pk):
+        '''计算调拨总金额,app_fk：出团申请单主键,trans_fk:调拨单位主键'''
+        tourists = self.objects.fiter(application_fk__id=app_pk, trans_agency=trans_pk)
+        trans_price_sum = 0
+        for i in tourists:
+            trans_price_sum = trans_price_sum + i.trans_price
+        return trans_price_sum
+    
+    def caculate_some_agent_price(self, app_pk, trans_pk):
+        '''计算第三方代收金额'''
+        tourists = self.objects.fiter(application_fk__id=app_pk, trans_agency=trans_pk)
+        some_agent_price = 0
+        for i in tourists:
+            some_agent_price = some_agent_price + i.agent_price
+        return some_agent_price
+
+    def caculate_app_income(self, app_pk):
+        '''计算收入'''
+        base_biz_sum = self.caculate_final_price_sum(app_pk)
+        agent_price_sum = self.caculate_agent_price_sum(app_pk)
+        tourists = self.objects.filter(application_fk__id=app_pk)
+        trans_price_sum = 0 #总调拨金额
+
+        for i in tourists:
+            trans_price_sum = trans_price_sum + i.trans_price
+        app_income = base_biz_sum + agent_price_sum - trans_price_sum
+
+        return app_income
+
+
+    
+
 
     class Meta:
         verbose_name = "游客信息 (Tourist_t)"
