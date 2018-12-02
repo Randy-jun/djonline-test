@@ -426,7 +426,7 @@ class Ref_PriceList(APIView):
                 else:
                     status.append(
                         'add '+serializer.data['kind'] + 'failed, error message: '+str(serializer.errors))
-            if added_num == 0 and serializer.data['line_price_fk']:
+            if added_num == 0 and serializer.data['line_price_fk']:#当没有一个挡位新增成功的时候，删除新增线路，确保每个新增的线路至少有一个挡位
                 line = Line_Price_t.objects.get(pk=serializer.data['local_agency_fk'])
                 line.delete()
             return Response({'added_num': added_num, 'failed_num': len(add_data)-added_num, 'status': status})
