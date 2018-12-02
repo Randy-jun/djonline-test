@@ -532,28 +532,39 @@ export default {
     },
     currentRowChangeDialog(rowContent,index,isCancel){
       //点击修改、保存,判断是否已经保存所有操作
+      // TODO: TO be DONE!!!!!!!!!!!!!!!!!!
+      console.log(rowContent,index)
       for (let item of this.dialogData.table.data) {
-        if (item.isSet && (item.id != rowContent.id)) return this.$message.warning("请先保存当前编辑项!");
+        console.log(item.isNew , rowContent.isNew)
+        if ((item.isSet && (item.id != rowContent.id)) || ((item.isSet && this.dialogData.isAdd && (item.isNew != rowContent.isNew)))) return this.$message.warning("请先保存当前编辑项!");
+        // console.log(this.dialogData.isAdd, item.isNew, this.dialogData.table.currentRow.isNew, item.kind, this.dialogData.table.currentRow.kind)
+        if (this.dialogData.isAdd) {
+          console.log(item.isSet)
+          if (item.isSet && (item.isNew !=rowContent.isNew) && (item.isNew != this.dialogData.table.currentRow.isNew)) {
+            return this.$message.warning("请先保存当前编辑项!");
+          } else if ((item.isNew == this.dialogData.table.currentRow.isNew) && (item.kind === this.dialogData.table.currentRow.kind)) {
+            return this.$message.warning("该档名称价已经存在!");
+          } 
+        }
       }
       //是否为取消操作
       if (isCancel) {
-        if (null === this.dialogData.table.currentRow.id) return this.dialogData.table.data.splice(index, 1);
+        if (this.dialogData.table.currentRow.isSet && (null === this.dialogData.table.currentRow.id)) return this.dialogData.table.data.splice(index, 1);
         rowContent.isSet = !rowContent.isSet;
         return this.$set(this.dialogData.table.data, index, rowContent)
       }
       if (rowContent.isSet) {
         // let tempData = JSON.parse(JSON.stringify(this.table.currentRow));
-
         if(InputCheck.namecheck(this.dialogData.table.currentRow.name)) return this.$message.warning("报价名称不能为空或空格!");
-
         if(this.dialogData.isAdd){
-          let tempData = JSON.parse(JSON.stringify({id: null, "kind": this.dialogData.table.currentRow.kind, "price": this.dialogData.table.currentRow.price, "isSet": false,}));
+          let tempData = JSON.parse(JSON.stringify({id: null, "kind": this.dialogData.table.currentRow.kind, "price": this.dialogData.table.currentRow.price, "isSet": false, "isNew": this.dialogData.table.currentRow.isNew,}));
           console.log(tempData)
           this.dialogData.table.countAll+=1;
           this.dialogData.table.data.splice(index,1,tempData)
           return 0;
-        }
+      }else{
 
+      }
         var params = new URLSearchParams();
         
         if(null !== this.table.currentRow.id){
@@ -635,7 +646,7 @@ export default {
       for (let item of this.dialogData.table.data) {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
-      let tempAddData = {"id": null, "kind": "", "price": "", "isSet": true,};
+      let tempAddData = {"id": null, "kind": "", "price": "", "isSet": true, "isNew":new Date().getTime(),};
       this.dialogData.table.data.push(JSON.parse(JSON.stringify(tempAddData)));
       this.dialogData.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
