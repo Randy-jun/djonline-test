@@ -185,7 +185,7 @@ export default {
           return false;
         }
       }
-      let localID = index;
+      // let localID = index;
       this.dialogData.isAdd = false;
       this.dialogData.isEdit = false;
       this.dialogData.ContentId = rowContent.id;
@@ -461,11 +461,38 @@ export default {
                     type: 'success',
                     message: "添加成功！"
                   });
-                  this.$set(this.dialogData, 'tableVisible', false);
+                  //this.$set(this.dialogData, 'tableVisible', false);
+                  this.dialogData.isAdd = false;
+                  this.dialogData.isEdit = false;
+                  // this.dialogData.ContentId = rowContent.id;
+                  // this.dialogData.localID = index;
+                  var getOneParams = new URLSearchParams();
+                  // params.append("req_method","GET_SINGLE");
+                  getOneParams.append("req_method","GETONE");
+                  
+                  getOneParams.append("pk",this.dialogData.ContentId);
+                  
+                  getOneParams.append("tokenID",Sstorage.get('tokenID'));
+                  getOneParams.append("local_agency_fk",Sstorage.get('localAgencyFk'));
+
+                  Axios.post(this.api, getOneParams).then((response)=>{
+                    console.log(response)
+
+                    this.dialogData.Content = JSON.parse(JSON.stringify(response.data.result.line_price));
+                    // this.dialogData._Content = this.dialogData.Content;
+                    this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
+
+                    this.dialogData.table.data = JSON.parse(JSON.stringify(response.data.result.ref_prices));
+                    this.dialogData.table.data.forEach(item => {
+                      this.$set(item, 'isSet', false);
+                    });
+                  }).catch((error)=>{
+                    console.log(error);
+                  })
                 }else{
                   this.$message({
                     type: 'error',
-                    message: "修改失败！"
+                    message: "添加失败！"
                   });
                 }
               })
