@@ -426,6 +426,9 @@ class Ref_PriceList(APIView):
                 else:
                     status.append(
                         'add '+serializer.data['kind'] + 'failed, error message: '+str(serializer.errors))
+            if added_num == 0 and serializer.data['line_price_fk']:
+                line = Line_Price_t.objects.get(pk=serializer.data['local_agency_fk'])
+                line.delete()
             return Response({'added_num': added_num, 'failed_num': len(add_data)-added_num, 'status': status})
 
         # get refprice by line_price_pk and local_agency_fk
