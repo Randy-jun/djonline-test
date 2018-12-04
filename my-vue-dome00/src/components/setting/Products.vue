@@ -533,16 +533,18 @@ export default {
     currentRowChangeDialog(rowContent,index,isCancel){
       //点击修改、保存,判断是否已经保存所有操作
       // TODO: TO be DONE!!!!!!!!!!!!!!!!!!
-      console.log(rowContent,index)
+      // console.log(rowContent,index)
       for (let item of this.dialogData.table.data) {
-        console.log(item.isNew , rowContent.isNew)
+        // console.log(item.isNew , rowContent.isNew)
         if ((item.isSet && (item.id != rowContent.id)) || ((item.isSet && this.dialogData.isAdd && (item.isNew != rowContent.isNew)))) return this.$message.warning("请先保存当前编辑项!");
+        if (item.isSet && (item.id != rowContent.id) && (item.kind === rowContent.kind)) return this.$message.warning("该档名称价已经存在!");
         // console.log(this.dialogData.isAdd, item.isNew, this.dialogData.table.currentRow.isNew, item.kind, this.dialogData.table.currentRow.kind)
         if (this.dialogData.isAdd) {
-          console.log(item.isSet)
+          // console.log(item.isSet)
+          console.log(item.isNew ,this.dialogData.table.currentRow.isNew ,item.kind , this.dialogData.table.currentRow.kind)
           if (item.isSet && (item.isNew !=rowContent.isNew) && (item.isNew != this.dialogData.table.currentRow.isNew)) {
             return this.$message.warning("请先保存当前编辑项!");
-          } else if ((item.isNew == this.dialogData.table.currentRow.isNew) && (item.kind === this.dialogData.table.currentRow.kind)) {
+          } else if (!isCancel && (item.isNew != this.dialogData.table.currentRow.isNew) && (item.kind === this.dialogData.table.currentRow.kind)) {
             return this.$message.warning("该档名称价已经存在!");
           } 
         }
@@ -554,87 +556,88 @@ export default {
         return this.$set(this.dialogData.table.data, index, rowContent)
       }
       if (rowContent.isSet) {
-        // let tempData = JSON.parse(JSON.stringify(this.table.currentRow));
-        if(InputCheck.namecheck(this.dialogData.table.currentRow.name)) return this.$message.warning("报价名称不能为空或空格!");
-        if(this.dialogData.isAdd){
-          let tempData = JSON.parse(JSON.stringify({id: null, "kind": this.dialogData.table.currentRow.kind, "price": this.dialogData.table.currentRow.price, "isSet": false, "isNew": this.dialogData.table.currentRow.isNew,}));
-          console.log(tempData)
-          this.dialogData.table.countAll+=1;
-          this.dialogData.table.data.splice(index,1,tempData)
-          return 0;
-      }else{
-
-      }
-        var params = new URLSearchParams();
-        
-        if(null !== this.table.currentRow.id){
-          params.append("pk",this.dialogData.table.currentRow.id);
-          params.append("req_method",'UPDATE');
+        if (this.dialogData.isAdd){
+          // let tempData = JSON.parse(JSON.stringify(this.table.currentRow));
+          if(InputCheck.namecheck(this.dialogData.table.currentRow.name)) return this.$message.warning("报价名称不能为空或空格!");
+          if(this.dialogData.isAdd){
+            let tempData = JSON.parse(JSON.stringify({"id": null, "kind": this.dialogData.table.currentRow.kind, "price": this.dialogData.table.currentRow.price, "isSet": false, "isNew": this.dialogData.table.currentRow.isNew,}));
+            console.log(tempData)
+            this.dialogData.table.countAll+=1;
+            this.dialogData.table.data.splice(index,1,tempData)
+            return 0;
+          }
         }else{
+          var params = new URLSearchParams();
+          // if(null !== this.table.currentRow.id){
+          //   params.append("pk",this.dialogData.table.currentRow.id);
+          //   params.append("req_method",'UPDATE');
+          // }else{
+          //   params.append("req_method",'ADD');
+          // }
+          let data2Add = {0: JSON.stringify({
+            "line_price_fk": this.dialogData.ContentId,
+            "local_agency_fk": Sstorage.get('localAgencyFk'),
+            "token": Sstorage.get('tokenID'),
+            "user_id":Sstorage.get('userID'),
+            "id": null,
+            "kind": this.dialogData.table.currentRow.kind,
+            "price": this.dialogData.table.currentRow.price,
+            }),};
+
           params.append("req_method",'ADD');
-        }
-        params.append("kind",this.dialogData.table.currentRow.kind);
-        params.append("price",this.dialogData.table.currentRow.price);
-        
-        params.append("token",Sstorage.get('tokenID'));
-        params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
-        params.append("line_price_fk", this.dialogData.ContentId);
-
-        Axios.post(this.api, params).then((response)=>{
-          if(response.data.status_flag){
+          // paramsData.append("data_to_add",JSON.stringify(this.dialogData.table.data));
+          params.append("data_to_add",JSON.stringify(data2Add));
+          // console.log(params.getAll("data_to_add"));
+          Axios.post(this.refApi, params).then((response)=>{
             console.log(response);
-            let tempData = response.data.result;
-            console.log(tempData);
-            this.$set(tempData, 'isSet', false);
-            if(null !== this.dialogData.table.currentRow.id){
-              this.dialogData.table.data.splice(index,1,tempData);
-              this.$message({
-                type: 'success',
-                message: "修改成功！"
-              });
+            return 0;
+            ```
+            在单条线路报价新增成功后，希望获得新的返回值形式，例如之前的组织机构新增后返回的结构，以便添加后在前台及时更新显示。
+            ```
+            if(response.data.status_flag){
+              console.log(response);
+              let tempData = response.data.result;
+              console.log(tempData);
+              this.$set(tempData, 'isSet', false);
+              if(null !== this.dialogData.table.currentRow.id){
+                this.dialogData.table.data.splice(index,1,tempData);
+                this.$message({
+                  type: 'success',
+                  message: "修改成功！"
+                });
+              }else{
+                this.dialogData.table.countAll+=1;
+                this.dialogData.table.data.splice(index,1,tempData);
+                this.$message({
+                  type: 'success',
+                  message: "添加成功！"
+                });
+              }
             }else{
-              this.dialogData.table.countAll+=1;
-              this.dialogData.table.data.splice(index,1,tempData);
-              this.$message({
-                type: 'success',
-                message: "添加成功！"
-              });
-            }
-          }else{
-            console.log(response);
+              console.log(response);
 
-            if(null !== this.dialogData.ble.currentRow.id){
+              if(null !== this.dialogData.ble.currentRow.id){
+                this.$message({
+                  type: 'error',
+                  message: "修改失败！"
+                });
+              }else{
+                // this.table.data.splice(index, 1);
+                this.$message({
+                  type: 'error',
+                  message: "添加失败！"
+                });
+              }
+            }})
+            .catch((error)=>{
+              console.log(error);
+              if(null !== this.dialogData.table.currentRow.id) this.dialogData.table.data.splice(index, 1);
               this.$message({
                 type: 'error',
-                message: "修改失败！"
+                message: "保存失败！"
               });
-            }else{
-              // this.table.data.splice(index, 1);
-              this.$message({
-                type: 'error',
-                message: "添加失败！"
-              });
-            }
-          }})
-          .catch((error)=>{
-            console.log(error);
-            if(null !== this.dialogData.table.currentRow.id) this.dialogData.table.data.splice(index, 1);
-            this.$message({
-              type: 'error',
-              message: "保存失败！"
             });
-          });
-        /*
-        for (let k in tempData) rowContent[k] = tempData[k];
-        console.log(this.table.data)
-        return 0;
-        */
-        // this.$message({
-        //     type: 'success',
-        //     message: "保存成功!"
-        // });
-        //然后这边重新读取表格数据
-        // app.readMasterUser();
+        }
       }else{
         this.dialogData.table.currentRow = JSON.parse(JSON.stringify(rowContent)); 
         rowContent.isSet = true;
