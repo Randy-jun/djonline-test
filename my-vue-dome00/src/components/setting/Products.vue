@@ -86,7 +86,7 @@
         <el-table-column property="price" label="报价"></el-table-column> -->
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
-            <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
+            <span v-if="dialogData.isAdd || scope.row.isNew" class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
                 {{scope.row.isSet?'保存':"修改"}}
             </span>
             <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini"  style="cursor: pointer;" v-on:click="doDelDialog(scope.row,scope.$index)">删除</span>
@@ -556,6 +556,7 @@ export default {
         return this.$set(this.dialogData.table.data, index, rowContent)
       }
       if (rowContent.isSet) {
+        console.log("else-out")
         if (this.dialogData.isAdd){
           // let tempData = JSON.parse(JSON.stringify(this.table.currentRow));
           if(InputCheck.namecheck(this.dialogData.table.currentRow.name)) return this.$message.warning("报价名称不能为空或空格!");
@@ -567,6 +568,7 @@ export default {
             return 0;
           }
         }else{
+          console.log("else")
           var params = new URLSearchParams();
           // if(null !== this.table.currentRow.id){
           //   params.append("pk",this.dialogData.table.currentRow.id);
@@ -587,7 +589,8 @@ export default {
           params.append("req_method",'ADD');
           // paramsData.append("data_to_add",JSON.stringify(this.dialogData.table.data));
           params.append("data_to_add",JSON.stringify(data2Add));
-          // console.log(params.getAll("data_to_add"));
+          console.log(params.getAll("req_method"));
+          console.log(params.getAll("data_to_add"));
           Axios.post(this.refApi, params).then((response)=>{
             console.log(response);
             return 0;
