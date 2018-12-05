@@ -657,6 +657,7 @@ export default {
       this.dialogData.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
     },
+    //目前可能不需要删除功能？？？
     doDelDialog(rowContent, index){
       this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -664,11 +665,22 @@ export default {
         type: 'warning'
       }).then(() => {
         console.log(rowContent, index);
+        // if (this.dialogData.isAdd) {
+        if (null === rowContent.id) {
+          this.dialogData.table.data.splice(index, 1);
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+          return 0;
+        } 
         var params = new URLSearchParams();
         params.append("req_method","DELETE");
         // params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
-        params.append("tokenID",Sstorage.get('tokenID'));
         params.append("pk",rowContent.id);
+        params.append("user_id",Sstorage.get('tokenID'));
+        params.append("token",Sstorage.get('tokenID'));
+        
         console.log(rowContent.id)
 
         Axios.post(this.api, params).then((response)=>{
