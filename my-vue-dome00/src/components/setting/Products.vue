@@ -341,7 +341,7 @@ export default {
         params.append("tokenID",Sstorage.get('tokenID'));
         params.append("pk",rowContent.id);
 
-        Axios.post(this.api, params).then((response)=>{
+        Axios.post(this.refApi, params).then((response)=>{
           console.log(response);
           if(response.data.status_flag){
             this.table.countAll-=1;
