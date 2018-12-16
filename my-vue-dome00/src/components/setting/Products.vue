@@ -555,7 +555,7 @@ export default {
         return this.$set(this.dialogData.table.data, index, rowContent)
       }
       if (rowContent.isSet) {
-        console.log("else-out")
+        
         if (this.dialogData.isAdd){
           // let tempData = JSON.parse(JSON.stringify(this.table.currentRow));
           if(InputCheck.namecheck(this.dialogData.table.currentRow.name)) return this.$message.warning("报价名称不能为空或空格!");
@@ -567,7 +567,7 @@ export default {
             return 0;
           }
         }else{
-          console.log("else")
+          
           var params = new URLSearchParams();
           // if(null !== this.table.currentRow.id){
           //   params.append("pk",this.dialogData.table.currentRow.id);
@@ -591,11 +591,12 @@ export default {
           console.log(params.getAll("req_method"));
           console.log(params.getAll("data_to_add"));
           Axios.post(this.refApi, params).then((response)=>{
-            console.log(response);
+            
             if(1 == response.data.added_num && 0 == response.data.failed_num){
               let tempData = JSON.parse(response.data.added_data);
               console.log(tempData);
-              
+              console.log("==============")
+              this.updateOne(this.dialogData.ContentId, index, false);
               this.$set(tempData, 'isSet', false);
               if(null !== this.dialogData.table.currentRow.id){
                 this.dialogData.table.data.splice(index,1,tempData);
@@ -706,6 +707,60 @@ export default {
         // });          
       });
     },
+    updateOne(contentID, localID, isAdd){
+
+      // 需要用异步写法？？？？？
+
+      
+      var params = new URLSearchParams();
+      // params.append("req_method","GET_SINGLE");
+      params.append("req_method","GETONE");
+      
+      params.append("pk",contentID);
+      
+      params.append("tokenID",Sstorage.get('tokenID'));
+      params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
+      console.log(contentID,localID);
+      Axios.post(this.api, params).then((response)=>{
+        console.log(response,contentID,localID);
+        if (response.data.status_flag){
+          console.log("--------")
+          let tempData = {"id": response.data.result.line_price.id, 
+                        "name": response.data.result.line_price.name,
+                        "remark": response.data.result.line_price.remark,
+                        "local_agency_fk": response.data.result.line_price.local_agency_fk,
+                        "isSet": false,
+                        };
+          console.log(tempData)
+          response.data.result.ref_prices.forEach(item=>{
+            console.log("item:", item, "index:", index);
+          })
+          console.log("--------")
+          // top3_ref_data0: "gtrgt:543.0"
+          // top3_ref_data1: "g3gg3:4545.0"
+          // top3_ref_data2: "456gfgdg:56655.0"
+          return 0;
+          this.table.countAll += 1;
+          if(isAdd){
+            this.table.data.append(tempData);
+          } else {
+            this.table.data.splice(localID, 1, tempData);
+          }
+        }
+        
+        
+        // this.dialogData.Content = JSON.parse(JSON.stringify(response.data.result.line_price));
+        // // this.dialogData._Content = this.dialogData.Content;
+        // this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
+
+        // this.dialogData.table.data = JSON.parse(JSON.stringify(response.data.result.ref_prices));
+        // this.dialogData.table.data.forEach(item => {
+        //   this.$set(item, 'isSet', false);
+        // });
+      }).catch((error)=>{
+        console.log(error);
+      })
+    }
   },
   mounted() {
     // var list = JSON.parse(localStorage.getItem('list'));
