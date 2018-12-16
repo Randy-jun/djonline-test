@@ -204,7 +204,7 @@ def orz_detail(request, pk):
         return JsonResponse({'status_flag': True, "status_string": "Delete Success!"}, status=200)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'UPDATE'])
 # @check_token
 def line_list(request):
 
@@ -233,10 +233,11 @@ def line_list(request):
 
     if request.method == 'POST' and request.data['req_method'] == 'ADD':
         serializer = Line_Price_tSerializer(data=request.data)
+        print(serializer.initial_data)
         if serializer.is_valid():
-
             serializer.save()
             return Response({'result': serializer.data, 'status_flag': True, 'status_string': 'Success'}, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=200)
 
     if request.method == 'POST' and request.data['req_method'] == 'UPDATE':
@@ -244,14 +245,17 @@ def line_list(request):
             line = Line_Price_t.objects.get(pk=request.data['pk'])
         except Line_Price_t.DoesNotExist:
             return Response({'error_message': 'item does not exist'})
+        data = request.data.copy()
+        data.pop('local_agency_fk')
         serializer = Line_Price_tSerializer(
-            line, data=request.data, partial=True)
+            line, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            serializer.validated_data['id'] = line.id
-            print(serializer.validated_data)
-            return Response({'result': serializer.validated_data, 'status_flag': True, 'status_string': 'Update Success', 'result_count': 1})
-        return Response(serializer.errors, status=200)
+            '''serializer.validated_data['id'] = line.id
+            print(serializer.validated_data)'''
+            return JsonResponse({'result': serializer.validated_data, 'status_flag': True, 'status_string': 'Update Success', 'result_count': 1})
+        
+        return JsonResponse(serializer.errors, status=200)
 
     if request.method == 'POST' and request.data['req_method'] == 'DELETE':
         try:
@@ -429,9 +433,9 @@ class Ref_PriceList(APIView):
                 else:
                     status.append(
                         'add '+serializer.data['kind'] + 'failed, error message: '+str(serializer.errors))
-            if added_num == 0 and serializer.data['line_price_fk']:#当没有一个挡位新增成功的时候，删除新增线路，确保每个新增的线路至少有一个挡位
+            '''if added_num == 0 and serializer.data['line_price_fk']:#当没有一个挡位新增成功的时候，删除新增线路，确保每个新增的线路至少有一个挡位
                 line = Line_Price_t.objects.get(pk=serializer.data['local_agency_fk'])
-                line.delete()
+                line.delete()'''
             return Response({'added_num': added_num, 'failed_num': len(add_data)-added_num, 'status': status,'added_data':added_data})
 
         # get refprice by line_price_pk and local_agency_fk
@@ -461,11 +465,11 @@ class Ref_PriceList(APIView):
                 refP, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response({'result': serializer.validated_data, 'status_flag': True, 'status_string': 'Update Success', 'result_count': 1})
-        return JsonResponse(serializer.errors, status=200)
+                return Response({ 'status_flag': True, 'status_string': 'Update Success', 'result_count': 1})
+        return JsonResponse(serializer.errors, status=400)
 
 
-class Ref_PriceDetail(APIView):
+'''class Ref_PriceDetail(APIView):
     def get_object(self, pk):
         try:
             return Ref_Price_t.objects.get(pk=pk)
@@ -488,4 +492,4 @@ class Ref_PriceDetail(APIView):
     def delete(self, request, pk, format=None):
         refP = self.get_object(pk)
         refP.delete()
-        return Response(status=status.HTTP_200_NO_CONTENT)
+        return Response(status=status.HTTP_200_NO_CONTENT)'''

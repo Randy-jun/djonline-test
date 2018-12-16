@@ -62,7 +62,7 @@ class Ref_Price_t(models.Model):
     price = models.FloatField()
     line_price_fk = models.ForeignKey(
         Line_Price_t, on_delete=models.PROTECT)
-    local_agency_fk = models.ForeignKey(Agency_t,on_delete=models.PROTECT,default=1)
+    local_agency_fk = models.ForeignKey(Agency_t, on_delete=models.PROTECT,default=1)
 
     def __str__(self):
         return str(self.id)+'-'+self.kind+'-'+str(self.price)+'-'+self.line_price_fk.name+'-'+self.local_agency_fk.name
@@ -184,6 +184,8 @@ class Settlement_t(models.Model):  # 结算表
     application_t = models.OneToOneField(
         Application_t, on_delete=models.PROTECT)  # 所属出团申请单
     local_agency_fk = models.ForeignKey(Agency_t,on_delete=models.PROTECT,default=1)
+
+
 
     def __str__(self):
         return self.application_t.name+'-'+self.rec_angency_fk.name+'-'+self.pay_angecy_fk.name+'-'+self.kind+'-'+self.local_agency_fk.name
