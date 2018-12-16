@@ -246,7 +246,8 @@ def line_list(request):
         except Line_Price_t.DoesNotExist:
             return Response({'error_message': 'item does not exist'})
         data = request.data.copy()
-        data.pop('local_agency_fk')
+        if 'local_agency_fk' in data:
+            data.pop('local_agency_fk')
         serializer = Line_Price_tSerializer(
             line, data=data, partial=True)
         if serializer.is_valid():
@@ -262,7 +263,10 @@ def line_list(request):
             line = Line_Price_t.objects.get(pk=request.data['pk'])
         except Agency_t.DoesNotExist:
             return HttpResponse(status=200)
-        line.delete()
+
+        ref_prices = Ref_Price_t.objects.filter(line_price_fk__pk=line.id)
+        ref_prices.delete()
+        line.delete()#need to update
         return JsonResponse({'status_flag': True, "status_string": "Delete Success!"}, status=200)
 
     if request.method == 'POST' and request.data['req_method'] == 'GETONE':
