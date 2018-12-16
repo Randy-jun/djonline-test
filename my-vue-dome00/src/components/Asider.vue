@@ -5,13 +5,20 @@
       <el-radio :border="true" :label="true" size="mini" >收起</el-radio>
     </el-radio-group> -->
     <!-- <el-menu default-active="1-4-1" class="el-menu-vertical" @open="handleOpen" @close="handleClose" :collapse="isCollapse"> -->
-    <el-menu class="el-menu-vertical" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-      <el-submenu index="1">
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span slot="title">导航一</span>
-        </template>
-        <el-menu-item-group>
+    <el-menu class="el-menu-vertical" default-active="1" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+      <el-menu-item index="1" v-on:click="navgo('')">
+        <i class="el-icon-menu"></i>
+        <span slot="title" >首页</span>
+      </el-menu-item>
+      <el-menu-item index="2" v-on:click="navgo('records')">
+        <i class="el-icon-menu"></i>
+        <span slot="title">出团记录</span>
+      </el-menu-item>
+      <el-menu-item index="3" v-on:click="navgo('accounts')">
+        <i class="el-icon-menu"></i>
+        <span slot="title">往来结算查询</span>
+      </el-menu-item>
+        <!-- <el-menu-item-group>
           <span slot="title">分组一</span>
           <el-menu-item index="1-1">选项1</el-menu-item>
           <el-menu-item index="1-2">选项2</el-menu-item>
@@ -35,7 +42,7 @@
       <el-menu-item index="4">
         <i class="el-icon-setting"></i>
         <span slot="title">导航四</span>
-      </el-menu-item>
+      </el-menu-item> -->
     </el-menu>
   </el-row>
 </template>
@@ -53,8 +60,13 @@
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
-      }
-    }
+      },
+      navgo(addgo){
+        var goadd = "/home/" + addgo
+        // console.log(goadd)
+        this.$router.replace({ path: goadd })
+      },
+    },
   }
   
 // export default {

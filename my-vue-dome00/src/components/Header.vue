@@ -27,7 +27,7 @@ export default {
   methods: {
     setting(){
       // alert("setting")
-      this.$router.replace({ path: 'setting' })
+      this.$router.replace({ path: '/setting' })
     },
   },
   mounted() {

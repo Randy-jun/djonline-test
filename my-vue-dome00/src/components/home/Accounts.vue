@@ -21,9 +21,9 @@
           <el-table-column label="操作" width="200">
             <template slot-scope="scope">
               <span v-if="!scope.row.isSet" class="el-tag el-tag el-tag--mini" style="cursor: pointer;" v-on:click="dialogData.tableVisible =true,currentRowModal(scope.row,scope.$index)">详细</span>
-              <!-- <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
+              <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
                   {{scope.row.isSet?'保存':"修改"}}
-              </span> -->
+              </span>
               <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="doDel(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
               <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,true)">取消</span>
             </template>
@@ -55,8 +55,9 @@
           <el-button type="primary" style="cursor: pointer;" v-on:click="contentChangeDialog(false)">
             {{dialogData.isEdit?'保存':"修改"}}
           </el-button>
-          <el-button v-if="dialogData.isEdit" type="info" style="cursor: pointer;" v-on:click="contentChangeDialog(true)">取消</el-button>
-          <el-button v-else type="info" style="cursor: pointer;" v-on:click="doDel(dialogData._Content,dialogData.localID)">删除</el-button>
+          <el-button type="info" style="cursor: pointer;" v-on:click="contentChangeDialog(true)">
+            {{dialogData.isEdit?'取消':"删除"}}
+          </el-button>
         </el-col>
       </el-row>
       <el-row style="padding: 10px 10px">
@@ -88,8 +89,8 @@
             <span v-if="dialogData.isAdd || scope.row.isNew" class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
                 {{scope.row.isSet?'保存':"修改"}}
             </span>
-            <!-- <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini"  style="cursor: pointer;" v-on:click="doDelDialog(scope.row,scope.$index)">删除</span> -->
-            <span v-if="dialogData.isAdd || scope.row.isNew" class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,true)">取消</span>
+            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini"  style="cursor: pointer;" v-on:click="doDelDialog(scope.row,scope.$index)">删除</span>
+            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,true)">取消</span>
           </template>
         </el-table-column>
       </el-table>
@@ -334,15 +335,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        console.log(rowContent.id, index);
+        console.log(rowContent, index);
         var params = new URLSearchParams();
         params.append("req_method","DELETE");
         params.append("tokenID",Sstorage.get('tokenID'));
         params.append("pk",rowContent.id);
-        console.log(params.getAll("pk","req_method"));
-        Axios.post(this.api, params).then((response)=>{
+
+        Axios.post(this.refApi, params).then((response)=>{
           console.log(response);
-          return 0;
           if(response.data.status_flag){
             this.table.countAll-=1;
             this.table.data.splice(index,1);
@@ -429,7 +429,7 @@ export default {
             
             let tempData = response.data.result;
             this.$set(tempData, 'isSet', false);
-            this.$set(this.dialogData, 'isEdit', false);
+            
             if(null !== this.dialogData.ContentId){
               this.table.data.splice(this.dialogData.localID,1,tempData);
               this.$message({
