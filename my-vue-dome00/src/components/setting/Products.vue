@@ -339,12 +339,11 @@ export default {
         params.append("req_method","DELETE");
         params.append("tokenID",Sstorage.get('tokenID'));
         params.append("pk",rowContent.id);
-        console.log(params.getAll("pk","req_method"));
+        // console.log(params.getAll("pk","req_method"));
         Axios.post(this.api, params).then((response)=>{
-          console.log(response);
-          return 0;
           if(response.data.status_flag){
             this.table.countAll-=1;
+            if (this.dialogData.tableVisible) this.$set(this.dialogData, 'tableVisible', false)
             this.table.data.splice(index,1);
             this.$message({
               type: 'success',
@@ -593,14 +592,10 @@ export default {
           console.log(params.getAll("data_to_add"));
           Axios.post(this.refApi, params).then((response)=>{
             console.log(response);
-            return 0;
-            ```
-            在单条线路报价新增成功后，希望获得新的返回值形式，例如之前的组织机构新增后返回的结构，以便添加后在前台及时更新显示。
-            ```
-            if(response.data.status_flag){
-              console.log(response);
-              let tempData = response.data.result;
+            if(1 == response.data.added_num && 0 == response.data.failed_num){
+              let tempData = JSON.parse(response.data.added_data);
               console.log(tempData);
+              
               this.$set(tempData, 'isSet', false);
               if(null !== this.dialogData.table.currentRow.id){
                 this.dialogData.table.data.splice(index,1,tempData);
