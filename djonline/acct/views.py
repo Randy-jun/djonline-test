@@ -422,10 +422,11 @@ class Ref_PriceList(APIView):
             # convert str from elementui to json
             add_data = json.loads(request.data['data_to_add'])
             #serializer = Ref_Price_tSerializer(data=add_data, many=True)
+            print(add_data,add_data['0'])
+            add_one = json.loads(add_data['0'])
 
             added_num = 0
             status = []
-            added_data = []
             for key, data in add_data.items():
                 serializer = Ref_Price_tSerializer(data=json.loads(data))
                 if serializer.is_valid():
@@ -433,14 +434,18 @@ class Ref_PriceList(APIView):
                     status.append(
                         serializer.data['kind']+' added successfully')
                     added_num = added_num+1
-                    added_data.append(data)
                 else:
                     status.append(
                         'add '+serializer.data['kind'] + 'failed, error message: '+str(serializer.errors))
-            '''if added_num == 0 and serializer.data['line_price_fk']:#当没有一个挡位新增成功的时候，删除新增线路，确保每个新增的线路至少有一个挡位
+            if added_num == 0 and add_one['line_price_fk']:#当没有一个挡位新增成功的时候，删除新增线路，确保每个新增的线路至少有一个挡位
                 line = Line_Price_t.objects.get(pk=serializer.data['local_agency_fk'])
-                line.delete()'''
-            return Response({'added_num': added_num, 'failed_num': len(add_data)-added_num, 'status': status,'added_data':added_data})
+                line.delete()
+            added_data = {}
+            if added_num == 1:
+                ref_prices = Ref_Price_t.objects.filter(
+                line_price_fk__id=add_one['line_price_fk'],kind=add_one['kind'])
+                serializer = Ref_Price_tSerializer(ref_prices, many=True)
+            return Response({'added_num': added_num, 'failed_num': len(add_data)-added_num, 'status': status,'added_data':serializer.data})
 
         # get refprice by line_price_pk and local_agency_fk
         if request.data['req_method'] == 'GET':
