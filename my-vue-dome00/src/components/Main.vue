@@ -6,6 +6,7 @@
 
 <script>
 import Records from './home/Records.vue'
+import AddRecord from './home/AddRecord.vue'
 import Accounts from './home/Accounts.vue'
 
 export default {
@@ -16,6 +17,7 @@ export default {
   },
   components: {
     Records,
+    AddRecord,
     Accounts,
   }
 }

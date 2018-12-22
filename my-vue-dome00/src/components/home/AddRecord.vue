@@ -1,23 +1,21 @@
 <template>
-<el-row :gutter=20>
-  <el-row v-if="0 == table.countAll">
-    <el-col>
-      <el-card shadow="hover" class="box-card">
-        <div slot="header" class="clearfix">
-          <span><h4>出团记录毛都没有，来不及解释了，赶快上车！</h4></span>
-        </div>
-        <div>
-          <el-button v-on:click="doAdd()" >
-            <i class="el-icon-plus"></i>
-            <span>新增出团记录</span>
-          </el-button>
-        </div>
-      </el-card>
-    </el-col>
-  </el-row>
-  <el-row v-else>
-    <!-- <el-row style="height:750px"> -->
-      <el-row>
+  <el-row>
+    <el-row :gutter=20 type="flex" justify="space-between">
+      <el-col :span=10>
+        <span >出团记录ID：</span>
+      </el-col>
+      <el-col :span=10>
+        <span>单据状态</span>
+      </el-col>
+      <el-col :span=2>
+        <el-button>保存</el-button>
+      </el-col>
+      <el-col :span=2>
+        <el-button>取消</el-button>
+      </el-col>
+
+    </el-row>
+    <el-row>
     <!-- <el-col :span=24> -->
       <!-- <el-scrollbar style="height:100%"> -->
         <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
@@ -61,7 +59,6 @@
       </el-pagination>
     </el-row>
   </el-row>
-</el-row>
 </template>
 
 <script>
@@ -203,9 +200,13 @@ export default {
       }
     },
     doAdd(){
-      var goadd = "/home/addrecord";
-      // console.log(goadd)
-      this.$router.replace({ path: goadd })
+      for (let item of this.table.data) {
+        if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
+      }
+      let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
+      this.table.data.push(tempAddData);
+      this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
+      // console.log(this.table.data)
     },
     doDel(rowContent, index){
       this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {

@@ -22,6 +22,9 @@ export default new Router({
         path: 'records',
         component: () => import(/* webpackChunkName: "home/records" */ '@/components/home/Records.vue'),
       }, {
+        path: 'addrecord',
+        component: () => import(/* webpackChunkName: "home/addrecord" */ '@/components/home/AddRecord.vue'),
+      }, {
         path: 'accounts',
         component: () => import(/* webpackChunkName: "home/accounts" */ '@/components/home/Accounts.vue'),
       },{
