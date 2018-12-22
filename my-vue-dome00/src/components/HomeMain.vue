@@ -1,15 +1,45 @@
 <template>
 <div>
-  <el-row :gutter=20 v-for="m in 3" :key="m">
-    <el-col :span=6 v-for="n in 4" :key="n">
-      <el-card class="box-card">
+  <el-row :gutter=20>
+    <el-col :span=8>
+      <el-card shadow="always" class="box-card">
         <div slot="header" class="clearfix">
-          <span><h4>应用 {{m}}-{{n}}</h4></span>
-          <!-- <el-button style="float: right; padding: 3px 0" type="text">X</el-button> -->
+          <i class="el-icon-tickets"></i>
         </div>
-        <div class="el-icon-message">
-          <span></span>
-          <!-- <i class="el-icon-message"></i>           -->
+        <div>
+          <span><h4>出团记录</h4></span>
+        </div>
+      </el-card>
+    </el-col>
+    <el-col :span=8>
+      <el-card shadow="always" class="box-card">
+        <div slot="header" class="clearfix">
+          <i class="el-icon-tickets"></i>
+        </div>
+        <div>
+          <span><h4>往来结算</h4></span>
+        </div>
+      </el-card>
+    </el-col>
+    <el-col :span=8>
+      <el-card shadow="always" class="box-card">
+        <div slot="header" class="clearfix">
+          <i class="el-icon-tickets"></i>
+        </div>
+        <div>
+          <span><h4>排车助手</h4></span>
+        </div>
+      </el-card>
+    </el-col>
+  </el-row>
+  <el-row :gutter=20>
+    <el-col :span=8>
+      <el-card shadow="always" class="box-card">
+        <div slot="header" class="clearfix">
+          <i class="el-icon-tickets"></i>
+        </div>
+        <div>
+          <el-button disabled><h4>更多应用，敬请期待。</h4></el-button>
         </div>
       </el-card>
     </el-col>

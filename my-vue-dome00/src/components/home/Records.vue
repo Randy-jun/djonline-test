@@ -1,5 +1,21 @@
 <template>
-  <el-row>
+<el-row :gutter=20>
+  <el-row v-if="0 == table.countAll">
+    <el-col>
+      <el-card shadow="hover" class="box-card">
+        <div slot="header" class="clearfix">
+          <span><h4>出团记录毛都没有，来不及解释了，赶快上车！</h4></span>
+        </div>
+        <div>
+          <el-button>
+            <i class="el-icon-plus"></i>
+            <span>新增出团记录</span>
+          </el-button>
+        </div>
+      </el-card>
+    </el-col>
+  </el-row>
+  <el-row v-else>
     <!-- <el-row style="height:750px"> -->
       <el-row>
     <!-- <el-col :span=24> -->
@@ -45,6 +61,7 @@
       </el-pagination>
     </el-row>
   </el-row>
+</el-row>
 </template>
 
 <script>
@@ -252,7 +269,8 @@ export default {
     params.append("tokenID",Sstorage.get('tokenID'));
     Axios.post(this.api, params).then((response) => {
       console.log(response)
-      this.table.countAll = response.data.item_num
+      this.table.countAll = response.data.item_num;
+      this.table.countAll = 0;
       this.table.data = response.data.result;
       // this.table.countAll=response.data.item_num;
       this.table.data.forEach(item => {

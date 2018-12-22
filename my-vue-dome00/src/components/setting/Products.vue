@@ -112,7 +112,7 @@
 import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
 import InputCheck from '@/module/inputcheck.js';
-import Product from '@/module/product.js';
+import Product from '@/module/setting/product.js';
 
 export default {
   name: 'Home',
