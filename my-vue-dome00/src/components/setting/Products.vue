@@ -112,6 +112,7 @@
 import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
 import InputCheck from '@/module/inputcheck.js';
+import Product from '@/module/product.js';
 
 export default {
   name: 'Home',
@@ -139,7 +140,7 @@ export default {
       currentPage4: 4,
       dialogData:{
         localID:"",
-        ContentId: "",
+        contentId: "",
         tableVisible: false,
         isEdit: false,
         isAdd: false,
@@ -187,14 +188,13 @@ export default {
       // let localID = index;
       this.dialogData.isAdd = false;
       this.dialogData.isEdit = false;
-      this.dialogData.ContentId = rowContent.id;
+      this.dialogData.contentId = rowContent.id;
       this.dialogData.localID = index;
       var params = new URLSearchParams();
       // params.append("req_method","GET_SINGLE");
       params.append("req_method","GETONE");
-      
+  
       params.append("pk",rowContent.id);
-      
       params.append("tokenID",Sstorage.get('tokenID'));
       params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
 
@@ -319,7 +319,7 @@ export default {
       }
       this.dialogData.isAdd = true;
       this.dialogData.isEdit = true;
-      this.dialogData.ContentId = null;
+      this.dialogData.contentId = null;
       this.dialogData._Content = JSON.parse(JSON.stringify({id: null, "name": "", "remark": "", "detail": "",}));
       // this.dialogData.Content = JSON.parse(JSON.stringify(this.dialogData._Content));
       this.dialogData.table.data = [];
@@ -429,7 +429,7 @@ export default {
             let tempData = response.data.result;
             this.$set(tempData, 'isSet', false);
             this.$set(this.dialogData, 'isEdit', false);
-            if(null !== this.dialogData.ContentId){
+            if(null !== this.dialogData.contentId){
               this.table.data.splice(this.dialogData.localID,1,tempData);
               this.$message({
                 type: 'success',
@@ -438,14 +438,14 @@ export default {
             }else{
               this.table.countAll+=1;
               this.table.data.splice(this.dialogData.localID,1,tempData);
-              this.dialogData.ContentId = tempData.id;
+              this.dialogData.contentId = tempData.id;
 
               let data2Add = {};
               this.dialogData.table.data.forEach((item,index) => {
                 this.$set(item, 'user_id',Sstorage.get('userID'));
                 this.$set(item, 'token',Sstorage.get('tokenID'));
                 this.$set(item, 'local_agency_fk',Sstorage.get('localAgencyFk'));
-                this.$set(item, 'line_price_fk', this.dialogData.ContentId);
+                this.$set(item, 'line_price_fk', this.dialogData.contentId);
                 data2Add[index] = JSON.stringify(item);
               });
 
@@ -464,13 +464,13 @@ export default {
                   //this.$set(this.dialogData, 'tableVisible', false);
                   this.dialogData.isAdd = false;
                   this.dialogData.isEdit = false;
-                  // this.dialogData.ContentId = rowContent.id;
+                  // this.dialogData.contentId = rowContent.id;
                   // this.dialogData.localID = index;
                   var getOneParams = new URLSearchParams();
                   // params.append("req_method","GET_SINGLE");
                   getOneParams.append("req_method","GETONE");
                   
-                  getOneParams.append("pk",this.dialogData.ContentId);
+                  getOneParams.append("pk",this.dialogData.contentId);
                   
                   getOneParams.append("tokenID",Sstorage.get('tokenID'));
                   getOneParams.append("local_agency_fk",Sstorage.get('localAgencyFk'));
@@ -576,7 +576,7 @@ export default {
           //   params.append("req_method",'ADD');
           // }
           let data2Add = {0: JSON.stringify({
-            "line_price_fk": this.dialogData.ContentId,
+            "line_price_fk": this.dialogData.contentId,
             "local_agency_fk": Sstorage.get('localAgencyFk'),
             "token": Sstorage.get('tokenID'),
             "user_id":Sstorage.get('userID'),
@@ -590,13 +590,16 @@ export default {
           params.append("data_to_add",JSON.stringify(data2Add));
           console.log(params.getAll("req_method"));
           console.log(params.getAll("data_to_add"));
-          Axios.post(this.refApi, params).then((response)=>{
-            
+          Axios.post(this.refApi, params).then((response) => {
+            console.log(response)
             if(1 == response.data.added_num && 0 == response.data.failed_num){
               let tempData = JSON.parse(response.data.added_data);
-              console.log(tempData);
-              console.log("==============")
-              this.updateOne(this.dialogData.ContentId, index, false);
+              Product.getOne(this.dialogData.contentId).then((resp) => {
+                console.log(resp);
+                //TODO:继续完成。
+              }).catch((err) => {
+                console.log(err);
+              });
               this.$set(tempData, 'isSet', false);
               if(null !== this.dialogData.table.currentRow.id){
                 this.dialogData.table.data.splice(index,1,tempData);
@@ -709,17 +712,6 @@ export default {
     },
     updateOne(contentID, localID, isAdd){
 
-      // 需要用异步写法？？？？？
-
-      
-      var params = new URLSearchParams();
-      // params.append("req_method","GET_SINGLE");
-      params.append("req_method","GETONE");
-      
-      params.append("pk",contentID);
-      
-      params.append("tokenID",Sstorage.get('tokenID'));
-      params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
       console.log(contentID,localID);
       Axios.post(this.api, params).then((response)=>{
         console.log(response,contentID,localID);
@@ -747,8 +739,7 @@ export default {
             this.table.data.splice(localID, 1, tempData);
           }
         }
-        
-        
+
         // this.dialogData.Content = JSON.parse(JSON.stringify(response.data.result.line_price));
         // // this.dialogData._Content = this.dialogData.Content;
         // this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
@@ -766,31 +757,16 @@ export default {
     // var list = JSON.parse(localStorage.getItem('list'));
     
     // const api='http://127.0.0.1:9090/acct/agencies/';
-    var params = new URLSearchParams();
-    params.append("req_method","GET");
-    params.append("userID",Sstorage.get('userID'));
-    params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
-    params.append("tokenID",Sstorage.get('tokenID'));
-    Axios.post(this.api, params).then((response) => {
-      // console.log(response)
-      this.table.countAll = response.data.item_num
-      this.table.data = response.data.result;
-      // this.table.countAll=response.data.item_num;
+    Product.get().then((data) => {
+      this.table.countAll = data.item_num
+      this.table.data = data.result;
       this.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
       });
       this.table.data = JSON.parse(JSON.stringify(this.table.data));
-      console.log(this.table.data);
-      // setTimeout(()=>{
-      //   this.data_list.splice(0,1)
-      //   console.log(this.data_list)
-      // },5000);
-      
-      // console.log(typeof(response.data.result));
-      // this.test_list=response.data.result;
     }).catch((error) => {
-      // console.log(error);
-    })
+      console.log(error);
+    });
   }
 }
 </script>
