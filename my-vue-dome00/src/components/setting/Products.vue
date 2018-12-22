@@ -190,6 +190,7 @@ export default {
       this.dialogData.isEdit = false;
       this.dialogData.contentId = rowContent.id;
       this.dialogData.localID = index;
+
       var params = new URLSearchParams();
       // params.append("req_method","GET_SINGLE");
       params.append("req_method","GETONE");
@@ -490,19 +491,37 @@ export default {
                     console.log(error);
                   })
                 }else{
-                  this.$message({
-                    type: 'error',
-                    message: "添加失败！"
-                  });
+                  return this.$message({
+                            type: 'error',
+                            message: "添加失败！"
+                          });
                 }
               })
               .catch((error)=>{
-                this.$message({
-                  type: 'error',
-                  message: "保存失败！"
-                });
+                return this.$message({
+                        type: 'error',
+                        message: "保存失败！"
+                      });
               });
             }
+            Product.getOne(this.dialogData.contentId).then((resp) => {
+              let tempLine = {
+                'id': resp.result.line_price.id,
+                'name': resp.result.line_price.name,
+                'remark': resp.result.line_price.remark,
+                'local_agency_fk': resp.result.line_price.local_agency_fk,
+                'detail': resp.result.line_price.detail,
+                'isSet': false,
+              }
+              resp.result.ref_prices.forEach((item, tempIndex) => {
+                let tempContent = item.kind + ':' + item.price;
+                tempLine['top3_ref_data' + tempIndex] = tempContent;
+              });
+              this.table.data.splice(this.dialogData.localID,1,tempLine);
+              //TODO:继续完成。
+            }).catch((err) => {
+              console.log(err);
+            });
           }else{
             console.log(response);
             if(null !== this.table.currentRow.id){
@@ -591,16 +610,32 @@ export default {
           console.log(params.getAll("req_method"));
           console.log(params.getAll("data_to_add"));
           Axios.post(this.refApi, params).then((response) => {
-            console.log(response)
+            // console.log(response.data.added_data[0])
             if(1 == response.data.added_num && 0 == response.data.failed_num){
-              let tempData = JSON.parse(response.data.added_data);
-              Product.getOne(this.dialogData.contentId).then((resp) => {
-                console.log(resp);
-                //TODO:继续完成。
-              }).catch((err) => {
-                console.log(err);
-              });
+              let tempData = JSON.parse(JSON.stringify(response.data.added_data[0]));
               this.$set(tempData, 'isSet', false);
+              if(3 > this.dialogData.table.countAll) {
+                // console.log(this.dialogData.table.countAll);
+                Product.getOne(this.dialogData.contentId).then((resp) => {
+                  console.log(resp);
+                  let tempLine = {
+                    'id': resp.result.line_price.id,
+                    'name': resp.result.line_price.name,
+                    'remark': resp.result.line_price.remark,
+                    'local_agency_fk': resp.result.line_price.local_agency_fk,
+                    'detail': resp.result.line_price.detail,
+                    'isSet': false,
+                  }
+                  resp.result.ref_prices.forEach((item, tempIndex) => {
+                    let tempContent = item.kind + ':' + item.price;
+                    tempLine['top3_ref_data' + tempIndex] = tempContent;
+                  });
+                  this.table.data.splice(this.dialogData.localID,1,tempLine);
+                  //TODO:继续完成。
+                }).catch((err) => {
+                  console.log(err);
+                });
+              }
               if(null !== this.dialogData.table.currentRow.id){
                 this.dialogData.table.data.splice(index,1,tempData);
                 this.$message({
@@ -764,6 +799,7 @@ export default {
         this.$set(item, 'isSet', false);
       });
       this.table.data = JSON.parse(JSON.stringify(this.table.data));
+      // console.log(this.table.data)
     }).catch((error) => {
       console.log(error);
     });
