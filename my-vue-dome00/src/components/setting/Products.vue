@@ -517,7 +517,9 @@ export default {
                 let tempContent = item.kind + ':' + item.price;
                 tempLine['top3_ref_data' + tempIndex] = tempContent;
               });
-              this.table.data.splice(this.dialogData.localID,1,tempLine);
+              console.log(resp, this.dialogData.localID, "++++++++++", this.table.data)
+              // this.table.data.splice(this.dialogData.localID,1,tempLine);
+              this.table.data.push(tempLine);
               //TODO:继续完成。
             }).catch((err) => {
               console.log(err);
@@ -538,7 +540,7 @@ export default {
             }
           }})
           .catch((error)=>{
-            console.log(error);
+            console.log(this.dialogData.localID,error);
             if(null !== this.table.currentRow.id) this.table.data.splice(this.dialogData.localID, 1);
             this.$message({
               type: 'error',
@@ -630,6 +632,7 @@ export default {
                     let tempContent = item.kind + ':' + item.price;
                     tempLine['top3_ref_data' + tempIndex] = tempContent;
                   });
+                  console.log(this.dialogData.localID, "++++++++*********")
                   this.table.data.splice(this.dialogData.localID,1,tempLine);
                   //TODO:继续完成。
                 }).catch((err) => {
