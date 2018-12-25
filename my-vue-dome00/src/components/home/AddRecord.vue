@@ -13,7 +13,71 @@
       <el-col :span=2>
         <el-button>取消</el-button>
       </el-col>
-
+    </el-row>
+    <el-row :gutter=20 type="flex" justify="space-between">
+      <el-col :span=6>
+        <span >地接社名称：</span>
+      </el-col>
+      <el-col :span=6>
+        <span>组团社名称：</span>
+      </el-col>
+      <el-col :span=6>
+        <span>线路名称：</span>
+      </el-col>
+      <el-col :span=6>
+        <span>出团日期：</span>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-tabs type="card" v-model="activeTableName" @tab-click="handleClick">
+        <el-tab-pane label="基础业务" name="first">
+          <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
+            <el-table-column fixed type="index" width="100"></el-table-column>
+            <el-table-column v-for="(value, key) in table.columns1" :prop="value.field" :label="value.title" :sortable="value.sortable">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
+                  <span v-else>{{scope.row[value.field]}}</span>
+                </span>
+                <span v-else>{{scope.row[value.field]}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="150">
+              <template slot-scope="scope">
+                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
+                    {{scope.row.isSet?'保存':"修改"}}
+                </span>
+                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="doDel(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
+                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,true)">取消</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="调拨业务" name="second">
+          <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
+            <el-table-column fixed type="index" width="100"></el-table-column>
+            <el-table-column v-for="(value, key) in table.columns2" :prop="value.field" :label="value.title" :sortable="value.sortable">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
+                  <span v-else>{{scope.row[value.field]}}</span>
+                </span>
+                <span v-else>{{scope.row[value.field]}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="150">
+              <template slot-scope="scope">
+                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
+                    {{scope.row.isSet?'保存':"修改"}}
+                </span>
+                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="doDel(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
+                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,true)">取消</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="代收业务" name="third">+代收业务+</el-tab-pane>
+      </el-tabs>
     </el-row>
     <el-row>
     <!-- <el-col :span=24> -->
@@ -75,12 +139,16 @@ export default {
   },
   data() {
     return {
+      activeTableName:'first',
       table: {
         countAll: null,
-        currentRow: null,//选中行   
-        columns: [
+        currentRow: null,//选中行  
+        columns1:[
           { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
           { field: "name", title: "组织名称", width: 320, isEdit: true, sortable: true },
+        ], 
+        columns2: [
+          { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
           { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
         ],
         // tempData: [],
@@ -94,6 +162,9 @@ export default {
     // CustomeAlert,
   },
   methods: {
+    handleClick(tab, event) {
+        console.log(tab, event);
+    },
     choice(id){
       // console.log(zuid)
     },
@@ -292,5 +363,9 @@ export default {
 <style>
 .el-scrollbar__wrap {
   overflow-x: hidden;
+}
+.el-row {
+  margin-top: 5px;
+  margin-bottom: 15px;
 }
 </style>
