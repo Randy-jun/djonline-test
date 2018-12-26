@@ -52,6 +52,9 @@
               </template>
             </el-table-column>
           </el-table>
+          <el-row>
+            <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新的组织机构</el-button>
+          </el-row>
         </el-tab-pane>
         <el-tab-pane label="调拨业务" name="second">
           <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
@@ -76,41 +79,32 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="代收业务" name="third">+代收业务+</el-tab-pane>
+        <el-tab-pane label="代收业务" name="third">
+          <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
+            <el-table-column fixed type="index" width="100"></el-table-column>
+            <el-table-column v-for="(value, key) in table.columns3" :prop="value.field" :label="value.title" :sortable="value.sortable">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
+                  <span v-else>{{scope.row[value.field]}}</span>
+                </span>
+                <span v-else>{{scope.row[value.field]}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="150">
+              <template slot-scope="scope">
+                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
+                    {{scope.row.isSet?'保存':"修改"}}
+                </span>
+                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="doDel(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
+                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,true)">取消</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
       </el-tabs>
     </el-row>
-    <el-row>
-    <!-- <el-col :span=24> -->
-      <!-- <el-scrollbar style="height:100%"> -->
-        <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
-          <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
-          <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
-          <el-table-column fixed type="index" width="100"></el-table-column>
-          <!-- <el-table-column v-for="(v,i) in table.columns" :prop="v.field" :label="v.title" :sortable="v.sortable"> -->
-          <el-table-column v-for="(value, key) in table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
-            <template slot-scope="scope">
-              <span v-if="scope.row.isSet">
-                <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
-                <span v-else>{{scope.row[value.field]}}</span>
-              </span>
-              <span v-else>{{scope.row[value.field]}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column fixed="right" label="操作" width="150">
-            <template slot-scope="scope">
-              <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
-                  {{scope.row.isSet?'保存':"修改"}}
-              </span>
-              <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="doDel(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
-              <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,true)">取消</span>
-            </template>
-          </el-table-column>
-        </el-table>
-      <!-- </el-scrollbar> -->
-    </el-row>
-    <el-row>
-      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新的组织机构</el-button>
-    </el-row>
+    
     <el-row>
       <el-pagination  
         v-on:size-change="handleSizeChange"
@@ -149,6 +143,10 @@ export default {
         ], 
         columns2: [
           { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
+          { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
+        ],
+        columns3: [
+          { field: "name", title: "组织名称", width: 320, isEdit: true, sortable: true },
           { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
         ],
         // tempData: [],
