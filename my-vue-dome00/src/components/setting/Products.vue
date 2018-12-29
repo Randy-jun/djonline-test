@@ -520,7 +520,6 @@ export default {
               console.log(resp, this.dialogData.localID, "++++++++++", this.table.data)
               // this.table.data.splice(this.dialogData.localID,1,tempLine);
               this.table.data.push(tempLine);
-              //TODO:继续完成。
             }).catch((err) => {
               console.log(err);
             });

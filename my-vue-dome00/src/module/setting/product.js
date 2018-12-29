@@ -33,10 +33,10 @@ var product = {
 
         return new Promise((resolve, reject) => {
             Axios.post(linePrice, params).then((response) => {
-                console.log(response);
+                console.log(response,"---------");
                 if(response.data.status_flag){
                     //处理请求到的数据。回写前台
-                resolve(response.data) ;
+                    resolve(response.data) ;
                 }
             }).catch((error) => {
                 // console.log(error);
