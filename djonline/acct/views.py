@@ -273,7 +273,7 @@ def line_list(request):
         try:
             line_price = Line_Price_t.objects.get(pk=request.data['pk'])
             ref_prices = Ref_Price_t.objects.filter(
-                line_price_fk__id=line_price.id)
+                line_price_fk__pk=request.data['pk'])
             serializer = Line_Price_tSerializer(line_price)
             serializer2 = Ref_Price_tSerializer(ref_prices, many=True)
             result = {'line_price': serializer.data,
@@ -476,6 +476,19 @@ class Ref_PriceList(APIView):
                 serializer.save()
                 return Response({ 'status_flag': True, 'status_string': 'Update Success', 'result_count': 1})
         return JsonResponse(serializer.errors, status=400)
+
+def get_settlement_info(request):
+    #get filtered settlement info
+    wl_agency_pk = 1
+    start_time = '2019-01-01'
+    end_time = '2019-01-31'
+    
+    basicbiz = Settlement_t.get_basicbiz(wl_agency_pk, start_time, end_time)
+    transbiz = Settlement_t.get_transbiz(wl_agency_pk, start_time, end_time)
+    from django.db.models import Count, Min, Sum, Avg
+    total_sum = basicbiz.aggregate(Sum('price'))['price_sum'] - transbiz.aggregate(Sum('price'))['price_sum']
+    bas_agrg = basicbiz.aggregate(Sum('price')).group_by('application_t__line_name_fk')
+    trans_agrg = transbiz.aggregate(Sum('price')).group_by('application_t__line_name_fk')
 
 
 '''class Ref_PriceDetail(APIView):
