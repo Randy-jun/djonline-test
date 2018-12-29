@@ -424,22 +424,38 @@ export default {
         
         console.log(params.getAll("pk"))
         Axios.post(this.api, params).then((response)=>{
-          console.log(response);
+          // console.log(response,"0000000");
           if(response.data.status_flag){
-            
-            let tempData = response.data.result;
-            this.$set(tempData, 'isSet', false);
-            this.$set(this.dialogData, 'isEdit', false);
+            // let tempData = response.data.result;
+            // this.$set(tempData, 'isSet', false);
+            // this.$set(this.dialogData, 'isEdit', false);
             if(null !== this.dialogData.contentId){
-              this.table.data.splice(this.dialogData.localID,1,tempData);
-              this.$message({
+              // console.log(this.dialogData.contentId,this.dialogData.localID,tempData)
+              Product.getOne(this.dialogData.contentId).then((resp) => {
+                let tempData = {
+                  'id': resp.result.line_price.id,
+                  'name': resp.result.line_price.name,
+                  'remark': resp.result.line_price.remark,
+                  'local_agency_fk': resp.result.line_price.local_agency_fk,
+                  'detail': resp.result.line_price.detail,
+                  'isSet': false,
+                }
+                resp.result.ref_prices.forEach((item, tempIndex) => {
+                  let tempContent = item.kind + ':' + item.price;
+                  tempData['top3_ref_data' + tempIndex] = tempContent;
+                });
+                this.table.data.splice(this.dialogData.localID,1,tempData);
+              }).catch((err) => {
+                console.log(err);
+              });
+              return this.$message({
                 type: 'success',
                 message: "修改成功！"
               });
             }else{
               // this.table.countAll+=1;
               // this.table.data.splice(this.dialogData.localID,1,tempData);
-              this.dialogData.contentId = tempData.id;
+              this.dialogData.contentId = response.data.result.id;
 
               let data2Add = {};
               this.dialogData.table.data.forEach((item,index) => {
@@ -505,7 +521,7 @@ export default {
               });
             }
             Product.getOne(this.dialogData.contentId).then((resp) => {
-              let tempLine = {
+              let tempData = {
                 'id': resp.result.line_price.id,
                 'name': resp.result.line_price.name,
                 'remark': resp.result.line_price.remark,
@@ -515,11 +531,11 @@ export default {
               }
               resp.result.ref_prices.forEach((item, tempIndex) => {
                 let tempContent = item.kind + ':' + item.price;
-                tempLine['top3_ref_data' + tempIndex] = tempContent;
+                tempData['top3_ref_data' + tempIndex] = tempContent;
               });
               console.log(resp, this.dialogData.localID, "++++++++++", this.table.data)
               // this.table.data.splice(this.dialogData.localID,1,tempLine);
-              this.table.data.push(tempLine);
+              this.table.data.push(tempData);
             }).catch((err) => {
               console.log(err);
             });
