@@ -21,6 +21,7 @@ from acct.serializers import Agency_tSerializer, Line_Price_tSerializer, Ref_Pri
 import datetime
 import uuid
 import json
+import time
 # Create your views here.
 
 
@@ -270,16 +271,18 @@ def line_list(request):
         return JsonResponse({'status_flag': True, "status_string": "Delete Success!"}, status=200)
 
     if request.method == 'POST' and request.data['req_method'] == 'GETONE':
+        time.sleep(0.01)#数据库写入同步问题
         try:
             line_price = Line_Price_t.objects.get(pk=request.data['pk'])
             ref_prices = Ref_Price_t.objects.filter(
-                line_price_fk__pk=request.data['pk'])
+                line_price_fk__id=line_price.id)
             serializer = Line_Price_tSerializer(line_price)
             serializer2 = Ref_Price_tSerializer(ref_prices, many=True)
             result = {'line_price': serializer.data,
                       'ref_prices': serializer2.data}
         except Line_Price_t.DoesNotExist:
             return HttpResponse(status=200)
+        print(result)
         return JsonResponse({'result': result, 'status_flag': True, "status_string": "Get one item Success!"}, status=200)
 
 
