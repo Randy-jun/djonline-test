@@ -437,8 +437,8 @@ export default {
                 message: "修改成功！"
               });
             }else{
-              this.table.countAll+=1;
-              this.table.data.splice(this.dialogData.localID,1,tempData);
+              // this.table.countAll+=1;
+              // this.table.data.splice(this.dialogData.localID,1,tempData);
               this.dialogData.contentId = tempData.id;
 
               let data2Add = {};
