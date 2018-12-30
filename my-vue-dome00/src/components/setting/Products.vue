@@ -378,6 +378,10 @@ export default {
     contentChangeDialog(isCancel){
       // console.log(this.dialogData.Content)
       // this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
+      //检查报价各条分录是否保存
+      for (let item of this.dialogData.table.data) {
+        if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
+      }
       if(isCancel){
         console.log(this.dialogData.isAdd)
         if(!this.dialogData.isEdit){
@@ -486,6 +490,8 @@ export default {
               
               if(this.dialogData.isAdd){
                 //===========反写对话框内容==========
+                this.$set(this.dialogData, 'isAdd', false);
+                // this.dialogData.isAdd = false;
                 this.dialogData.Content = JSON.parse(JSON.stringify(resp.result.line_price));
                 // this.dialogData._Content = this.dialogData.Content;
                 this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
@@ -734,48 +740,6 @@ export default {
         // });          
       });
     },
-    updateOne(contentID, localID, isAdd){
-
-      console.log(contentID,localID);
-      Axios.post(this.api, params).then((response)=>{
-        console.log(response,contentID,localID);
-        if (response.data.status_flag){
-          console.log("--------")
-          let tempData = {"id": response.data.result.line_price.id, 
-                        "name": response.data.result.line_price.name,
-                        "remark": response.data.result.line_price.remark,
-                        "local_agency_fk": response.data.result.line_price.local_agency_fk,
-                        "isSet": false,
-                        };
-          console.log(tempData)
-          response.data.result.ref_prices.forEach(item=>{
-            console.log("item:", item, "index:", index);
-          })
-          console.log("--------")
-          // top3_ref_data0: "gtrgt:543.0"
-          // top3_ref_data1: "g3gg3:4545.0"
-          // top3_ref_data2: "456gfgdg:56655.0"
-          return 0;
-          this.table.countAll += 1;
-          if(isAdd){
-            this.table.data.append(tempData);
-          } else {
-            this.table.data.splice(localID, 1, tempData);
-          }
-        }
-
-        // this.dialogData.Content = JSON.parse(JSON.stringify(response.data.result.line_price));
-        // // this.dialogData._Content = this.dialogData.Content;
-        // this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
-
-        // this.dialogData.table.data = JSON.parse(JSON.stringify(response.data.result.ref_prices));
-        // this.dialogData.table.data.forEach(item => {
-        //   this.$set(item, 'isSet', false);
-        // });
-      }).catch((error)=>{
-        console.log(error);
-      })
-    }
   },
   mounted() {
     // var list = JSON.parse(localStorage.getItem('list'));
