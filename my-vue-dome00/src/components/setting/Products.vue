@@ -210,6 +210,7 @@ export default {
         this.dialogData.table.data.forEach(item => {
           this.$set(item, 'isSet', false);
         });
+        this.dialogData.table.countAll = response.data.result.ref_prices.length;
       }).catch((error)=>{
         console.log(error);
       })
@@ -452,9 +453,42 @@ export default {
               Axios.post(this.refApi , paramsData).then((response)=>{
                 // console.log(response);
                 if(0 == response.data.failed_num){
-                  this.$message({
-                    type: 'success',
-                    message: "添加成功！"
+                    this.dialogData.isEdit = false;
+                    Product.getOne(this.dialogData.contentId).then((resp) => {
+                      let tempData = {
+                        'id': resp.result.line_price.id,
+                        'name': resp.result.line_price.name,
+                        'remark': resp.result.line_price.remark,
+                        'local_agency_fk': resp.result.line_price.local_agency_fk,
+                        'detail': resp.result.line_price.detail,
+                        'isSet': false,
+                      }
+                      resp.result.ref_prices.forEach((item, tempIndex) => {
+                        let tempContent = item.kind + ':' + item.price;
+                        tempData['top3_ref_data' + tempIndex] = tempContent;
+                      });
+                      // console.log(resp, this.dialogData.localID, "++++++++++", this.table.data)
+                      // this.table.data.splice(this.dialogData.localID,1,tempLine);
+                      
+                      //===========反写对话框内容==========
+                      this.$set(this.dialogData, 'isAdd', false);
+                      // this.dialogData.isAdd = false;
+                      this.dialogData.Content = JSON.parse(JSON.stringify(resp.result.line_price));
+                      // this.dialogData._Content = this.dialogData.Content;
+                      this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
+
+                      this.dialogData.table.data = JSON.parse(JSON.stringify(resp.result.ref_prices));
+                      this.dialogData.table.data.forEach(item => {
+                        this.$set(item, 'isSet', false);
+                      });
+                      //===========反写外部表单内容==========
+                      this.table.data.push(tempData);
+                      return this.$message({
+                        type: 'success',
+                        message: "新增成功！"
+                        });
+                  }).catch((err) => {
+                    console.log(err);
                   });
                   //this.$set(this.dialogData, 'tableVisible', false);
                 }else{
@@ -466,56 +500,37 @@ export default {
               })
               .catch((error)=>{
                 return this.$message({
-                        type: 'error',
-                        message: "保存失败！"
-                      });
+                          type: 'error',
+                          message: "保存失败！"
+                        });
               });
-            }
-            this.dialogData.isEdit = false;
-            Product.getOne(this.dialogData.contentId).then((resp) => {
-              let tempData = {
-                'id': resp.result.line_price.id,
-                'name': resp.result.line_price.name,
-                'remark': resp.result.line_price.remark,
-                'local_agency_fk': resp.result.line_price.local_agency_fk,
-                'detail': resp.result.line_price.detail,
-                'isSet': false,
-              }
-              resp.result.ref_prices.forEach((item, tempIndex) => {
-                let tempContent = item.kind + ':' + item.price;
-                tempData['top3_ref_data' + tempIndex] = tempContent;
-              });
-              // console.log(resp, this.dialogData.localID, "++++++++++", this.table.data)
-              // this.table.data.splice(this.dialogData.localID,1,tempLine);
-              
-              if(this.dialogData.isAdd){
-                //===========反写对话框内容==========
-                this.$set(this.dialogData, 'isAdd', false);
-                // this.dialogData.isAdd = false;
-                this.dialogData.Content = JSON.parse(JSON.stringify(resp.result.line_price));
-                // this.dialogData._Content = this.dialogData.Content;
-                this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
-
-                this.dialogData.table.data = JSON.parse(JSON.stringify(resp.result.ref_prices));
-                this.dialogData.table.data.forEach(item => {
-                  this.$set(item, 'isSet', false);
+            }else{
+              this.dialogData.isEdit = false;
+              Product.getOne(this.dialogData.contentId).then((resp) => {
+                let tempData = {
+                  'id': resp.result.line_price.id,
+                  'name': resp.result.line_price.name,
+                  'remark': resp.result.line_price.remark,
+                  'local_agency_fk': resp.result.line_price.local_agency_fk,
+                  'detail': resp.result.line_price.detail,
+                  'isSet': false,
+                }
+                resp.result.ref_prices.forEach((item, tempIndex) => {
+                  let tempContent = item.kind + ':' + item.price;
+                  tempData['top3_ref_data' + tempIndex] = tempContent;
                 });
-                //===========反写外部表单内容==========
-                this.table.data.push(tempData);
-                return this.$message({
-                type: 'success',
-                message: "新增成功！"
-              });
-              }else{
+                // console.log(resp, this.dialogData.localID, "++++++++++", this.table.data)
+                // this.table.data.splice(this.dialogData.localID,1,tempLine);
+                
                 this.table.data.splice(this.dialogData.localID,1,tempData);
                 return this.$message({
-                type: 'success',
-                message: "修改成功！"
-              });
-              }
+                  type: 'success',
+                  message: "修改成功！"
+                  });
             }).catch((err) => {
               console.log(err);
             });
+            }
           }else{
             console.log(response);
             if(null !== this.table.currentRow.id){
@@ -533,7 +548,6 @@ export default {
           }})
           .catch((error)=>{
             console.log(this.dialogData.localID,error);
-            if(null !== this.table.currentRow.id) this.table.data.splice(this.dialogData.localID, 1);
             this.$message({
               type: 'error',
               message: "保存失败！"
