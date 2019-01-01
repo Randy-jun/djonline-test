@@ -16,9 +16,9 @@
     "vue-router": "^3.0.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.2.0",
-    "@vue/cli-plugin-eslint": "^3.2.1",
-    "@vue/cli-service": "^3.2.0",
+    "@vue/cli-plugin-babel": "^3.2.2",
+    "@vue/cli-plugin-eslint": "^3.2.2",
+    "@vue/cli-service": "^3.2.2",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.0.3",
     "vue-cli-plugin-bootstrap": "^1.0.0-alpha.0",

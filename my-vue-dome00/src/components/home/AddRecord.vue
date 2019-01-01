@@ -2,10 +2,10 @@
   <el-row>
     <el-row :gutter=20 type="flex" justify="space-between">
       <el-col :span=10>
-        <span >出团记录ID：</span>
+        <span >出团记录ID：{{content.data.id}}</span>
       </el-col>
       <el-col :span=10>
-        <span>单据状态</span>
+        <span>单据状态{{content.data.status}}</span>
       </el-col>
       <el-col :span=2>
         <el-button>保存</el-button>
@@ -16,20 +16,20 @@
     </el-row>
     <el-row :gutter=20 type="flex" justify="space-between">
       <el-col :span=6>
-        <span >地接社名称：</span>
+        <span >地接社名称：{{content.data.djName}}</span>
       </el-col>
       <el-col :span=6>
-        <span>组团社名称：</span>
+        <span>组团社名称：{{content.data.ztName}}</span>
       </el-col>
       <el-col :span=6>
-        <span>线路名称：</span>
+        <span>线路名称：{{content.data.product}}</span>
       </el-col>
       <el-col :span=6>
-        <span>出团日期：</span>
+        <span>出团日期：{{content.data.date}}</span>
       </el-col>
     </el-row>
     <el-row>
-      <el-tabs type="card" v-model="activeTableName" @tab-click="handleClick">
+      <el-tabs type="card" v-model="table.activeTableName" @tab-click="handleClick">
         <el-tab-pane label="基础业务" name="first">
           <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
             <el-table-column fixed type="index" width="100"></el-table-column>
@@ -133,23 +133,44 @@ export default {
   },
   data() {
     return {
-      activeTableName:'first',
+      content:{
+        data:{
+            id:"1",
+            status:"d",
+            djName:"关东大四",
+            ztName:"花间高手",
+            product:"西安东线",
+            date:"2019年01月01日",
+          },
+        },
       table: {
+        activeTableName:'first',
         countAll: null,
         currentRow: null,//选中行  
         columns1:[
-          { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
-          { field: "name", title: "组织名称", width: 320, isEdit: true, sortable: true },
+          { field: "name", title: "姓名", width: 150, isEdit: true, sortable: true },
+          { field: "count", title: "人数", width: 150, isEdit: true, sortable: true },
+          { field: "ref_price", title: "参考报价", width: 320, isEdit: true, sortable: true },
+          { field: "final_price", title: "最终报价", width: 320, isEdit: true, sortable: true },
+          { field: "refine_price", title: "修正金额", width: 320, isEdit: true, sortable: true },
+          { field: "refine_remark", title: "修正报价", width: 320, isEdit: true, sortable: true },
         ], 
-        columns2: [
-          { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
-          { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
-        ],
-        columns3: [
-          { field: "name", title: "组织名称", width: 320, isEdit: true, sortable: true },
-          { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
-        ],
-        // tempData: [],
+        columns2:[
+          { field: "name", title: "姓名", width: 150, isEdit: true, sortable: true },
+          { field: "count", title: "人数", width: 150, isEdit: true, sortable: true },
+          { field: "final_price", title: "最终报价", width: 320, isEdit: true, sortable: true },
+          { field: "allocate_price", title: "调拨金额", width: 320, isEdit: true, sortable: true },
+          { field: "allocate_group", title: "调拨单位", width: 320, isEdit: true, sortable: true },
+          { field: "allocate_remark", title: "调拨备注", width: 320, isEdit: true, sortable: true },
+        ], 
+        columns3:[
+          { field: "name", title: "姓名", width: 150, isEdit: true, sortable: true },
+          { field: "count", title: "人数", width: 150, isEdit: true, sortable: true },
+          { field: "final_price", title: "最终报价", width: 320, isEdit: true, sortable: true },
+          { field: "deputy_price", title: "代收金额", width: 320, isEdit: true, sortable: true },
+          { field: "deputy_group", title: "代收单位", width: 320, isEdit: true, sortable: true },
+          { field: "deputy_remark", title: "代收备注", width: 320, isEdit: true, sortable: true },
+        ], 
         data: [],
       },
       api:'http://127.0.0.1:9090/acct/agencies/',

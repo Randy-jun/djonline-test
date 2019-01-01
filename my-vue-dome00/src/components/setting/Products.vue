@@ -210,6 +210,7 @@ export default {
         this.dialogData.table.data.forEach(item => {
           this.$set(item, 'isSet', false);
         });
+        this.dialogData.table.countAll = response.data.result.ref_prices.length;
       }).catch((error)=>{
         console.log(error);
       })
@@ -378,6 +379,10 @@ export default {
     contentChangeDialog(isCancel){
       // console.log(this.dialogData.Content)
       // this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
+      //检查报价各条分录是否保存
+      for (let item of this.dialogData.table.data) {
+        if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
+      }
       if(isCancel){
         console.log(this.dialogData.isAdd)
         if(!this.dialogData.isEdit){
@@ -407,11 +412,10 @@ export default {
           params.append("req_method",'ADD');
           console.log("ADD")
           if(0 == this.dialogData.table.data.length){
-            this.$message({
+            return this.$message({
               type: 'warning',
               message: "每条线路至少有一个默认报价！"
             });
-            return 0;
           }
         }
 
@@ -424,22 +428,13 @@ export default {
         
         console.log(params.getAll("pk"))
         Axios.post(this.api, params).then((response)=>{
-          console.log(response);
+          // console.log(response,"0000000");
           if(response.data.status_flag){
-            
-            let tempData = response.data.result;
-            this.$set(tempData, 'isSet', false);
-            this.$set(this.dialogData, 'isEdit', false);
-            if(null !== this.dialogData.contentId){
-              this.table.data.splice(this.dialogData.localID,1,tempData);
-              this.$message({
-                type: 'success',
-                message: "修改成功！"
-              });
-            }else{
+            // let tempData = response.data.result;
+            if(null === this.dialogData.contentId){
               // this.table.countAll+=1;
               // this.table.data.splice(this.dialogData.localID,1,tempData);
-              this.dialogData.contentId = tempData.id;
+              this.dialogData.contentId = response.data.result.id;
 
               let data2Add = {};
               this.dialogData.table.data.forEach((item,index) => {
@@ -456,40 +451,46 @@ export default {
               paramsData.append("data_to_add",JSON.stringify(data2Add));
               // console.log(paramsData.getAll("data_to_add"));
               Axios.post(this.refApi , paramsData).then((response)=>{
-                console.log(response);
+                // console.log(response);
                 if(0 == response.data.failed_num){
-                  this.$message({
-                    type: 'success',
-                    message: "添加成功！"
+                    this.dialogData.isEdit = false;
+                    Product.getOne(this.dialogData.contentId).then((resp) => {
+                      let tempData = {
+                        'id': resp.result.line_price.id,
+                        'name': resp.result.line_price.name,
+                        'remark': resp.result.line_price.remark,
+                        'local_agency_fk': resp.result.line_price.local_agency_fk,
+                        'detail': resp.result.line_price.detail,
+                        'isSet': false,
+                      }
+                      resp.result.ref_prices.forEach((item, tempIndex) => {
+                        let tempContent = item.kind + ':' + item.price;
+                        tempData['top3_ref_data' + tempIndex] = tempContent;
+                      });
+                      // console.log(resp, this.dialogData.localID, "++++++++++", this.table.data)
+                      // this.table.data.splice(this.dialogData.localID,1,tempLine);
+                      
+                      //===========反写对话框内容==========
+                      this.$set(this.dialogData, 'isAdd', false);
+                      // this.dialogData.isAdd = false;
+                      this.dialogData.Content = JSON.parse(JSON.stringify(resp.result.line_price));
+                      // this.dialogData._Content = this.dialogData.Content;
+                      this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
+
+                      this.dialogData.table.data = JSON.parse(JSON.stringify(resp.result.ref_prices));
+                      this.dialogData.table.data.forEach(item => {
+                        this.$set(item, 'isSet', false);
+                      });
+                      //===========反写外部表单内容==========
+                      this.table.data.push(tempData);
+                      return this.$message({
+                        type: 'success',
+                        message: "新增成功！"
+                        });
+                  }).catch((err) => {
+                    console.log(err);
                   });
                   //this.$set(this.dialogData, 'tableVisible', false);
-                  this.dialogData.isAdd = false;
-                  this.dialogData.isEdit = false;
-                  // this.dialogData.contentId = rowContent.id;
-                  // this.dialogData.localID = index;
-                  var getOneParams = new URLSearchParams();
-                  // params.append("req_method","GET_SINGLE");
-                  getOneParams.append("req_method","GETONE");
-                  
-                  getOneParams.append("pk",this.dialogData.contentId);
-                  
-                  getOneParams.append("tokenID",Sstorage.get('tokenID'));
-                  getOneParams.append("local_agency_fk",Sstorage.get('localAgencyFk'));
-
-                  Axios.post(this.api, getOneParams).then((response)=>{
-                    console.log(response)
-
-                    this.dialogData.Content = JSON.parse(JSON.stringify(response.data.result.line_price));
-                    // this.dialogData._Content = this.dialogData.Content;
-                    this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
-
-                    this.dialogData.table.data = JSON.parse(JSON.stringify(response.data.result.ref_prices));
-                    this.dialogData.table.data.forEach(item => {
-                      this.$set(item, 'isSet', false);
-                    });
-                  }).catch((error)=>{
-                    console.log(error);
-                  })
                 }else{
                   return this.$message({
                             type: 'error',
@@ -499,30 +500,37 @@ export default {
               })
               .catch((error)=>{
                 return this.$message({
-                        type: 'error',
-                        message: "保存失败！"
-                      });
+                          type: 'error',
+                          message: "保存失败！"
+                        });
               });
-            }
-            Product.getOne(this.dialogData.contentId).then((resp) => {
-              let tempLine = {
-                'id': resp.result.line_price.id,
-                'name': resp.result.line_price.name,
-                'remark': resp.result.line_price.remark,
-                'local_agency_fk': resp.result.line_price.local_agency_fk,
-                'detail': resp.result.line_price.detail,
-                'isSet': false,
-              }
-              resp.result.ref_prices.forEach((item, tempIndex) => {
-                let tempContent = item.kind + ':' + item.price;
-                tempLine['top3_ref_data' + tempIndex] = tempContent;
-              });
-              console.log(resp, this.dialogData.localID, "++++++++++", this.table.data)
-              // this.table.data.splice(this.dialogData.localID,1,tempLine);
-              this.table.data.push(tempLine);
+            }else{
+              this.dialogData.isEdit = false;
+              Product.getOne(this.dialogData.contentId).then((resp) => {
+                let tempData = {
+                  'id': resp.result.line_price.id,
+                  'name': resp.result.line_price.name,
+                  'remark': resp.result.line_price.remark,
+                  'local_agency_fk': resp.result.line_price.local_agency_fk,
+                  'detail': resp.result.line_price.detail,
+                  'isSet': false,
+                }
+                resp.result.ref_prices.forEach((item, tempIndex) => {
+                  let tempContent = item.kind + ':' + item.price;
+                  tempData['top3_ref_data' + tempIndex] = tempContent;
+                });
+                // console.log(resp, this.dialogData.localID, "++++++++++", this.table.data)
+                // this.table.data.splice(this.dialogData.localID,1,tempLine);
+                
+                this.table.data.splice(this.dialogData.localID,1,tempData);
+                return this.$message({
+                  type: 'success',
+                  message: "修改成功！"
+                  });
             }).catch((err) => {
               console.log(err);
             });
+            }
           }else{
             console.log(response);
             if(null !== this.table.currentRow.id){
@@ -540,7 +548,6 @@ export default {
           }})
           .catch((error)=>{
             console.log(this.dialogData.localID,error);
-            if(null !== this.table.currentRow.id) this.table.data.splice(this.dialogData.localID, 1);
             this.$message({
               type: 'error',
               message: "保存失败！"
@@ -747,48 +754,6 @@ export default {
         // });          
       });
     },
-    updateOne(contentID, localID, isAdd){
-
-      console.log(contentID,localID);
-      Axios.post(this.api, params).then((response)=>{
-        console.log(response,contentID,localID);
-        if (response.data.status_flag){
-          console.log("--------")
-          let tempData = {"id": response.data.result.line_price.id, 
-                        "name": response.data.result.line_price.name,
-                        "remark": response.data.result.line_price.remark,
-                        "local_agency_fk": response.data.result.line_price.local_agency_fk,
-                        "isSet": false,
-                        };
-          console.log(tempData)
-          response.data.result.ref_prices.forEach(item=>{
-            console.log("item:", item, "index:", index);
-          })
-          console.log("--------")
-          // top3_ref_data0: "gtrgt:543.0"
-          // top3_ref_data1: "g3gg3:4545.0"
-          // top3_ref_data2: "456gfgdg:56655.0"
-          return 0;
-          this.table.countAll += 1;
-          if(isAdd){
-            this.table.data.append(tempData);
-          } else {
-            this.table.data.splice(localID, 1, tempData);
-          }
-        }
-
-        // this.dialogData.Content = JSON.parse(JSON.stringify(response.data.result.line_price));
-        // // this.dialogData._Content = this.dialogData.Content;
-        // this.dialogData._Content = JSON.parse(JSON.stringify(this.dialogData.Content));
-
-        // this.dialogData.table.data = JSON.parse(JSON.stringify(response.data.result.ref_prices));
-        // this.dialogData.table.data.forEach(item => {
-        //   this.$set(item, 'isSet', false);
-        // });
-      }).catch((error)=>{
-        console.log(error);
-      })
-    }
   },
   mounted() {
     // var list = JSON.parse(localStorage.getItem('list'));
