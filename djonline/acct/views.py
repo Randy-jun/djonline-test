@@ -271,7 +271,7 @@ def line_list(request):
         return JsonResponse({'status_flag': True, "status_string": "Delete Success!"}, status=200)
 
     if request.method == 'POST' and request.data['req_method'] == 'GETONE':
-        time.sleep(0.01)#数据库写入同步问题
+        time.sleep(0.1)#数据库写入同步问题
         try:
             line_price = Line_Price_t.objects.get(pk=request.data['pk'])
             ref_prices = Ref_Price_t.objects.filter(
@@ -282,7 +282,7 @@ def line_list(request):
                       'ref_prices': serializer2.data}
         except Line_Price_t.DoesNotExist:
             return HttpResponse(status=200)
-        print(result)
+       
         return JsonResponse({'result': result, 'status_flag': True, "status_string": "Get one item Success!"}, status=200)
 
 
