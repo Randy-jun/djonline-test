@@ -6,8 +6,9 @@
         <div slot="header" class="clearfix">
           <i class="el-icon-tickets"></i>
         </div>
-        <div>
-          <span><h4>出团记录</h4></span>
+        <span><h4>出团记录</h4></span>
+        <div class="bottom clearfix">
+          <el-button class="button" type="text" plain>进入</el-button>
         </div>
       </el-card>
     </el-col>
@@ -16,8 +17,9 @@
         <div slot="header" class="clearfix">
           <i class="el-icon-tickets"></i>
         </div>
-        <div>
-          <span><h4>往来结算</h4></span>
+        <span><h4>往来结算</h4></span>
+        <div class="bottom clearfix">
+          <el-button class="button" type="text" plain>进入</el-button>
         </div>
       </el-card>
     </el-col>
@@ -26,8 +28,9 @@
         <div slot="header" class="clearfix">
           <i class="el-icon-tickets"></i>
         </div>
-        <div>
-          <span><h4>排车助手</h4></span>
+        <span><h4>排车助手</h4></span>
+        <div class="bottom clearfix">
+          <el-button class="button" type="text" plain>进入</el-button>
         </div>
       </el-card>
     </el-col>
@@ -38,8 +41,9 @@
         <div slot="header" class="clearfix">
           <i class="el-icon-tickets"></i>
         </div>
-        <div>
-          <el-button disabled><h4>更多应用，敬请期待。</h4></el-button>
+        <span><h4>更多应用，敬请期待。</h4></span>
+        <div class="bottom clearfix">
+          <el-button class="button" type="text" plain disabled>进入</el-button>
         </div>
       </el-card>
     </el-col>
@@ -131,13 +135,21 @@ export default {
 </script>
 
 <style scoped>
-.el-row {
-    margin-bottom: 20px;
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-.el-col {
-  border-radius: 4px;
+.bottom {
+  margin-top: 8px;
+  line-height: 12px;
+}
+.button {
+  padding:2px;
+  float: right;
+}
+.clearfix:before,
+.clearfix:after {
+    display: table;
+    content: "";
+}
+
+.clearfix:after {
+    clear: both
 }
 </style>

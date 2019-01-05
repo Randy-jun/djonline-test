@@ -1,20 +1,41 @@
 <template>
-  <div>
-    <el-row :gutter=20 v-for="m in 3" :key="m">
-      <el-col :span=6 v-for="n in 4" :key="n">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span><h4>管理首页 {{m}}-{{n}}</h4></span>
-            <!-- <el-button style="float: right; padding: 3px 0" type="text">X</el-button> -->
-          </div>
-          <div class="el-icon-setting">
-            <span></span>
-            <!-- <i class="el-icon-message"></i>           -->
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-  </div>
+<div>
+  <el-row :gutter=20>
+    <el-col :span=8>
+      <el-card shadow="always" class="box-card">
+        <div slot="header" class="clearfix">
+          <i class="el-icon-tickets"></i>
+        </div>
+        <span><h4>组团社管理</h4></span>
+        <div class="bottom clearfix">
+          <el-button class="button" type="text" plain>进入</el-button>
+        </div>
+      </el-card>
+    </el-col>
+    <el-col :span=8>
+      <el-card shadow="always" class="box-card">
+        <div slot="header" class="clearfix">
+          <i class="el-icon-tickets"></i>
+        </div>
+          <span><h4>线路报价管理</h4></span>
+        <div class="bottom clearfix">
+          <el-button class="button" type="text" plain>进入</el-button>
+        </div>
+      </el-card>
+    </el-col>
+    <el-col :span=8>
+      <el-card shadow="always" class="box-card">
+        <div slot="header" class="clearfix">
+          <i class="el-icon-tickets"></i>
+        </div>
+        <span><h4>更多应用，敬请期待。</h4></span>
+        <div class="bottom clearfix">
+          <el-button class="button" type="text" plain disabled>进入</el-button>
+        </div>
+      </el-card>
+    </el-col>
+  </el-row>
+</div>
 </template>
 
 <script>
@@ -259,16 +280,7 @@ export default {
     }
   },
   mounted() {
-    // var list = JSON.parse(localStorage.getItem('list'));
-      
-    // var api="http://127.0.0.1:9090/acct/request_form/6";
-    var api='http://www.phonegap100.com/appapi.php?a=getPortalList&catid=20&page=2';
-    Axios.get(api).then((response)=>{
-      // console.log(response);
-      this.test_list=response.data.result;
-    }).catch((error)=>{
-      console.log(error);
-    })
+
   }
 }
 </script>
@@ -277,5 +289,23 @@ export default {
 .ho-pad{
   padding-top: 28px;
   padding-bottom: 28px;
+}
+
+.bottom {
+  margin-top: 8px;
+  line-height: 12px;
+}
+.button {
+  padding:2px;
+  float: right;
+}
+.clearfix:before,
+.clearfix:after {
+    display: table;
+    content: "";
+}
+
+.clearfix:after {
+    clear: both
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
 <el-row :gutter=20>
-  <el-row v-if="0 == table.countAll">
+  <el-row v-if="value">
     <el-col>
       <el-card shadow="hover" class="box-card">
         <div slot="header" class="clearfix">
@@ -47,7 +47,7 @@
       <!-- </el-scrollbar> -->
     </el-row>
     <el-row>
-      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新的组织机构</el-button>
+      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">新增出团记录</el-button>
     </el-row>
     <el-row>
       <el-pagination  
@@ -61,6 +61,11 @@
       </el-pagination>
     </el-row>
   </el-row>
+  <el-switch
+    v-model="value"
+    active-color="#13ce66"
+    inactive-color="#ff4949">
+  </el-switch>
 </el-row>
 </template>
 
@@ -78,16 +83,61 @@ export default {
   },
   data() {
     return {
+      value:false,
       table: {
         countAll: null,
         currentRow: null,//选中行   
         columns: [
           { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
-          { field: "name", title: "组织名称", width: 320, isEdit: true, sortable: true },
-          { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
+          { field: "group", title: "组织名称", width: 320, isEdit: true, sortable: true },
+          { field: "product", title: "备注", width: 320, isEdit: true, sortable: false },
+          { field: "date", title: "备注", width: 320, isEdit: true, sortable: false },
+          { field: "count", title: "备注", width: 320, isEdit: true, sortable: false },
+          { field: "status", title: "备注", width: 320, isEdit: true, sortable: false },
         ],
         // tempData: [],
-        data: [],
+        data: [
+          {
+            id:"2019-0922-0001",
+            group:"光大旅行社",
+            product:"西安北线二日游（旺季）",
+            date:"2019-09-22",
+            count:18,
+            status:"",
+          },
+          {
+            id:"2019-0921-0001",
+            group:"光大旅行社",
+            product:"西安北线二日游（旺季）",
+            date:"2019-09-21",
+            count:20,
+            status:"",
+          },
+          {
+            id:"2019-0922-0021",
+            group:"光大旅行社",
+            product:"西安北线二日游（旺季）",
+            date:"2019-06-22",
+            count:16,
+            status:"已结算",
+          },
+          {
+            id:"2019-0922-0201",
+            group:"西安康辉旅行社",
+            product:"西安东线三日游",
+            date:"2019-04-24",
+            count:23,
+            status:"已结算",
+          },
+          {
+            id:"2019-0612-0001",
+            group:"中国青年旅行社",
+            product:"西安市内一日游",
+            date:"2019-07-12",
+            count:9,
+            status:"",
+          },
+        ],
       },
       api:'http://127.0.0.1:9090/acct/agencies/',
       currentPage4: 4,
@@ -266,8 +316,8 @@ export default {
     Axios.post(this.api, params).then((response) => {
       console.log(response)
       this.table.countAll = response.data.item_num;
-      this.table.countAll = 0;
-      this.table.data = response.data.result;
+      // this.table.countAll = 0;
+      // this.table.data = response.data.result;
       // this.table.countAll=response.data.item_num;
       this.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
