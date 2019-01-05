@@ -17,6 +17,22 @@
   </el-row>
   <el-row v-else>
     <!-- <el-row style="height:750px"> -->
+      <el-row type="flex">
+        <span>出团时间：不限|今天|本周|本月</span>
+        <el-date-picker
+          v-model="dateValue"
+          type="daterange"
+          align="right"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions2">
+        </el-date-picker>
+      </el-row>
+      <el-row type="flex">
+        <span>单据状态：不限|无|已审核|已结算</span>
+      </el-row>
       <el-row>
     <!-- <el-col :span=24> -->
       <!-- <el-scrollbar style="height:100%"> -->
@@ -83,6 +99,7 @@ export default {
   },
   data() {
     return {
+      dateValue:null,
       value:true,
       table: {
         countAll: null,
