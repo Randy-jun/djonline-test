@@ -1,6 +1,9 @@
 <template>
   <el-row>
     <!-- <el-row style="height:750px"> -->
+    <el-row type="flex">
+      <span><h4>往来查询：百恒国际旅行社<i class="el-icon-refresh"></i>光大旅行社</h4></span>
+    </el-row>
     <el-row>
     <!-- <el-col :span=24> -->
       <el-scrollbar style="height:100%">
@@ -20,19 +23,11 @@
           </el-table-column>
           <el-table-column label="操作" width="200">
             <template slot-scope="scope">
-              <span v-if="!scope.row.isSet" class="el-tag el-tag el-tag--mini" style="cursor: pointer;" v-on:click="dialogData.tableVisible =true,currentRowModal(scope.row,scope.$index)">详细</span>
-              <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
-                  {{scope.row.isSet?'保存':"修改"}}
-              </span>
-              <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="doDel(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
-              <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,true)">取消</span>
+              <span class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="flashTable.isShow = !flashTable.isShow">联查相关单据</span>
             </template>
           </el-table-column>
         </el-table>
       </el-scrollbar>
-    </el-row>
-    <el-row>
-      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="dialogData.tableVisible =true,doAdd()">添加新的组织机构</el-button>
     </el-row>
     <el-row>
       <el-pagination  
@@ -46,64 +41,22 @@
       </el-pagination>
     </el-row>
     <el-row>
-    <el-dialog title="线路报价单" :visible.sync="dialogData.tableVisible">
-      <el-row align="top">
-        <el-col :span="8">
-          <span v-if="!dialogData.isAdd" style="font-size: 24px;"> 线路报价单ID:{{dialogData._Content.id}}</span>
-        </el-col>
-        <el-col :span="4" :offset="12">
-          <el-button type="primary" style="cursor: pointer;" v-on:click="contentChangeDialog(false)">
-            {{dialogData.isEdit?'保存':"修改"}}
-          </el-button>
-          <el-button type="info" style="cursor: pointer;" v-on:click="contentChangeDialog(true)">
-            {{dialogData.isEdit?'取消':"删除"}}
-          </el-button>
-        </el-col>
-      </el-row>
-      <el-row style="padding: 10px 10px">
-        <el-col :gutter="20" :span="12">
-          <span v-if='dialogData.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="dialogData._Content.name"><template slot="prepend">线路名称:</template></el-input></span>
-          <span v-else>线路名称:{{dialogData._Content.name}}</span>
-        </el-col>
-        <el-col :span="12">
-          <span v-if='dialogData.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="dialogData._Content.remark"><template slot="prepend">备注:</template></el-input></span>
-          <span v-else>备注:{{dialogData._Content.remark}}</span>
-        </el-col>
-      </el-row>
-      <el-table :data="dialogData.table.data">
-        <el-table-column type="index" width="100">档位</el-table-column>
-        <el-table-column v-for="(value, key) in dialogData.table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
-          <template slot-scope="scope">
-            <span v-if="scope.row.isSet">
-              <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="dialogData.table.currentRow[value.field]"></el-input></span>
-              <span v-else>{{scope.row[value.field]}}</span>
-            </span>
-            <span v-else>{{scope.row[value.field]}}</span>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column property="id" label="编号" width="150"></el-table-column>
-        <el-table-column property="kind" label="名称" width="200"></el-table-column>
-        <el-table-column property="price" label="报价"></el-table-column> -->
-        <el-table-column label="操作" width="200">
-          <template slot-scope="scope">
-            <span v-if="dialogData.isAdd || scope.row.isNew" class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
-                {{scope.row.isSet?'保存':"修改"}}
-            </span>
-            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini"  style="cursor: pointer;" v-on:click="doDelDialog(scope.row,scope.$index)">删除</span>
-            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,true)">取消</span>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-row>
-        <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAddDialog()">添加新的线路报价单</el-button>
-      </el-row>
-       <el-row>
-        <el-col :span="24">
-          <span v-if='dialogData.isEdit'><el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="dialogData._Content.detail"></el-input></span>
-          <span v-else>{{dialogData._Content.detail}}</span>
-        </el-col>
-      </el-row>
-    </el-dialog>
+      <el-collapse-transition>
+        <el-row v-show="flashTable.isShow">
+          <el-table :data="flashTable.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
+            <el-table-column fixed type="index" width="150"></el-table-column>
+            <el-table-column v-for="(value, key) in flashTable.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
+                  <span v-else>{{scope.row[value.field]}}</span>
+                </span>
+                <span v-else>{{scope.row[value.field]}}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-row>
+      </el-collapse-transition>
     </el-row>
   </el-row>
 </template>
@@ -124,45 +77,115 @@ export default {
       table: {
         countAll: null,
         currentRow: null,//选中行   
-        columns: [
-          { field: "id", title: "编号", width: 60, isEdit: false, sortable: true },
-          { field: "name", title: "线路名称", width: 320, isEdit: true, sortable: true },
-          { field: "top3_ref_data0", title: "1档位报价", width: 320, isEdit: false, sortable: false },
-          { field: "top3_ref_data1", title: "2档位报价", width: 320, isEdit: false, sortable: false },
-          { field: "top3_ref_data2", title: "3档位报价", width: 320, isEdit: false, sortable: false },
-          { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
+        columns:[
+          { field: "payee", title: "收款方", width: 200, isEdit: true, sortable: true },
+          { field: "payer", title: "付款方", width: 200, isEdit: true, sortable: true },
+          { field: "product", title: "线路名称", width: 200, isEdit: true, sortable: true },
+          { field: "amount", title: "结算金额", width: 200, isEdit: true, sortable: true },
+          { field: "business_type", title: "业务类型", width: 200, isEdit: true, sortable: true },
         ],
         // tempData: [],
-        data: [],
+        data: [
+          {
+              payee:"百恒国际旅行社",
+              payer:"光大旅行社",
+              product:"西安北线三日游（旺季）",
+              amount:4420,
+              business_type:"基础业务",
+          },
+          {
+              payee:"百恒国际旅行社",
+              payer:"光大旅行社",
+              product:"西安东线二日游（旺季）",
+              amount:2000,
+              business_type:"基础业务",
+          },
+          {
+              payee:"百恒国际旅行社",
+              payer:"光大旅行社",
+              product:"西安华山一日游（旺季）",
+              amount:2080,
+              business_type:"基础业务",
+          },
+          {
+              payee:"光大旅行社",
+              payer:"百恒国际旅行社",
+              product:"西安市内二日游（旺季）",
+              amount:900,
+              business_type:"调拨业务",
+          },
+          {
+              payee:"光大旅行社",
+              payer:"百恒国际旅行社",
+              product:"西安华山一日游（旺季）",
+              amount:200,
+              business_type:"调拨业务",
+          },
+          {
+              payee:"光大旅行社",
+              payer:"百恒国际旅行社",
+              product:"西安兵马俑一日游（旺季）",
+              amount:100,
+              business_type:"调拨业务",
+          },
+        ],
       },
       api:'http://127.0.0.1:9090/acct/lineprices/',
       refApi:'http://127.0.0.1:9090/acct/refprices/',
       currentPage4: 4,
-      dialogData:{
-        localID:"",
-        ContentId: "",
-        tableVisible: false,
-        isEdit: false,
-        isAdd: false,
-        _Content: {
-          id: "",
-          name: "",
-          remark: "",
-          detail: "",
-        },
-        Content: null,
-        table: {
-          countAll: null,
-          currentRow: null,
-          columns: [
-            //{ field: "id", title: "编号", width: 60, isEdit: false, sortable: true },
-            { field: "kind", title: "名称", width: 320, isEdit: true, sortable: true },
-            { field: "price", title: "报价", width: 320, isEdit: true, sortable: true },
-          ],
-          data:[],
-        }
-      }
-      
+      flashTable:{
+        isShow:false,
+        columns:[
+          { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
+          { field: "group", title: "组织名称", width: 320, isEdit: true, sortable: true },
+          { field: "product", title: "备注", width: 320, isEdit: true, sortable: false },
+          { field: "date", title: "备注", width: 320, isEdit: true, sortable: false },
+          { field: "count", title: "备注", width: 320, isEdit: true, sortable: false },
+          { field: "status", title: "备注", width: 320, isEdit: true, sortable: false },
+        ],
+        data:[
+          {
+            id:"2019-0922-0001",
+            group:"光大旅行社",
+            product:"西安北线二日游（旺季）",
+            date:"2019-09-22",
+            count:18,
+            status:"",
+          },
+          {
+            id:"2019-0921-0001",
+            group:"光大旅行社",
+            product:"西安北线二日游（旺季）",
+            date:"2019-09-21",
+            count:20,
+            status:"",
+          },
+          {
+            id:"2019-0922-0021",
+            group:"光大旅行社",
+            product:"西安北线二日游（旺季）",
+            date:"2019-06-22",
+            count:16,
+            status:"已结算",
+          },
+          {
+            id:"2019-0922-0201",
+            group:"西安康辉旅行社",
+            product:"西安东线三日游",
+            date:"2019-04-24",
+            count:23,
+            status:"已结算",
+          },
+          {
+            id:"2019-0612-0001",
+            group:"中国青年旅行社",
+            product:"西安市内一日游",
+            date:"2019-07-12",
+            count:9,
+            status:"",
+          },
+        ],
+      },
     }
   },
   components: {
@@ -723,14 +746,14 @@ export default {
     params.append("tokenID",Sstorage.get('tokenID'));
     Axios.post(this.api, params).then((response) => {
       // console.log(response)
-      this.table.countAll = response.data.item_num
-      this.table.data = response.data.result;
-      // this.table.countAll=response.data.item_num;
-      this.table.data.forEach(item => {
-        this.$set(item, 'isSet', false);
-      });
-      this.table.data = JSON.parse(JSON.stringify(this.table.data));
-      console.log(this.table.data);
+      // this.table.countAll = response.data.item_num
+      // this.table.data = response.data.result;
+      // // this.table.countAll=response.data.item_num;
+      // this.table.data.forEach(item => {
+      //   this.$set(item, 'isSet', false);
+      // });
+      // this.table.data = JSON.parse(JSON.stringify(this.table.data));
+      // console.log(this.table.data);
       // setTimeout(()=>{
       //   this.data_list.splice(0,1)
       //   console.log(this.data_list)
