@@ -83,7 +83,7 @@ export default {
   },
   data() {
     return {
-      value:false,
+      value:true,
       table: {
         countAll: null,
         currentRow: null,//选中行   

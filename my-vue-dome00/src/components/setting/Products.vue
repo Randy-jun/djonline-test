@@ -32,7 +32,7 @@
       </el-scrollbar>
     </el-row>
     <el-row>
-      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="dialogData.tableVisible =true,doAdd()">添加新的组织机构</el-button>
+      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="dialogData.tableVisible =true,doAdd()">添加新的线路报价单</el-button>
     </el-row>
     <el-row>
       <el-pagination  
@@ -94,7 +94,7 @@
         </el-table-column>
       </el-table>
       <el-row>
-        <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAddDialog()">添加新的线路报价单</el-button>
+        <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAddDialog()">添加新的报价档位</el-button>
       </el-row>
        <el-row>
         <el-col :span="24">
@@ -331,7 +331,7 @@ export default {
       // console.log(this.table.data)
     },
     doDel(rowContent, index){
-      this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该报价单, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -702,7 +702,7 @@ export default {
     },
     //目前可能不需要删除功能？？？
     doDelDialog(rowContent, index){
-      this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该报价单, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
