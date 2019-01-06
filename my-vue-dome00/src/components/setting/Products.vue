@@ -85,11 +85,13 @@
         <el-table-column property="price" label="报价"></el-table-column> -->
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
-            <span v-if="dialogData.isAdd || scope.row.isNew" class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
+            <!-- 临时展示按钮。 -->
+            <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)">
+            <!-- <span v-if="dialogData.isAdd || scope.row.isNew" class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,false)"> -->
                 {{scope.row.isSet?'保存':"修改"}}
             </span>
-            <!-- <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini"  style="cursor: pointer;" v-on:click="doDelDialog(scope.row,scope.$index)">删除</span> -->
-            <span v-if="dialogData.isAdd || scope.row.isNew" class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,true)">取消</span>
+            <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini"  style="cursor: pointer;" v-on:click="doDelDialog(scope.row,scope.$index)">删除</span>
+            <span v-else="dialogData.isAdd || scope.row.isNew" class="el-tag  el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChangeDialog(scope.row,scope.$index,true)">取消</span>
           </template>
         </el-table-column>
       </el-table>
