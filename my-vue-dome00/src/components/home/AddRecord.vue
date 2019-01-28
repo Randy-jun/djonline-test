@@ -1,11 +1,14 @@
 <template>
   <el-row>
     <el-row :gutter=20 type="flex" justify="space-between">
-      <el-col :span=10>
+      <el-col :span=8>
         <span >出团记录ID：{{content.data.id}}</span>
       </el-col>
-      <el-col :span=10>
-        <span>单据状态{{content.data.status}}</span>
+      <el-col :span=8>
+        <span>单据状态：{{content.data.status}}</span>
+      </el-col>
+      <el-col :span=4>
+        <el-button type="primary" @click="flashTable.isShow = !flashTable.isShow">查看结算信息</el-button>
       </el-col>
       <el-col :span=2>
         <el-button>保存</el-button>
@@ -27,6 +30,24 @@
       <el-col :span=6>
         <span>出团日期：{{content.data.date}}</span>
       </el-col>
+    </el-row>
+     <el-row>
+      <el-collapse-transition>
+        <el-row v-show="flashTable.isShow">
+          <el-table :data="flashTable.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
+            <el-table-column fixed type="index" width="150"></el-table-column>
+            <el-table-column v-for="(value, key) in flashTable.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
+                  <span v-else>{{scope.row[value.field]}}</span>
+                </span>
+                <span v-else>{{scope.row[value.field]}}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-row>
+      </el-collapse-transition>
     </el-row>
     <el-row>
       <el-tabs type="card" v-model="table.activeTableName" @tab-click="handleClick">
@@ -53,7 +74,7 @@
             </el-table-column>
           </el-table>
           <el-row>
-            <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新的组织机构</el-button>
+            <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加游客</el-button>
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="调拨业务" name="second">
@@ -104,7 +125,6 @@
         </el-tab-pane>
       </el-tabs>
     </el-row>
-    
     <el-row>
       <el-pagination  
         v-on:size-change="handleSizeChange"
@@ -135,11 +155,11 @@ export default {
     return {
       content:{
         data:{
-            id:"1",
-            status:"d",
-            djName:"关东大四",
-            ztName:"花间高手",
-            product:"西安东线",
+            id:"6868-2219-SQ85-6988",
+            status:"已审核",
+            djName:"百恒国际旅行社",
+            ztName:"光大旅行社",
+            product:"西安北线二日游（旺季）",
             date:"2019年01月01日",
           },
         },
@@ -150,10 +170,10 @@ export default {
         columns1:[
           { field: "name", title: "姓名", width: 150, isEdit: true, sortable: true },
           { field: "count", title: "人数", width: 150, isEdit: true, sortable: true },
-          { field: "ref_price", title: "参考报价", width: 320, isEdit: true, sortable: true },
+          { field: "refer_price", title: "参考报价", width: 320, isEdit: true, sortable: true },
           { field: "final_price", title: "最终报价", width: 320, isEdit: true, sortable: true },
-          { field: "refine_price", title: "修正金额", width: 320, isEdit: true, sortable: true },
-          { field: "refine_remark", title: "修正报价", width: 320, isEdit: true, sortable: true },
+          { field: "modify_price", title: "修正金额", width: 320, isEdit: true, sortable: true },
+          { field: "modify_price_remark", title: "修正报价", width: 320, isEdit: true, sortable: true },
         ], 
         columns2:[
           { field: "name", title: "姓名", width: 150, isEdit: true, sortable: true },
@@ -171,10 +191,128 @@ export default {
           { field: "deputy_group", title: "代收单位", width: 320, isEdit: true, sortable: true },
           { field: "deputy_remark", title: "代收备注", width: 320, isEdit: true, sortable: true },
         ], 
-        data: [],
+        data: [
+           {
+            name:"甲",
+            count:1,
+            refer_price:"成人:270",
+            final_price:280,
+            modify_price:+10,
+            modify_price_remark:"含餐",
+            allocate_price:null,
+            allocate_group:null,
+            allocate_remark:null,
+            deputy_price:null,
+            deputy_group:null,
+            deputy_remark:null,
+          },
+          {
+            name:"乙",
+            count:1,
+            refer_price:"车住:160",
+            final_price:190,
+            modify_price:+30,
+            modify_price_remark:"法门寺电瓶车",
+            allocate_price:null,
+            allocate_group:null,
+            allocate_remark:null,
+            deputy_price:20,
+            deputy_group:"百恒国际旅行社",
+            deputy_remark:"车费",
+          },
+          {
+            name:"丙",
+            count:1,
+            refer_price:"车费:130",
+            final_price:140,
+            modify_price:+10,
+            modify_price_remark:"含餐",
+            allocate_price:100,
+            allocate_group:"大唐旅行社",
+            allocate_remark:null,
+            deputy_price:20,
+            deputy_group:"大唐旅行社",
+            deputy_remark:"车费",
+          },
+          {
+            name:"丁",
+            count:10,
+            refer_price:"成人:270",
+            final_price:2800,
+            modify_price:+100,
+            modify_price_remark:"含餐",
+            allocate_price:2000,
+            allocate_group:"大唐旅行社",
+            allocate_remark:null,
+            deputy_price:null,
+            deputy_group:null,
+            deputy_remark:null,
+          },
+          {
+            name:"戊",
+            count:5,
+            refer_price:"成人:270",
+            final_price:1150,
+            modify_price:-200,
+            modify_price_remark:"优惠",
+            allocate_price:1000,
+            allocate_group:"中国青年旅行社",
+            allocate_remark:null,
+            deputy_price:100,
+            deputy_group:"中国青年旅行社",
+            deputy_remark:"车费",
+          },
+        ],
       },
       api:'http://127.0.0.1:9090/acct/agencies/',
       currentPage4: 4,
+      flashTable:{
+        isShow:false,
+        columns:[
+          { field: "payee", title: "收款方", width: 200, isEdit: true, sortable: true },
+          { field: "payer", title: "付款方", width: 200, isEdit: true, sortable: true },
+          { field: "amount", title: "结算金额", width: 200, isEdit: true, sortable: true },
+          { field: "business_type", title: "业务类型", width: 200, isEdit: true, sortable: true },
+        ],
+        data:[
+          {
+            payee:"百恒国际旅行社",
+            payer:"光大旅行社",
+            amount:4420,
+            business_type:"基础业务",
+          },
+          {
+            payee:"百恒国际旅行社",
+            payer:"游客",
+            amount:20,
+            business_type:"代收业务",
+          },
+          {
+            payee:"大唐旅行社",
+            payer:"百恒国际旅行社",
+            amount:2080,
+            business_type:"调拨业务",
+          },
+          {
+            payee:"中国青年旅行社",
+            payer:"百恒国际旅行社",
+            amount:900,
+            business_type:"调拨业务",
+          },
+          {
+            payee:"大唐旅行社",
+            payer:"游客",
+            amount:20,
+            business_type:"第三方代收业务",
+          },
+          {
+            payee:"中国青年旅行社",
+            payer:"游客",
+            amount:100,
+            business_type:"第三方代收业务",
+          },
+        ],
+      },
     }
   },
   components: {
@@ -358,7 +496,7 @@ export default {
       console.log(response)
       this.table.countAll = response.data.item_num;
       this.table.countAll = 0;
-      this.table.data = response.data.result;
+      // this.table.data = response.data.result;
       // this.table.countAll=response.data.item_num;
       this.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
