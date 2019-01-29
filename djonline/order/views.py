@@ -2,6 +2,7 @@ from django.shortcuts import render
 from order.models import o_jieji,o_order,o_songji,o_tourist
 from openpyxl import Workbook
 import json,time
+from django.http import HttpResponseBadRequest,HttpResponse
 # Create your views here.
 def index(request):
     '''order = o_order.objects.get(pk=1)
@@ -11,26 +12,64 @@ def index(request):
     order_item = ['o_type', 'o_from', 'o_time', 'o_zhidan', 'o_tijiao', 'o_shouli', 
     'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg']
     tourist_item = ['name', 'phone_number', 'number']
-    jieji_item = ['jieji_date', 'jieji_line_num', 'jieji_fee', 'jiejie_address',
-    'jieji_from', 'jieji_to', 'jieji_qifei_time', 'jieji_luodi_time', 'jieji_hangzhanlou']
-    songji_item = ['songji_date', 'songji_line_num', 'songji_fee', 'songjie_address',
-    'songji_from', 'songji_to', 'songji_qifei_time', 'songji_luodi_time', 'songji_hangzhanlou']
+    jieji_item = ['date', 'line_num', 'fee', 'address',
+    'o_from', 'o_to', 'qifei_time', 'luodi_time', 'hangzhanlou']
+    songji_item = ['date', 'line_num', 'fee', 'address',
+    'o_from', 'o_to', 'qifei_time', 'luodi_time', 'hangzhanlou']
 
     if request.method == 'POST':        
         order_dict = {}
         tourist_dict = {}
+        jieji_dict = {}
+        songji_dict = {}
+        mark = 0
         data = json.loads(request.body)
         print(data)
         for i in order_item:
             order_dict[i] = data['order'].get(i, None)
-           #print(request.POST.get(i, None))
-        order = o_order.objects.create(**order_dict)
-        order.save()
+           
+        order = o_order.objects.create(**order_dict) 
+
         for i in tourist_item:
-            tourist_dict[i] = data['tourist'].get(i,None)
-        tourist = o_tourist.objects.create(**tourist_dict)
-        tourist.o_order=order
-        tourist.save()
+            tourist_dict[i] = data['tourist'].get(i, None)
+        tourist_dict['o_order'] = order
+        tourist = o_tourist.objects.create(**tourist_dict)       
+        
+        mark = mark+1
+        jieji = None
+        songji = None
+        if 'jieji' in data.keys() and 'songji' in data.keys():
+            order.delete()
+            return HttpResponseBadRequest()
+
+        if 'jieji' in data.keys():
+            try:
+                for i in jieji_item:
+                    jieji_dict[i] = data['jieji'].get(i, None)
+                jieji_dict['o_order'] = order
+                jieji = o_jieji.objects.create(**jieji_dict)
+                mark = mark+1
+            except Exception as e:
+                order.delete()
+                return HttpResponse(content=e,status=400)
+
+        if 'songji' in data.keys():
+            try:
+                for i in songji_item:
+                    songji_dict[i] = data['songji'].get(i, None)
+                songji_dict['o_order']=order
+                songji = o_songji.objects.create(**songji_dict)          
+                mark = mark+1
+            except Exception as e:
+                order.delete()
+                return HttpResponse(content=e,status=400)
+
+     
+
+        mark = 0
+
+    
+
 
         
 

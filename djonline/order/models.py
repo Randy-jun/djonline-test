@@ -16,14 +16,14 @@ class o_order(models.Model):
 
 class o_tourist(models.Model):
     o_order = models.ForeignKey(
-        o_order, on_delete=models.PROTECT, default=1)
+        o_order, on_delete=models.CASCADE, default=1)
     name = models.CharField(max_length=128)
     phone_number = models.CharField(max_length=128)
     number = models.IntegerField()
 
 class o_jieji(models.Model):
     o_order = models.ForeignKey(
-        o_order, on_delete=models.PROTECT, default=1)
+        o_order, on_delete=models.CASCADE, default=1)
     date = models.DateField()
     line_num = models.CharField(max_length=128)
     fee = models.FloatField()
@@ -36,7 +36,7 @@ class o_jieji(models.Model):
 
 class o_songji(models.Model):
     o_order = models.ForeignKey(
-        o_order, on_delete=models.PROTECT, default=1)
+        o_order, on_delete=models.CASCADE, default=1)
     date = models.DateField()
     line_num = models.CharField(max_length=128)
     fee = models.FloatField()
