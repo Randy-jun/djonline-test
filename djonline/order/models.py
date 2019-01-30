@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class o_order(models.Model):
-    remark = models.CharField(max_length=128)
+    remark = models.CharField(max_length=128, blank=True)
     o_type = models.CharField(max_length=128)
     o_from = models.CharField(max_length=128)
     o_time = models.DateTimeField()
@@ -13,6 +13,7 @@ class o_order(models.Model):
     o_shoukuan = models.CharField(max_length=128)
     o_jiesuan_type = models.CharField(max_length=32)
     o_dahui_msg = models.CharField(max_length=512, blank=True)
+    o_status = models.CharField(max_length=32, default='暂存')
 
 class o_tourist(models.Model):
     o_order = models.ForeignKey(
