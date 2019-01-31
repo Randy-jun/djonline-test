@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from order.models import o_jieji,o_order,o_songji,o_tourist
 from openpyxl import Workbook
-import json,time
+import json,time,datetime
+from tempfile import NamedTemporaryFile
 from django.http import HttpResponseBadRequest,HttpResponse
 
 from rest_framework import status
@@ -96,7 +97,12 @@ def export_excel(request):
     title = ['单据编号','单据状态','游客姓名','人数','联系电话','备注','接机日期','结算金额','送达地址',
     '航班号','起飞城市','到达城市','起飞时间','落地时间','航站楼','送单门市','送单时间','制单人','提交人','受理人',
     '付款人','收款人','结算方式','打回信息']
-    orders = o_order.objects.all()
+    if request.method=='GET':
+        orders = o_order.objects.all()
+    else:
+        data = json.loads(request.body)
+        order_ids = data['order_ids']
+        orders = o_order.objects.filter(id__in=order_ids)
     wb = Workbook()
     ws = wb.active    
     ws.append(title)
@@ -112,7 +118,13 @@ def export_excel(request):
         order.o_dahui_msg]
         ws.append(data)
     wb.save(r'test.xlsx')
-    return Response({'Result':'Export Succeed!'})
+    with NamedTemporaryFile() as tmp:
+        wb.save(tmp.name)
+        tmp.seek(0)
+        stream = tmp.read()
+    response = HttpResponse(stream,content_type='application/vnd.ms-excel')
+    response['Content-Disposition']='attachment; filename ='+datetime.datetime.now().strftime("%Y%m%d%H%M%S")+'.xlsx'
+    return response
 
 @api_view(['GET', 'POST', 'UPDATE'])
 def order(request,order_id):
