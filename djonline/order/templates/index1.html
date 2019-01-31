@@ -1,0 +1,23 @@
+<html>
+
+<head>
+    <title>Index Page</title>
+</head>
+
+<body>
+    <h1>{{welcome}}</h1>
+    <a href="{% url 'login'  %}">Login</a>
+    <hr>
+    <hr>
+    {{title}}
+    <br>
+    {{data}}
+    <br>
+    {% for key, value in show_data.items %}
+    {{key}}:{{value}}
+    <br>
+    {% endfor %}
+    
+</body>
+
+</html>
