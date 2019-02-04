@@ -6,7 +6,7 @@
         <div slot="header" class="clearfix">
           <i class="el-icon-tickets"></i>
         </div>
-        <span><h4>出团记录</h4></span>
+        <span><h4>组织管理</h4></span>
         <div class="bottom clearfix">
           <el-button class="button" type="text" plain>进入</el-button>
         </div>
@@ -17,7 +17,7 @@
         <div slot="header" class="clearfix">
           <i class="el-icon-tickets"></i>
         </div>
-        <span><h4>往来结算</h4></span>
+        <span><h4>用户管理</h4></span>
         <div class="bottom clearfix">
           <el-button class="button" type="text" plain>进入</el-button>
         </div>
@@ -28,7 +28,7 @@
         <div slot="header" class="clearfix">
           <i class="el-icon-tickets"></i>
         </div>
-        <span><h4>排车助手</h4></span>
+        <span><h4>订单管理</h4></span>
         <div class="bottom clearfix">
           <el-button class="button" type="text" plain>进入</el-button>
         </div>
@@ -53,7 +53,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'MainHome',
   props: {
     msg: String
   }
