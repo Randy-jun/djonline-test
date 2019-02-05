@@ -82,7 +82,7 @@ def add_order(request):
                 return HttpResponse(content=e,status=400)
         mark = 0 
     
-    return render(request, 'index1.html', context={'title':title,'data':data,'show_data':'show_data'})
+    return render(request, 'index1.html', context={'data':data})
 
 def index(request):
     if request.method == 'GET':
