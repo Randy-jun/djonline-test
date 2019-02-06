@@ -37,7 +37,7 @@
 <script>
 import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
-import Userinfo from '@/module/userinfo.js';
+import UserInfo from '@/module/userinfo.js';
 
 export default {
   name: 'Login',
@@ -64,8 +64,8 @@ export default {
       const api='http://127.0.0.1:9090/login/';
       if (event.type == 'click' || event.keyCode == 13) {
         this.isWorking = true;
-        Userinfo.check(this.userInfo).then((response) => {
-          // console.log(response);
+        UserInfo.check(this.userInfo).then((response) => {
+          console.log(response);    
           setTimeout(()=>{
               this.$router.replace({ path: 'home' })
           },500)

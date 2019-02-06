@@ -21,17 +21,20 @@ export default new Router({
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "Home" */ '@/views/Home.vue'),
       children: [{
-        path: 'managegroup',
+        path: 'group',
         component: () => import(/* webpackChunkName: "home/managegroup" */ '@/components/GroupManage.vue'),
       },{
-        path: 'manageuser',
-        component: () => import(/* webpackChunkName: "home/manageuser" */ '@/components/UserManage.vue'),
+        path: 'staff',
+        component: () => import(/* webpackChunkName: "home/manageuser" */ '@/components/StaffManage.vue'),
       },{
-        path: 'records',
-        component: () => import(/* webpackChunkName: "home/records" */ '@/components/RecordList.vue'),
+        path: 'clerk',
+        component: () => import(/* webpackChunkName: "home/manageuser" */ '@/components/ClerkManage.vue'),
       },{
-        path: 'record',
-        component: () => import(/* webpackChunkName: "home/record" */ '@/components/RecordDetail.vue'),
+        path: 'orderlist',
+        component: () => import(/* webpackChunkName: "home/orrderlist" */ '@/components/OrderList.vue'),
+      },{
+        path: 'order',
+        component: () => import(/* webpackChunkName: "home/order" */ '@/components/OrderDetail.vue'),
       },{
         path: '/*',
         component: () => import(/* webpackChunkName: "home/*" */ '@/components/MainHome.vue'),

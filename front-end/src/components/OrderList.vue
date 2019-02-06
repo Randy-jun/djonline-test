@@ -1,15 +1,15 @@
 <template>
 <el-row :gutter=20>
-  <el-row v-if="value">
+  <el-row v-if="0 !== table.countAll">
     <el-col>
       <el-card shadow="hover" class="box-card">
         <div slot="header" class="clearfix">
-          <span><h4>出团记录毛都没有，来不及解释了，赶快上车！</h4></span>
+          <span><h4>订单记录毛都没有，来不及解释了，赶快上车！</h4></span>
         </div>
         <div>
           <el-button v-on:click="doAdd()" >
             <i class="el-icon-plus"></i>
-            <span>新增出团记录</span>
+            <span>新增订单</span>
           </el-button>
         </div>
       </el-card>
@@ -76,23 +76,17 @@
       </el-pagination>
     </el-row>
   </el-row>
-  <el-switch
-    v-model="value"
-    active-color="#13ce66"
-    inactive-color="#ff4949">
-  </el-switch>
 </el-row>
 </template>
 
 <script>
 
-import Axios from 'axios';
-import Sstorage from '@/module/sstorage.js';
+import Order from '@/module/order.js';
 import InputCheck from '@/module/inputcheck.js';
 // import CustomeAlert from  '@/components/sysinfo/CustomAlert.vue';
 
 export default {
-  name: 'Home',
+  name: 'OrderList',
   props: {
     msg: String
   },
@@ -101,7 +95,7 @@ export default {
       dateValue:null,
       value:true,
       table: {
-        countAll: null,
+        countAll: 0,
         currentRow: null,//选中行   
         columns: [
           { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
@@ -269,7 +263,7 @@ export default {
       }
     },
     doAdd(){
-      var goadd = "/home/addrecord";
+      var goadd = "/home/addorder";
       // console.log(goadd)
       this.$router.replace({ path: goadd })
     },
@@ -324,12 +318,8 @@ export default {
     // var list = JSON.parse(localStorage.getItem('list'));
     
     // const api='http://127.0.0.1:9090/acct/agencies/';
-    var params = new URLSearchParams();
-    params.append("req_method","GET");
-    params.append("userID",Sstorage.get('userID'));
-    params.append("local_agency_fk",Sstorage.get('localAgencyFk'));
-    params.append("tokenID",Sstorage.get('tokenID'));
-    Axios.post(this.api, params).then((response) => {
+    
+    Order.get().then((response) => {
       console.log(response)
       this.table.countAll = response.data.item_num;
       // this.table.countAll = 0;

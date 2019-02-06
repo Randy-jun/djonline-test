@@ -2,7 +2,7 @@
 import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
 
-const api='http://127.0.0.1:9090/acct/agencies/';
+const api='http://127.0.0.1:9090/order/';
 
 var temp = {
     item_num: 7,
@@ -15,7 +15,7 @@ var temp = {
             {"id":"7","name":"pear7","remark":"pear7"},]
 }
 
-var group = {
+var order = {
     get : function(){
         var params = new URLSearchParams();
         params.append("userID",Sstorage.get('userID'));
@@ -25,20 +25,20 @@ var group = {
         params.append("req_method","GET");
 
         return new Promise((resolve, reject) => {
-            temp.result.forEach(element => {
-                element.isSet = false;
-            });
-            resolve(temp) ;
-            // Axios.post(api, params).then((response) => {
-            //     console.log(response);
-            //     response.data.result.forEach(element => {
-            //         this.$set(element, 'isSet', false);
-            //     });
-            //     resolve(response.data) ;
-            // }).catch((error) => {
-            //     // console.log(error);
-            //     reject(error);
-            // })
+            // temp.result.forEach(element => {
+            //     element.isSet = false;
+            // });
+            // resolve(temp) ;
+            Axios.post(api, params).then((response) => {
+                console.log(response);
+                response.data.result.forEach(element => {
+                    this.$set(element, 'isSet', false);
+                });
+                resolve(response.data) ;
+            }).catch((error) => {
+                // console.log(error);
+                reject(error);
+            })
         })
     },
     update : function(value){
@@ -141,4 +141,4 @@ var group = {
     }
 }
 
-export default group;
+export default order;

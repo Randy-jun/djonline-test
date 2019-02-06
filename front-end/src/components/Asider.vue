@@ -10,19 +10,23 @@
         <i class="el-icon-menu"></i>
         <span slot="title" >首页</span>
       </el-menu-item>
-      <el-menu-item index="2" v-on:click="navgo('managegroup')">
+      <el-menu-item v-if="menu[0]" index="2" v-on:click="navgo('group')">
         <i class="el-icon-menu"></i>
         <span slot="title">组织管理</span>
       </el-menu-item>
-      <el-menu-item index="3" v-on:click="navgo('manageuser')">
+      <el-menu-item v-if="menu[1]" index="3" v-on:click="navgo('staff')">
         <i class="el-icon-menu"></i>
         <span slot="title">用户管理</span>
       </el-menu-item>
-      <el-menu-item index="4" v-on:click="navgo('records')">
+      <el-menu-item v-if="menu[2]" index="4" v-on:click="navgo('clerk')">
+        <i class="el-icon-menu"></i>
+        <span slot="title">职员用理</span>
+      </el-menu-item>
+      <el-menu-item v-if="menu[3]" index="5" v-on:click="navgo('orderlist')">
         <i class="el-icon-menu"></i>
         <span slot="title">订单管理</span>
       </el-menu-item>
-      <el-menu-item index="5" v-on:click="navgo('record')">
+      <el-menu-item v-if="menu[4]" index="6" v-on:click="navgo('order')">
         <i class="el-icon-menu"></i>
         <span slot="title">订单详情</span>
       </el-menu-item>
@@ -56,26 +60,42 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        isCollapse: false,
-      };
+import Sstorage from '@/module/sstorage.js';
+
+export default {
+  data() {
+    return {
+      isCollapse: false,
+      menu:[false, false, false, false, false]
+    };
+  },
+  methods: {
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
     },
-    methods: {
-      handleOpen(key, keyPath) {
-        console.log(key, keyPath);
-      },
-      handleClose(key, keyPath) {
-        console.log(key, keyPath);
-      },
-      navgo(addgo){
-        var goadd = "/home/" + addgo
-        // console.log(goadd)
-        this.$router.replace({ path: goadd })
-      },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath);
     },
-  }
+    navgo(addgo){
+      var goadd = "/home/" + addgo
+      // console.log(goadd)
+      this.$router.replace({ path: goadd })
+    },
+  },
+  mounted() {
+    let userLevel = Sstorage.get('userLevel');
+    console.log(userLevel);
+    if (0 == userLevel) {
+     this.menu = [true, true, true, true, true]; 
+    }else if (1 == userLevel) {
+      this.menu = [false, false, false, true, true];
+    }else if (2 == userLevel) {
+      this.menu = [false, false, true, true, true];
+    }else if (3 == userLevel) {
+      this.menu = [false, false, false, true, true];
+    }
+  },
+}
   
 // export default {
 //   name: 'Asider',

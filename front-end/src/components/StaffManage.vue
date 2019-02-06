@@ -48,7 +48,7 @@ import Group from '@/module/group.js';
 import InputCheck from '@/module/inputcheck.js';
 
 export default {
-  name: 'GroupManage',
+  name: 'StaffManage',
   props: {
     msg: String
   },
