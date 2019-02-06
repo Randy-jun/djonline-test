@@ -29,7 +29,7 @@ export default {
     },
   },
   mounted() {
-    this.nickname = Sstorage.get('nickName')
+    this.nickname = Sstorage.get('nickName');
     this.djname = Sstorage.get('localName');
   },
 }

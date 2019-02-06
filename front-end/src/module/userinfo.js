@@ -3,10 +3,11 @@ import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
 
 const api='http://127.0.0.1:9090/login/';
-var params = new URLSearchParams();
+
 
 var userinfo = {
-    check(userinfo){
+    check : function(userinfo){
+        var params = new URLSearchParams();
         params.append("username",userinfo.username);
         params.append("password",userinfo.password); 
 
@@ -33,6 +34,7 @@ var userinfo = {
         })
     },
     // getOne(key){
+    //     var params = new URLSearchParams();
     //     params.append("pk",key);
     //     params.append("req_method","GETONE");
     //     params.append("userID",Sstorage.get('userID'));
