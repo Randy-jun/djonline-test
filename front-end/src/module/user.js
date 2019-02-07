@@ -4,18 +4,18 @@ import Sstorage from '@/module/sstorage.js';
 
 const api='http://127.0.0.1:9090/acct/agencies/';
 
-var temp = {
+var userData = {
     item_num: 7,
-    result:[{"id":"1","name":"pearl","remark":"pearl"},
-            {"id":"2","name":"pear2","remark":"pear2"},
-            {"id":"3","name":"pear3","remark":"pear3"},
-            {"id":"4","name":"pear4","remark":"pear4"},
-            {"id":"5","name":"pear5","remark":"pear5"},
-            {"id":"6","name":"pear6","remark":"pear6"},
-            {"id":"7","name":"pear7","remark":"pear7"},]
+    data:[{id:1,name:"pearl",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pearl"},
+            {id:2,name:"pear2",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear2"},
+            {id:3,name:"pear3",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear3"},
+            {id:4,name:"pear4",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear4"},
+            {id:5,name:"pear5",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear5"},
+            {id:6,name:"pear6",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear6"},
+            {id:7,name:"pear7",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear7"},]
 }
 
-var group = {
+var user = {
     get : function(){
         var params = new URLSearchParams();
         params.append("userID",Sstorage.get('userID'));
@@ -25,10 +25,11 @@ var group = {
         params.append("req_method","GET");
 
         return new Promise((resolve, reject) => {
-            temp.result.forEach(element => {
+            userData.data.forEach(element => {
                 element.isSet = false;
             });
-            resolve(temp) ;
+            // console.log(userData)
+            resolve(userData) ;
             // Axios.post(api, params).then((response) => {
             //     console.log(response);
             //     response.data.result.forEach(element => {
@@ -54,11 +55,7 @@ var group = {
         params.append("remark", value.remark);
 
         return new Promise((resolve, reject) => {
-            let tempData = {
-                id:value.id,
-                name: value.name,
-                remark: value.remark,
-            }
+            let tempData = value;
             tempData.isSet = false;
             resolve(tempData);
         })
@@ -90,11 +87,7 @@ var group = {
         params.append("remark", value.remark);
 
         return new Promise((resolve, reject) => {
-            let tempData = {
-                id:456,
-                name: value.name,
-                remark: value.remark,
-            }
+            let tempData = value;
             tempData.isSet = false;
             resolve(tempData);
         })
@@ -141,4 +134,4 @@ var group = {
     }
 }
 
-export default group;
+export default user;

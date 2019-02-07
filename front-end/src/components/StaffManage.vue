@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import Group from '@/module/group.js';
+import User from '@/module/user.js';
 import InputCheck from '@/module/inputcheck.js';
 
 export default {
@@ -59,7 +59,10 @@ export default {
         currentRow: null,//选中行   
         columns: [
           // { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
-          { field: "name", title: "组织名称", width: 320, isEdit: true, sortable: true },
+          { field: "name", title: "用户名称", width: 320, isEdit: true, sortable: true },
+          { field: "level", title: "用户类型", width: 320, isEdit: true, sortable: true },
+          { field: "group", title: "归属组织", width: 320, isEdit: true, sortable: true },
+          { field: "status", title: "用户状态", width: 320, isEdit: true, sortable: true },
           { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
         ],
         // tempData: [],
@@ -102,7 +105,7 @@ export default {
         if(InputCheck.namecheck(this.table.currentRow.name)) return this.$message.warning("组织名称不能为空或空格!");
         
         if(null !== rowContent.id){
-          Group.update(this.table.currentRow).then((response) => {
+          User.update(this.table.currentRow).then((response) => {
             this.table.data.splice(index,1,response);
             this.$message({
               type: 'success',
@@ -116,7 +119,7 @@ export default {
             });
           })
         }else{
-          Group.insert(this.table.currentRow).then((response) => {
+          User.insert(this.table.currentRow).then((response) => {
             this.table.countAll+=1;
             this.table.data.splice(index,1,response);
             this.$message({
@@ -143,20 +146,21 @@ export default {
       for (let item of this.table.data) {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
-      let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
+      // let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
+      let tempAddData = {id: null, name : "", nickname : "", level:"管理员", group:"",status:"正常",remark:"", "isSet": true};
       this.table.data.push(tempAddData);
       this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
     },
     doDel(rowContent, index){
-      this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         console.log(rowContent, index);
 
-        Group.delete(rowContent.id).then((response) => {
+        User.delete(rowContent.id).then((response) => {
           this.table.countAll-=1;
           this.table.data.splice(index,1);
           this.$message({
@@ -188,11 +192,12 @@ export default {
     // var list = JSON.parse(localStorage.getItem('list'));
     
     // const api='http://127.0.0.1:9090/acct/agencies/';
-    Group.get().then((response) => {
+    User.get().then((response) => {
       // this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
       // this.table.data = JSON.parse(JSON.stringify(response.result));
       this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
-      this.table.data = JSON.parse(JSON.stringify(response.result));
+      // this.table.data = JSON.parse(JSON.stringify(response.result));
+      this.table.data = response.data;
       // console.log(typeof(this.table.data))
       // this.table.data = response.result;
     }).catch((error) => {

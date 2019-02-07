@@ -65,7 +65,7 @@ var userInfo = {
         return new Promise((resolve, reject) => {
             //===================================
             let tempData = user[String(userInfo.username)];
-            // console.log(user[String(userInfo.username)]);
+            console.log(tempData);
             Sstorage.set('nickName', tempData.unickname);
             Sstorage.set('userID', tempData.uuuid);
             Sstorage.set('userLevel', tempData.ulevel);

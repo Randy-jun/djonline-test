@@ -48,14 +48,14 @@ import Group from '@/module/group.js';
 import InputCheck from '@/module/inputcheck.js';
 
 export default {
-  name: 'GroupManage',
+  name: 'StaffManage',
   props: {
     msg: String
   },
   data() {
     return {
       table: {
-        countAll: null,
+        countAll: 0,
         currentRow: null,//选中行   
         columns: [
           // { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
@@ -63,7 +63,7 @@ export default {
           { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
         ],
         // tempData: [],
-        data: [],
+        data:[],
       },
       api:'http://127.0.0.1:9090/acct/agencies/',
       currentPage4: 4,
@@ -170,7 +170,7 @@ export default {
             message: "删除失败！"
           });
         })
-      }).catch(() => {
+      }).catch((error) => {
           this.$message({
             type: 'info',
             message: '已取消删除'
@@ -192,11 +192,13 @@ export default {
       // this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
       // this.table.data = JSON.parse(JSON.stringify(response.result));
       this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
-      this.table.data = JSON.parse(JSON.stringify(response.result));
+      // this.table.data = JSON.parse(JSON.stringify(response.data));
+      this.table.data = response.data;
+      console.log(this.table.data)
       // console.log(typeof(this.table.data))
       // this.table.data = response.result;
     }).catch((error) => {
-      // console.log(error);
+      console.log(error);
     })
   }
 }

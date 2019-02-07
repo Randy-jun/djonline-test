@@ -20,7 +20,7 @@
       </el-menu-item>
       <el-menu-item v-if="menu[2]" index="4" v-on:click="navgo('clerk')">
         <i class="el-icon-menu"></i>
-        <span slot="title">职员用理</span>
+        <span slot="title">职员管理</span>
       </el-menu-item>
       <el-menu-item v-if="menu[3]" index="5" v-on:click="navgo('orderlist')">
         <i class="el-icon-menu"></i>

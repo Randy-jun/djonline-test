@@ -4,16 +4,16 @@ import Sstorage from '@/module/sstorage.js';
 
 const api='http://127.0.0.1:9090/acct/agencies/';
 
-var temp = {
-    item_num: 7,
-    result:[{"id":"1","name":"pearl","remark":"pearl"},
-            {"id":"2","name":"pear2","remark":"pear2"},
-            {"id":"3","name":"pear3","remark":"pear3"},
-            {"id":"4","name":"pear4","remark":"pear4"},
-            {"id":"5","name":"pear5","remark":"pear5"},
-            {"id":"6","name":"pear6","remark":"pear6"},
-            {"id":"7","name":"pear7","remark":"pear7"},]
-}
+var groupData = {
+    item_num : 7,
+    data : [{id:1,name:"pearl",remark:"remark_pearl",isSet:false},
+            {id:2,name:"pear2",remark:"remark_pear2",isSet:false},
+            {id:3,name:"pear3",remark:"remark_pear3",isSet:false},
+            {id:4,name:"pear4",remark:"remark_pear4",isSet:false},
+            {id:5,name:"pear5",remark:"remark_pear5",isSet:false},
+            {id:6,name:"pear6",remark:"remark_pear6",isSet:false},
+            {id:7,name:"pear7",remark:"remark_pear7",isSet:false},],
+    }
 
 var group = {
     get : function(){
@@ -25,10 +25,14 @@ var group = {
         params.append("req_method","GET");
 
         return new Promise((resolve, reject) => {
-            temp.result.forEach(element => {
-                element.isSet = false;
-            });
-            resolve(temp) ;
+            // group.result.forEach(element => {
+            //     element[isSet] = false;
+            // });
+            // console.log(groupData)
+            resolve(groupData) ;
+        }).catch((error) => {
+            reject(error);
+        });
             // Axios.post(api, params).then((response) => {
             //     console.log(response);
             //     response.data.result.forEach(element => {
@@ -39,7 +43,6 @@ var group = {
             //     // console.log(error);
             //     reject(error);
             // })
-        })
     },
     update : function(value){
         var params = new URLSearchParams();
