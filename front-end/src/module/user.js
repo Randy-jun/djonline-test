@@ -25,9 +25,6 @@ var user = {
         params.append("req_method","GET");
 
         return new Promise((resolve, reject) => {
-            userData.data.forEach(element => {
-                element.isSet = false;
-            });
             // console.log(userData)
             resolve(userData) ;
             // Axios.post(api, params).then((response) => {

@@ -114,7 +114,7 @@ export default {
               type: 'error',
               message: "修改失败！"
             });
-          })
+          });
         }else{
           Group.insert(this.table.currentRow).then((response) => {
             this.table.countAll+=1;
@@ -129,7 +129,7 @@ export default {
               type: 'error',
               message: "添加失败！"
             });
-          })
+          });
         }
       }else{
         this.table.currentRow = JSON.parse(JSON.stringify(rowContent));
@@ -169,7 +169,7 @@ export default {
             type: 'error',
             message: "删除失败！"
           });
-        })
+        });
       }).catch((error) => {
           this.$message({
             type: 'info',
@@ -194,7 +194,9 @@ export default {
       this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
       // this.table.data = JSON.parse(JSON.stringify(response.data));
       this.table.data = response.data;
-      console.log(this.table.data)
+      this.table.data.forEach(item => {
+        this.$set(item, 'isSet', false);
+      });
       // console.log(typeof(this.table.data))
       // this.table.data = response.result;
     }).catch((error) => {

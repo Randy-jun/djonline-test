@@ -2,18 +2,18 @@
 import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
 
-const api='http://127.0.0.1:9090/order/';
+const api='http://127.0.0.1:9090/acct/agencies/';
 
-var temp = {
-    item_num: 7,
-    result:[{"id":"1","name":"pearl","remark":"pearl"},
-            {"id":"2","name":"pear2","remark":"pear2"},
-            {"id":"3","name":"pear3","remark":"pear3"},
-            {"id":"4","name":"pear4","remark":"pear4"},
-            {"id":"5","name":"pear5","remark":"pear5"},
-            {"id":"6","name":"pear6","remark":"pear6"},
-            {"id":"7","name":"pear7","remark":"pear7"},]
-}
+var orderData = {
+    item_num : 7,
+    data : [{id:1,user:"pearl",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",status:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arrivetime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pearl",isSet:false},
+            {id:2,user:"pear2",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",status:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arrivetime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear2",isSet:false},
+            {id:3,user:"pear3",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",status:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arrivetime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear3",isSet:false},
+            {id:4,user:"pear4",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",status:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arrivetime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear4",isSet:false},
+            {id:5,user:"pear5",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",status:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arrivetime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear5",isSet:false},
+            {id:6,user:"pear6",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",status:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arrivetime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear6",isSet:false},
+            {id:7,user:"pear7",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",status:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arrivetime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear7",isSet:false},],
+    }
 
 var order = {
     get : function(){
@@ -25,21 +25,53 @@ var order = {
         params.append("req_method","GET");
 
         return new Promise((resolve, reject) => {
-            // temp.result.forEach(element => {
-            //     element.isSet = false;
+            // orderData.result.forEach(element => {
+            //     element[isSet] = false;
             // });
-            // resolve(temp) ;
-            Axios.post(api, params).then((response) => {
-                console.log(response);
-                response.data.result.forEach(element => {
-                    this.$set(element, 'isSet', false);
-                });
-                resolve(response.data) ;
-            }).catch((error) => {
-                // console.log(error);
-                reject(error);
-            })
-        })
+            // console.log(orderData)
+            resolve(orderData) ;
+        }).catch((error) => {
+            reject(error);
+        });
+            // Axios.post(api, params).then((response) => {
+            //     console.log(response);
+            //     response.data.result.forEach(element => {
+            //         this.$set(element, 'isSet', false);
+            //     });
+            //     resolve(response.data) ;
+            // }).catch((error) => {
+            //     // console.log(error);
+            //     reject(error);
+            // })
+    },
+    getOne : function(){
+        var params = new URLSearchParams();
+        params.append("userID",Sstorage.get('userID'));
+        params.append("tokeID",Sstorage.get('localAgencyFk'));
+        params.append("local_agency_fk",Sstorage.get('tokenID'));
+
+        params.append("req_method","GET");
+
+        return new Promise((resolve, reject) => {
+            // orderData.result.forEach(element => {
+            //     element[isSet] = false;
+            // });
+            // console.log(orderData)
+            let tempData = orderData.data[0];
+            resolve(tempData) ;
+        }).catch((error) => {
+            reject(error);
+        });
+            // Axios.post(api, params).then((response) => {
+            //     console.log(response);
+            //     response.data.result.forEach(element => {
+            //         this.$set(element, 'isSet', false);
+            //     });
+            //     resolve(response.data) ;
+            // }).catch((error) => {
+            //     // console.log(error);
+            //     reject(error);
+            // })
     },
     update : function(value){
         var params = new URLSearchParams();
@@ -54,11 +86,7 @@ var order = {
         params.append("remark", value.remark);
 
         return new Promise((resolve, reject) => {
-            let tempData = {
-                id:value.id,
-                name: value.name,
-                remark: value.remark,
-            }
+            let tempData = value;
             tempData.isSet = false;
             resolve(tempData);
         })
@@ -90,11 +118,7 @@ var order = {
         params.append("remark", value.remark);
 
         return new Promise((resolve, reject) => {
-            let tempData = {
-                id:456,
-                name: value.name,
-                remark: value.remark,
-            }
+            let tempData = value;
             tempData.isSet = false;
             resolve(tempData);
         })
@@ -138,7 +162,36 @@ var order = {
         //         reject(error);
         //     })
         // })
-    }
+    },
+    exportOrder : function(){
+        var params = new URLSearchParams();
+        params.append("userID",Sstorage.get('userID'));
+        params.append("tokeID",Sstorage.get('localAgencyFk'));
+        params.append("local_agency_fk",Sstorage.get('tokenID'));
+
+        params.append("req_method","GET");
+
+        return new Promise((resolve, reject) => {
+            Axios.get(api).then((response) => {
+                console.log(response);
+                resolve(response);
+            }).catch((error) => {
+                reject(error);
+            });
+        }).catch((error) => {
+            reject(error);
+        });
+            // Axios.post(api, params).then((response) => {
+            //     console.log(response);
+            //     response.data.result.forEach(element => {
+            //         this.$set(element, 'isSet', false);
+            //     });
+            //     resolve(response.data) ;
+            // }).catch((error) => {
+            //     // console.log(error);
+            //     reject(error);
+            // })
+    },
 }
 
 export default order;

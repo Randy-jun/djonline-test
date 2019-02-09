@@ -4,7 +4,7 @@
       <h1>DJonline</h1>
     </el-col>
     <el-col :span=4>
-      <small>{{nickname}} | {{djname}} | <a class="badge badge-second el-icon-setting" v-on:click="setting()">设置</a></small>
+      <small>{{nickname}} | {{djname}} | <a class="badge badge-second el-icon-setting" v-on:click="logout()">退出</a></small>
     </el-col>
   </el-row>
 </template>
@@ -23,9 +23,9 @@ export default {
     }
   },
   methods: {
-    setting(){
+    logout(){
       // alert("setting")
-      // this.$router.replace({ path: '/setting' })
+      this.$router.replace({ path: '/' })
     },
   },
   mounted() {
