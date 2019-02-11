@@ -89,7 +89,7 @@ def index(request):
         orders = o_order.objects.all()
         orders_serializer = o_orderSerializer(orders, many=True)
         data = orders_serializer.data    
-    return render(request, 'index1.html', context={'title':'order_list','data':data,'show_data':'show_data'})
+        return render(request, 'index1.html', context={'title':'order_list','data':data,'show_data':'show_data'})
 
 
 @api_view(['GET', 'POST'])
