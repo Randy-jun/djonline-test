@@ -24,25 +24,26 @@ var group = {
 
         params.append("req_method","GET");
 
+        // return new Promise((resolve, reject) => {
+        //     // group.result.forEach(element => {
+        //     //     element[isSet] = false;
+        //     // });
+        //     // console.log(groupData)
+        //     resolve(groupData) ;
+        // }).catch((error) => {
+        //     reject(error);
+        // });
         return new Promise((resolve, reject) => {
-            // group.result.forEach(element => {
-            //     element[isSet] = false;
-            // });
-            // console.log(groupData)
-            resolve(groupData) ;
+            Axios.post(api, params).then((response) => {
+                console.log(response);
+                resolve(response.data) ;
+            }).catch((error) => {
+                // console.log(error);
+                reject(error);
+            });
         }).catch((error) => {
-            reject(error);
+            console.log(error);
         });
-            // Axios.post(api, params).then((response) => {
-            //     console.log(response);
-            //     response.data.result.forEach(element => {
-            //         this.$set(element, 'isSet', false);
-            //     });
-            //     resolve(response.data) ;
-            // }).catch((error) => {
-            //     // console.log(error);
-            //     reject(error);
-            // })
     },
     update : function(value){
         var params = new URLSearchParams();
