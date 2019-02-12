@@ -3,7 +3,7 @@ import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
 
 const api='http://127.0.0.1:9090/acct/agencies/';
-
+//=========================================================
 var groupData = {
     item_num : 7,
     data : [{id:1,name:"pearl",remark:"remark_pearl",isSet:false},
@@ -14,6 +14,7 @@ var groupData = {
             {id:6,name:"pear6",remark:"remark_pear6",isSet:false},
             {id:7,name:"pear7",remark:"remark_pear7",isSet:false},],
     }
+//=========================================================
 
 var group = {
     get : function(){
@@ -23,27 +24,28 @@ var group = {
         params.append("local_agency_fk",Sstorage.get('tokenID'));
 
         params.append("req_method","GET");
-
-        // return new Promise((resolve, reject) => {
-        //     // group.result.forEach(element => {
-        //     //     element[isSet] = false;
-        //     // });
-        //     // console.log(groupData)
-        //     resolve(groupData) ;
-        // }).catch((error) => {
-        //     reject(error);
-        // });
+//=========================================================
         return new Promise((resolve, reject) => {
-            Axios.post(api, params).then((response) => {
-                console.log(response);
-                resolve(response.data) ;
-            }).catch((error) => {
-                // console.log(error);
-                reject(error);
-            });
+            // group.result.forEach(element => {
+            //     element[isSet] = false;
+            // });
+            // console.log(groupData)
+            resolve(groupData) ;
         }).catch((error) => {
-            console.log(error);
+            reject(error);
         });
+//=========================================================        
+        // return new Promise((resolve, reject) => {
+        //     Axios.post(api, params).then((response) => {
+        //         console.log(response);
+        //         resolve(response.data) ;
+        //     }).catch((error) => {
+        //         // console.log(error);
+        //         reject(error);
+        //     });
+        // }).catch((error) => {
+        //     console.log(error);
+        // });
     },
     update : function(value){
         var params = new URLSearchParams();
