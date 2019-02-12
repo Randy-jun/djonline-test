@@ -4,13 +4,18 @@ from openpyxl import Workbook
 import json,time,datetime
 from tempfile import NamedTemporaryFile
 from django.http import HttpResponseBadRequest,HttpResponse
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser, FormParser
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+
+from .permissions import CustomerAccessPermission
 
 from order.serializers import o_jiejiSerializer, o_orderSerializer, o_songjiSerializer, o_touristSerializer
 
@@ -90,7 +95,10 @@ def index(request):
         orders_serializer = o_orderSerializer(orders, many=True)
         data = orders_serializer.data    
         return render(request, 'index1.html', context={'title':'order_list','data':data,'show_data':'show_data'})
-
+    if request.method == 'POST':
+        name = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=name, password = password)
 
 @api_view(['GET', 'POST'])
 def export_excel(request):
@@ -159,6 +167,7 @@ def delete_order(request):
     return Response({'result_str':result_str})
 
 @api_view(['POST'])
+@permission_classes((IsAuthenticated,CustomerAccessPermission,))
 def change_order_status(request):
     if request.method == 'POST':
         try:            
@@ -175,6 +184,7 @@ def change_order_status(request):
     return Response({'result_str':'changed succeed'},status=200)
 
 @api_view(['POST'])
+@permission_classes((IsAuthenticated,CustomerAccessPermission,))
 def multi_change_order_status(request):
     if request.method == 'POST':
         try:
