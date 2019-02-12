@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.5.4",
-    "vue": "^2.6.5",
+    "vue": "^2.6.6",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
@@ -24,6 +24,6 @@
     "less": "^3.0.4",
     "less-loader": "^4.1.0",
     "vue-cli-plugin-element": "^1.0.1",
-    "vue-template-compiler": "^2.6.5"
+    "vue-template-compiler": "^2.6.6"
   }
 }
