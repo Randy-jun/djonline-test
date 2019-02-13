@@ -27,7 +27,7 @@
       </el-table>
     </el-row>
     <el-row>
-      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新的组织机构</el-button>
+      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新的职员</el-button>
     </el-row>
     <el-row>
       <el-pagination  
