@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 class CustomerAccessPermission(permissions.BasePermission):
-    message = 'Adding customers not allowed.'
+    message = 'You have no permission to change'
 
     def has_permission(self,request, view):
         token = request.META['HTTP_TOKEN']

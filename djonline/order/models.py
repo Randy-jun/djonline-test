@@ -48,6 +48,4 @@ class o_songji(models.Model):
     luodi_time = models.TimeField()
     hangzhanlou = models.CharField(max_length=32)
 
-class oUser(models.Model):
-    oab = models.CharField(max_length=128)
 

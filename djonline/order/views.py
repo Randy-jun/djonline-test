@@ -167,7 +167,7 @@ def delete_order(request):
     return Response({'result_str':result_str})
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,CustomerAccessPermission,))
+@permission_classes((CustomerAccessPermission,))
 def change_order_status(request):
     if request.method == 'POST':
         try:            
