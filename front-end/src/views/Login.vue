@@ -5,27 +5,28 @@
     </el-header>
     <el-main>
       <div class="login-box">
-        <el-row>
-          <el-col :span="8">
-            <el-input id="username"  v-model="userInfo.username" placeholder="请输入帐号">
-              <template slot="prepend">帐号</template>
-            </el-input> 
-            <small>{{userInfo.username}}</small>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="8">
-            <el-input id="password" v-model="userInfo.password" v-on:keyup.enter.native="login($event)" type="password" placeholder="请输入密码">
-              <template slot="prepend">密码</template>
-            </el-input>
-            <small>{{userInfo.password}}</small>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="8">
-            <el-button id="login" v-on:click="login($event)" style="width:98%" type="success" v-bind:disabled="isWorking">登录</el-button>
-          </el-col>
-        </el-row>
+        <form id="jsLoginForm" autocomplete="off">
+          <input type="hidden" name="csrfmiddlewaretoken" value="YgezAZugvEEiADKS1yFQFwW75jez80R9dEVXbaVLSrilwzeZ2cnsTWvXGmXPyVE1">
+          <el-row>
+            <el-col :span="8">
+              <el-input id="username"  v-model="userInfo.userName" placeholder="请输入帐号">
+                <template slot="prepend">帐号</template>
+              </el-input> 
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-input id="password" v-model="userInfo.passWord" v-on:keyup.enter.native="login($event)" type="password" placeholder="请输入密码">
+                <template slot="prepend">密码</template>
+              </el-input>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-button id="login" v-on:click="login($event)" style="width:98%" type="success" v-bind:disabled="isWorking">立即登录</el-button>
+            </el-col>
+          </el-row>
+        </form>
       </div>
     </el-main>
     <el-footer>
@@ -35,9 +36,10 @@
 </template>
 
 <script>
-import Axios from 'axios';
+
+import { login } from '@/api/api'
 import Sstorage from '@/module/sstorage.js';
-import UserInfo from '@/module/userinfo.js';
+import Axios from 'axios'
 
 export default {
   name: 'Login',
@@ -47,14 +49,14 @@ export default {
   data() {
     return {
       userInfo:{
-        username:'',
-        password:'',
+        userName:'',
+        passWord:'',
       },
       isWorking:false,
       status:{
         userCheck:false,
         passCheck:false,
-      }
+      },
     }
   },
   methods: {
@@ -63,8 +65,19 @@ export default {
       console.log(event)
       const api='http://127.0.0.1:9090/login/';
       if (event.type == 'click' || event.keyCode == 13) {
+        // var params = new URLSearchParams();
+        // params.append("username",this.userInfo.userName);
+        // params.append("password",this.userInfo.passWord); 
+        // Axios.post(api, params).then((response) => {
+        //   console.log(response);
+        // }).catch(error => {
+        //   console.log(error);
+        // });
         this.isWorking = true;
-        UserInfo.check(this.userInfo).then((response) => {
+        login({
+            username:this.userInfo.userName,
+            password:this.userInfo.passWord,
+        }).then((response) => {
           console.log(response);    
           setTimeout(()=>{
               this.$router.replace({ path: 'home' })
