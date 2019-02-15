@@ -83,13 +83,22 @@ def add_employee(request):
     first_name = data['e_first_name']
     e_type = data['e_type']
     e_remark = data['e_remark']
+    user_id = data['user_id']
     if email == '':
         email = username+'@djonline.com'
     if first_name == '':
         first_name = username
+
+
+
+    #权限验证
+    user = User.objects.get(user__id=user_id)
+    if not user.is_superuser():
+        return JsonResponse({"error":"非管理员无法新增职员"},status=404)
+
     try:
         user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
-       
+        user.is_staff = True
     except Exception as e:
         return JsonResponse({"result":str(e)})
     try:
@@ -117,6 +126,92 @@ def inactive_employee(request):
     user_id = data['user_id']
     user = employee.objects.get(pk=user_id)
     user.inactive()
+
+def add_level1_partner(request):
+       #接受json数据，新增职员
+    if request.method != 'POST':
+        return HttpResponse(status=404)
+    data = json.loads(request.body)
+    username = data['p_username']
+    password = data['p_password']
+    p_org_id = data['p_org_id']
+    email = data['email']
+    first_name = data['p_first_name']
+    p_level = 1
+    p_remark = data['p_remark']
+
+
+    #权限验证
+    user_id = data['user_id']
+    user = User.objects.get(pk=user_id)
+    if not user.is_staff and not user.is_superuser:
+        #非职员和超级管理员无法新增1级伙伴
+        return JsonResponse({"error":"非职员和管理员无法新增1级伙伴"}, status=404)
+
+    if email == '':
+        email = username+'@djonline.com'
+    if first_name == '':
+        first_name = username
+    try:
+        user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
+        user.is_staff = False
+    except Exception as e:
+        return JsonResponse({"result":str(e)})
+    try:
+        p_org = organization.objects.get(pk=p_org_id)
+        result = employee.objects.create(user=user,p_org=p_org,p_level=p_level,p_remark=p_remark)
+        result=[result]
+        data = serializers.serialize("json",result,ensure_ascii=False)
+        data = json.loads(data)
+    except Exception as e:
+        user.delete()
+        return JsonResponse({"result":str(e)})
+    return JsonResponse({"result":data})
+
+def add_level2_partner(request):
+    def add_level1_partner(request):
+       #接受json数据，新增职员
+    if request.method != 'POST':
+        return HttpResponse(status=404)
+    data = json.loads(request.body)
+    username = data['p_username']
+    password = data['p_password']
+    p_org_id = data['p_org_id']
+    email = data['email']
+    first_name = data['p_first_name']
+    p_level = 2
+    p_remark = data['p_remark']
+
+
+    #权限验证
+    user_id = data['user_id']
+    user = User.objects.get(pk=user_id)
+    if not user.is_staff and not user.is_superuser:
+        #非职员和超级管理员无法新增1级伙伴
+        partner = partner.objects.get(user=user)
+        if partner.level !=1:
+            #非一级伙伴，无法新增二级伙伴
+            return JsonResponse({"error":"非职员、管理员或1级伙伴无法新增2级伙伴"}, status=404)
+
+    if email == '':
+        email = username+'@djonline.com'
+    if first_name == '':
+        first_name = username
+    try:
+        user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
+        user.is_staff = False
+    except Exception as e:
+        return JsonResponse({"result":str(e)})
+    try:
+        p_org = organization.objects.get(pk=p_org_id)
+        result = employee.objects.create(user=user,p_org=p_org,p_level=p_level,p_remark=p_remark)
+        result=[result]
+        data = serializers.serialize("json",result,ensure_ascii=False)
+        data = json.loads(data)
+    except Exception as e:
+        user.delete()
+        return JsonResponse({"result":str(e)})
+    return JsonResponse({"result":data})
 
 def get_level1_partner(request):
     #获取1级伙伴
