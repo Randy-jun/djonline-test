@@ -71,6 +71,15 @@ def get_organization(request):
     data = json.loads(data)
     return JsonResponse(data,safe=False)
 
+def inactivate_organization(request):
+    #失效组织
+    data = json.loads(request.body)
+    org_id = data['org_id']
+    org = organization.objects.get(pk=org_id)
+    org.is_active = False
+    return HttpResponse(status=200)
+
+
 def add_employee(request):
     #接受json数据，新增职员
     if request.method != 'POST':
@@ -124,8 +133,10 @@ def inactive_employee(request):
         return HttpResponse(status=404)
     data = json.loads(request.body)
     user_id = data['user_id']
-    user = employee.objects.get(pk=user_id)
-    user.inactive()
+    user = User.objects.get(pk=user_id)
+    user.is_active = False
+    user.save()
+    return True
 
 def add_level1_partner(request):
        #接受json数据，新增职员
@@ -231,7 +242,36 @@ def inactive_partner(request):
         return HttpResponse(status=404)
     data = json.loads(request.body)
     user_id = data['user_id']
-    user = partner.objects.get(pk=user_id)
-    user.inactive()
+    user = User.objects.get(pk=user_id)
+    user.is_active = False
+    user.save()
+    return True
 
+def change_first_name(request):
+    if request.method != 'POST':
+        return HttpResponse(status=404)
+    data = json.loads(request.body)
+    user_id = data['user_id']
+    first_name = data['first_name']
+    user = User.objects.get(pk=user_id)
+    user.first_name = first_name
+    user.save()
+    return True
 
+def change_password(request):
+    if request.method != 'POST':
+        return HttpResponse(status=404)
+    token = request.META['HTTP_TOKEN']
+    token_list = token_list.objects.all()#需要过滤
+    if token not in token_list:
+       return HttpResponse(status=404) 
+    user_id = data['user_id']
+    user_password = data['user_password']
+    new_password = data['new_password']
+
+    user = User.objects.get(pk=user_id)
+    #authenticate(user.username,user_password)验证用户本人
+    user.set_password(new_password)
+    user.save()
+    return True
+    
