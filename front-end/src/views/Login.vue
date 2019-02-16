@@ -39,7 +39,8 @@
 
 import { login } from '@/api/api'
 import Sstorage from '@/module/sstorage.js';
-import Axios from 'axios'
+// import Axios from 'axios'
+import UserInfo from '@/module/userinfo.js';
 
 export default {
   name: 'Login',
@@ -74,10 +75,11 @@ export default {
         //   console.log(error);
         // });
         this.isWorking = true;
-        login({
-            username:this.userInfo.userName,
-            password:this.userInfo.passWord,
-        }).then((response) => {
+        // login({
+        //     username:this.userInfo.userName,
+        //     password:this.userInfo.passWord,
+        // }).then((response) => {
+        UserInfo.check(this.userInfo).then((response) => {
           console.log(response);    
           setTimeout(()=>{
               this.$router.replace({ path: 'home' })

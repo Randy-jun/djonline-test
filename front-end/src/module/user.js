@@ -6,13 +6,16 @@ const api='http://127.0.0.1:9090/acct/agencies/';
 
 var userData = {
     item_num: 7,
-    data:[{id:1,name:"pearl",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pearl"},
-            {id:2,name:"pear2",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear2"},
-            {id:3,name:"pear3",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear3"},
-            {id:4,name:"pear4",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear4"},
-            {id:5,name:"pear5",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear5"},
-            {id:6,name:"pear6",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear6"},
-            {id:7,name:"pear7",nickname:"NickName",level:"管理员",group:"中旅",status:"正常",remark:"pear7"},]
+    data:[
+        {uuuid:0,uname:'user0',upassword:'passwd',unickname:'系统管理员',ulevel:'0',ulevelname:'系统管理员',uremark:'系统拥有者，权限最大。',guuid:0,ugroup:"百恒国际0",statuscode:0,statusflag:'正常',},
+        {uuuid:1,uname:'user1',upassword:'passwd',unickname:'系统管理员',ulevel:'0',ulevelname:'系统管理员',uremark:'系统拥有者，权限最大。',guuid:1,ugroup:"百恒国际1",statuscode:0,statusflag:'正常',},
+        {uuuid:2,uname:'user2',upassword:'passwd',unickname:'系统管理员',ulevel:'0',ulevelname:'系统管理员',uremark:'系统拥有者，权限最大。',guuid:2,ugroup:"百恒国际2",statuscode:0,statusflag:'正常',},
+        {uuuid:3,uname:'user3',upassword:'passwd',unickname:'系统管理员',ulevel:'0',ulevelname:'系统管理员',uremark:'系统拥有者，权限最大。',guuid:3,ugroup:"百恒国际3",statuscode:0,statusflag:'正常',},
+        {uuuid:4,uname:'user4',upassword:'passwd',unickname:'系统管理员',ulevel:'0',ulevelname:'系统管理员',uremark:'系统拥有者，权限最大。',guuid:4,ugroup:"百恒国际4",statuscode:0,statusflag:'正常',},
+        {uuuid:5,uname:'user5',upassword:'passwd',unickname:'系统管理员',ulevel:'0',ulevelname:'系统管理员',uremark:'系统拥有者，权限最大。',guuid:5,ugroup:"百恒国际5",statuscode:0,statusflag:'正常',},
+        {uuuid:6,uname:'user6',upassword:'passwd',unickname:'系统管理员',ulevel:'0',ulevelname:'系统管理员',uremark:'系统拥有者，权限最大。',guuid:6,ugroup:"百恒国际6",statuscode:0,statusflag:'正常',},
+        {uuuid:7,uname:'user7',upassword:'passwd',unickname:'系统管理员',ulevel:'0',ulevelname:'系统管理员',uremark:'系统拥有者，权限最大。',guuid:7,ugroup:"百恒国际7",statuscode:0,statusflag:'正常',},
+    ],
 }
 
 var user = {

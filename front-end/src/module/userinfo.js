@@ -59,12 +59,12 @@ var user = {
 var userInfo = {
     check : function(userInfo){
         var params = new URLSearchParams();
-        params.append("username",userInfo.username);
-        params.append("password",userInfo.password); 
+        params.append("username",userInfo.userName);
+        params.append("password",userInfo.passWord); 
 
         return new Promise((resolve, reject) => {
             //===================================
-            let tempData = user[String(userInfo.username)];
+            let tempData = user[String(userInfo.userName)];
             console.log(tempData);
             Sstorage.set('nickName', tempData.unickname);
             Sstorage.set('userID', tempData.uuuid);

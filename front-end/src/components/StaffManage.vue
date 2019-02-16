@@ -4,9 +4,9 @@
       <el-table v-if="0 !== table.countAll" :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
         <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
         <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
-        <el-table-column fixed type="index" width="100"></el-table-column>
+        <el-table-column align='center' fixed type="index" width="100"></el-table-column>
         <!-- <el-table-column v-for="(v,i) in table.columns" :prop="v.field" :label="v.title" :sortable="v.sortable"> -->
-        <el-table-column v-for="(value, key) in table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
+        <el-table-column align='center' v-for="(value, key) in table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
           <template slot-scope="scope">
             <span v-if="scope.row.isSet">
               <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
@@ -15,7 +15,29 @@
             <span v-else>{{scope.row[value.field]}}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="150">
+        <el-table-column align='center' width="200" label="归属组织">
+          <template slot-scope="scope">
+            <div v-if="scope.row.isSet">
+              <el-select size="mini" @change="groupChange" v-model="scope.row.guuid" >
+                <el-option v-for="item in groupList" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </div>
+            <div v-else>{{scope.row.ugroup}}</div>
+          </template>
+        </el-table-column>
+        <el-table-column align='center' width="100" label="状态">
+          <template slot-scope="scope">
+            <span v-if="scope.row.isSet">
+              <el-select size="mini" @change="statusChange" v-model="scope.row.statuscode" >
+                <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </span>
+            <span v-else class="el-tag el-tag--mini">{{scope.row.statusflag}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align='center' fixed="right" label="操作" width="150">
           <template slot-scope="scope">
             <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
                 {{scope.row.isSet?'保存':"修改"}}
@@ -54,16 +76,50 @@ export default {
   },
   data() {
     return {
+      statusList: [{
+          value: 0,
+          label: '正常'
+        },{
+          value: 1,
+          label: '异常'
+        },{
+          value: 2,
+          label: '禁用'
+        },],
+        groupList: [{
+          value: 0,
+          label: '百恒国际'
+        },{
+          value: 1,
+          label: '青年旅行'
+        },{
+          value: 2,
+          label: '青2年旅行'
+        },{
+          value: 3,
+          label: '青3年旅行'
+        },{
+          value: 4,
+          label: '青4年旅行'
+        },{
+          value: 5,
+          label: '青5年旅行'
+        },{
+          value: 6,
+          label: '青6年旅行'
+        },{
+          value: 7,
+          label: '中国旅行'
+        },],
       table: {
         countAll: null,
         currentRow: null,//选中行   
         columns: [
           // { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
-          { field: "name", title: "用户名称", width: 320, isEdit: true, sortable: true },
-          { field: "level", title: "用户类型", width: 320, isEdit: true, sortable: true },
-          { field: "group", title: "归属组织", width: 320, isEdit: true, sortable: true },
-          { field: "status", title: "用户状态", width: 320, isEdit: true, sortable: true },
-          { field: "remark", title: "备注", width: 320, isEdit: true, sortable: false },
+          { field: "uname", title: "用户名称", width: 120, isEdit: true, sortable: true },
+          { field: "ulevelname", title: "用户类型", width: 120, isEdit: true, sortable: true },
+          // { field: "ugroup", title: "归属组织", width: 220, isEdit: true, sortable: true },
+          { field: "uremark", title: "备注", width: 220, isEdit: true, sortable: false },
         ],
         // tempData: [],
         data: [],
@@ -78,6 +134,24 @@ export default {
   methods: {
     choice(id){
       // console.log(zuid)
+    },
+    statusChange(value){
+      let obj = {};
+      obj = this.statusList.find((item)=>{//这里的selectList就是上面遍历的数据源
+          return item.value === value;//筛选出匹配数据
+      });
+      // console.log(obj)
+      this.table.currentRow.statuscode = obj.value;
+      this.table.currentRow.statusflag = obj.label;
+    },
+    groupChange(value){
+      let obj = {};
+      obj = this.groupList.find((item)=>{//这里的selectList就是上面遍历的数据源
+          return item.value === value;//筛选出匹配数据
+      });
+      // console.log(obj)
+      this.table.currentRow.guuid = obj.value;
+      this.table.currentRow.ugroup = obj.label;
     },
     // handleCurrentChange(selectRow){
     //   this.table.currentRow = selectRow;

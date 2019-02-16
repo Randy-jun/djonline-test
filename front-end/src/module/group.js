@@ -6,13 +6,13 @@ const api='http://127.0.0.1:9090/acct/agencies/';
 //=========================================================
 var groupData = {
     item_num : 7,
-    data : [{id:1,name:"pearl",remark:"remark_pearl",isSet:false},
-            {id:2,name:"pear2",remark:"remark_pear2",isSet:false},
-            {id:3,name:"pear3",remark:"remark_pear3",isSet:false},
-            {id:4,name:"pear4",remark:"remark_pear4",isSet:false},
-            {id:5,name:"pear5",remark:"remark_pear5",isSet:false},
-            {id:6,name:"pear6",remark:"remark_pear6",isSet:false},
-            {id:7,name:"pear7",remark:"remark_pear7",isSet:false},],
+    data : [{id:1,name:"pearl",remark:"remark_pearl",statuscode:0,statusflag:"正常",},
+            {id:2,name:"pear2",remark:"remark_pear2",statuscode:0,statusflag:"正常",},
+            {id:3,name:"pear3",remark:"remark_pear3",statuscode:0,statusflag:"正常",},
+            {id:4,name:"pear4",remark:"remark_pear4",statuscode:0,statusflag:"正常",},
+            {id:5,name:"pear5",remark:"remark_pear5",statuscode:0,statusflag:"正常",},
+            {id:6,name:"pear6",remark:"remark_pear6",statuscode:0,statusflag:"正常",},
+            {id:7,name:"pear7",remark:"remark_pear7",statuscode:0,statusflag:"正常",},],
     }
 //=========================================================
 
@@ -60,11 +60,7 @@ var group = {
         params.append("remark", value.remark);
 
         return new Promise((resolve, reject) => {
-            let tempData = {
-                id:value.id,
-                name: value.name,
-                remark: value.remark,
-            }
+            let tempData = value;
             tempData.isSet = false;
             resolve(tempData);
         })
