@@ -117,7 +117,8 @@ def get_organization(request):
             d['statusflag'] = statusflag[d['statuscode']]
             result.append(d)
         print(result)
-    return JsonResponse(result,safe=False)
+
+    return JsonResponse({"item_num":len(data),"data":result})
 
 def inactivate_organization(request):
     #失效组织
