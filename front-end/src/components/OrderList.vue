@@ -79,7 +79,7 @@
         <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
           <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
           <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
-          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column type="selection" width="55" @selection-change="handleSelectionChange"></el-table-column>
           <el-table-column fixed type="index" width="20"></el-table-column>
           <!-- <el-table-column v-for="(v,i) in table.columns" :prop="v.field" :label="v.title" :sortable="v.sortable"> -->
           <el-table-column v-for="(value, key) in table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
@@ -89,6 +89,17 @@
                 <span v-else>{{scope.row[value.field]}}</span>
               </span>
               <span v-else>{{scope.row[value.field]}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column align='center' width="100" label="状态">
+            <template slot-scope="scope">
+              <span v-if="scope.row.isSet">
+                <el-select size="mini" @change="statusChange" v-model="scope.row.statuscode" >
+                  <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
+                  </el-option>
+                </el-select>
+              </span>
+              <span v-else class="el-tag el-tag--mini">{{scope.row.statusflag}}</span>
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="150">
@@ -129,6 +140,17 @@ export default {
   },
   data() {
     return {
+      checkedList:[],
+      statusList: [{
+          value: 0,
+          label: '已提交'
+        },{
+          value: 1,
+          label: '受理中'
+        },{
+          value: 2,
+          label: '已结算'
+        },],
       buttonShow:false,
       dateValue:null,
       value:true,
@@ -145,7 +167,6 @@ export default {
           { field: "address", title: "接送地址", width: 200, isEdit: true, sortable: false },
           { field: "group", title: "组织", width: 200, isEdit: true, sortable: false },
           { field: "name", title: "订单类型", width: 200, isEdit: true, sortable: false },
-          { field: "status", title: "订单状态", width: 200, isEdit: true, sortable: false },
           { field: "number", title: "航班时间", width: 200, isEdit: true, sortable: false },
           { field: "leavetime", title: "上机时间", width: 200, isEdit: true, sortable: false },
           { field: "arrivetime", title: "下机时间", width: 200, isEdit: true, sortable: false },
@@ -162,8 +183,17 @@ export default {
     // CustomeAlert,
   },
   methods: {
-    choice(id){
-      // console.log(zuid)
+    handleSelectionChange(){
+      console.log(value)
+    },
+    statusChange(value){
+      let obj = {};
+      obj = this.statusList.find((item)=>{//这里的selectList就是上面遍历的数据源
+          return item.value === value;//筛选出匹配数据
+      });
+      // console.log(obj)
+      this.table.currentRow.statuscode = obj.value;
+      this.table.currentRow.statusflag = obj.label;
     },
     // handleCurrentChange(selectRow){
     //   this.table.currentRow = selectRow;
