@@ -37,9 +37,6 @@
 
 <script>
 
-import { login } from '@/api/api'
-import Sstorage from '@/module/sstorage.js';
-import Axios from 'axios'
 import UserInfo from '@/module/userinfo.js';
 
 export default {
@@ -63,37 +60,23 @@ export default {
   methods: {
     // login(e){
     login : function(event){
-      console.log(event)
-      const api='http://127.0.0.1:9090/user/login/';
+      // console.log(event)
       if (event.type == 'click' || event.keyCode == 13) {
-        var params = {
-          username: this.userInfo.userName,
-          password: this.userInfo.passWord
-        }
-        Axios.post(api, params).then((response) => {
-          console.log(response);
-        }).catch(error => {
-          console.log(error);
-        });
         this.isWorking = true;
-        // login({
-        //     username:this.userInfo.userName,
-        //     password:this.userInfo.passWord,
-        // }).then((response) => {
-        // UserInfo.check(this.userInfo).then((response) => {
-        //   console.log(response);    
-        //   setTimeout(()=>{
-        //       this.$router.replace({ path: 'home' })
-        //   },500)
-        //   this.$message({
-        //     message: '登录成功！',
-        //     type: 'success'
-        //   });
-        // }).catch((error) => {
-        //   console.log(error);
-        //   this.$message.error('登录失败！');
-        //   this.isWorking = false;
-        // })
+        UserInfo.check(this.userInfo).then((response) => {
+          // console.log(response); 
+          setTimeout(()=>{
+              this.$router.replace({ path: 'home' });
+          },500)
+          this.$message({
+            message: response.unickname + '登录成功！',
+            type: 'success'
+          });
+        }).catch((error) => {
+          console.log(error);
+          this.$message.error('登录失败！');
+          this.isWorking = false;
+        });
       }
     },
   },

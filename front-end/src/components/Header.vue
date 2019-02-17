@@ -4,7 +4,7 @@
       <h1>DJonline</h1>
     </el-col>
     <el-col :span=4>
-      <small>{{nickname}} | {{djname}} | <a class="badge badge-second el-icon-setting" v-on:click="logout()">退出</a></small>
+      <small>{{nickname}} | {{group}} | <a class="badge badge-second el-icon-setting" v-on:click="logout()">退出</a></small>
     </el-col>
   </el-row>
 </template>
@@ -19,18 +19,19 @@ export default {
   data() {
     return {
       nickname:'',
-      djname:'',
+      group:'',
     }
   },
   methods: {
     logout(){
       // alert("setting")
-      this.$router.replace({ path: '/' })
+      Sstorage.clearAll();
+      this.$router.replace({ path: '/login' })
     },
   },
   mounted() {
     this.nickname = Sstorage.get('nickName');
-    this.djname = Sstorage.get('localName');
+    this.group = Sstorage.get('group');
   },
 }
 </script>

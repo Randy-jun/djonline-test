@@ -1,81 +1,97 @@
 //sessionstorage function packae
-import Axios from 'axios';
+import { login } from '@/api/api'
 import Sstorage from '@/module/sstorage.js';
 
-const api='http://127.0.0.1:9090/login/';
 //======================================
-var user = {
-    'user0' : {
-        uuuid : '0000',
-        uname : 'user0',
-        upassword : 'passwd',
-        unickname : '系统管理员',
-        ulevel : 0,
-        ulevelname : '系统管理员',
-        umark : '系统拥有者，权限最大。',
-        guuid : '000',
-        ustatusid : '0',
-        ustatusname : '正常',
-    },
-    'user1' : {
-        uuuid : '0001',
-        uname : 'user1',
-        upassword : 'passwd',
-        unickname : '系统职员',
-        ulevel : 1,
-        ulevelname : '系统职员',
-        umark : '系统拥有公司职员。',
-        guuid : '000',
-        ustatusid : '0',
-        ustatusname : '正常',
-    },
-    'user2' : {
-        uuuid : '0002',
-        uname : 'user2',
-        upassword : 'passwd',
-        unickname : '公司管理员',
-        ulevel : 2,
-        ulevelname : '公司管理员',
-        umark : '公司管理者，公司内权限最大。',
-        guuid : '001',
-        ustatusid : '0',
-        ustatusname : '正常',
-    },
-    'user3' : {
-        uuuid : '0003',
-        uname : 'user3',
-        upassword : 'passwd',
-        unickname : '公司职员',
-        ulevel : 3,
-        ulevelname : '公司职员',
-        umark : '公司职员，主要负责订单新增。',
-        guuid : '001',
-        ustatusid : '0',
-        ustatusname : '正常',
-    },
-}
+// var user = {
+//     'user0' : {
+//         uuuid : '0000',
+//         uname : 'user0',
+//         upassword : 'passwd',
+//         unickname : '系统管理员',
+//         ulevel : 0,
+//         ulevelname : '系统管理员',
+//         umark : '系统拥有者，权限最大。',
+//         guuid : '000',
+//         ustatusid : '0',
+//         ustatusname : '正常',
+//     },
+//     'user1' : {
+//         uuuid : '0001',
+//         uname : 'user1',
+//         upassword : 'passwd',
+//         unickname : '系统职员',
+//         ulevel : 1,
+//         ulevelname : '系统职员',
+//         umark : '系统拥有公司职员。',
+//         guuid : '000',
+//         ustatusid : '0',
+//         ustatusname : '正常',
+//     },
+//     'user2' : {
+//         uuuid : '0002',
+//         uname : 'user2',
+//         upassword : 'passwd',
+//         unickname : '公司管理员',
+//         ulevel : 2,
+//         ulevelname : '公司管理员',
+//         umark : '公司管理者，公司内权限最大。',
+//         guuid : '001',
+//         ustatusid : '0',
+//         ustatusname : '正常',
+//     },
+//     'user3' : {
+//         uuuid : '0003',
+//         uname : 'user3',
+//         upassword : 'passwd',
+//         unickname : '公司职员',
+//         ulevel : 3,
+//         ulevelname : '公司职员',
+//         umark : '公司职员，主要负责订单新增。',
+//         guuid : '001',
+//         ustatusid : '0',
+//         ustatusname : '正常',
+//     },
+// }
 //======================================
 
 var userInfo = {
     check : function(userInfo){
-        var params = new URLSearchParams();
-        params.append("username",userInfo.userName);
-        params.append("password",userInfo.passWord); 
 
         return new Promise((resolve, reject) => {
             //===================================
-            let tempData = user[String(userInfo.userName)];
-            console.log(tempData);
-            Sstorage.set('nickName', tempData.unickname);
-            Sstorage.set('userID', tempData.uuuid);
-            Sstorage.set('userLevel', tempData.ulevel);
+            // let tempData = user[String(userInfo.userName)];
+            // console.log(tempData);
+            // Sstorage.set('nickName', tempData.unickname);
+            // Sstorage.set('userID', tempData.uuuid);
+            // Sstorage.set('userLevel', tempData.ulevel);
             
-            Sstorage.set('localName', tempData.guuid);
-            Sstorage.set('localAgencyFk', tempData.guuid);
+            // Sstorage.set('localName', tempData.guuid);
+            // Sstorage.set('localAgencyFk', tempData.guuid);
             
-            Sstorage.set('tokenID', 'response.data.tokenID');
-            resolve(tempData);
+            // Sstorage.set('tokenID', 'response.data.tokenID');
+            // resolve(tempData);
             //===================================
+            login({
+                username:userInfo.userName,
+                password:userInfo.passWord,
+            }).then((response) => {
+                // console.log(response);
+                if (response.data.isLogin && null !== response.data.tonkenID) {
+                    // console.log(response)
+                    Sstorage.set('tonken', response.data.tokenID);
+                    Sstorage.set('nickName', response.data.unickname);
+                    Sstorage.set('userLevel', response.data.ulevel);
+                    Sstorage.set('nickName', response.data.ulevelname);
+                    Sstorage.set('group', response.data.ulevelname);
+                    resolve(response.data);
+                } else {
+                    reject(response.data.loginResultString);
+                }
+            }).catch((error) => {
+                // console.log(error);
+                reject(error);
+            });
             // Axios.post(api, params).then((response) => {
             //     console.log(response);
             //     if(response.data.isLogin){

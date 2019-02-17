@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from '@/axios';
 
-let local_host = 'http://127.0.0.1:9090'
+// let local_host = 'http://127.0.0.1:9090'
 
 //登录
 export const login = params => {
-  return axios.post(`${local_host}/login/`, params)
+  return axios.post(`/user/login/`, params)
 }
 
 // //获取商品类别信息

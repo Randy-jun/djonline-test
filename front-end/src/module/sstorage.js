@@ -9,7 +9,10 @@ var sstorage = {
     },
     remove(key){
         window.sessionStorage.removeItem(key);
-    }
+    },
+    clearAll(){
+        window.sessionStorage.clear();
+    },
 }
 
 export default sstorage;
