@@ -63,17 +63,7 @@ def index(request):
     pass
     return HttpResponse("good")
 
-def add_organization(request):
-    #新增组织
-    #token = request.META.get('Authorization',0)
-    token = request.META['HTTP_AUTHORIZATION']
-    print(token)
-    data = json.loads(request.body)
-    name = data['org_name'] 
-    remark = data['org_remark']
-    organization.objects.create(name=name,remark=remark)
-    
-    return JsonResponse({"result":"add success","name":name,"remark":remark})
+
 
 def check_token(func):
     def inner(request, **kwargs):
@@ -90,6 +80,26 @@ def check_token(func):
         else:
             return JsonResponse({'msg': 'Unauthorized Access'}, status=404)
     return inner
+
+def add_organization(request):
+    #新增组织 
+    try: 
+        data = json.loads(request.body)
+        name = data['org_name'] 
+        remark = data['org_remark']
+        is_active = data['org_is_active']
+        org = organization.objects.create(name=name,remark=remark,is_active=is_active)
+        org.save()
+        d = {}
+        d['id'] = org.id
+        d['name'] = org.name
+        d['remark'] = org.remark
+        d['statuscode'] = org.is_active
+        statusflag = {True:"正常",False:"禁用"}
+        d['statusflag'] = statusflag[d['statuscode']]
+    except Exception as e:
+        return JsonResponse({"is_success":False,"error_msg":str(e)})    
+    return JsonResponse({"is_success":True,"data":d})
 
 @check_token
 def get_organization(request):

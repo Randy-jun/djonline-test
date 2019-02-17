@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class organization(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128,unique=True)
     remark = models.CharField(max_length=256, blank=True, default='')
     is_active = models.BooleanField(default=True)
 
