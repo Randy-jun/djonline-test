@@ -42,9 +42,9 @@ class employee(models.Model):
         return self.user.username    
    
 
-    def inactive(self):
-        self.user.is_active = False
-
+    def is_manager(self):        
+        return self.e_type == 0
+        
 class partner(models.Model):
     pass
 
