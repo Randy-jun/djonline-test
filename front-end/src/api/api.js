@@ -4,9 +4,12 @@ import axios from '@/axios';
 
 //登录
 export const login = params => {
-  return axios.post(`/user/login/`, params)
+  return axios.post('/user/login/', params)
 }
-
+//获取组织机构列表
+export const groupList = () => {
+  return axios.get('/user/get_organization')
+}
 // //获取商品类别信息
 // export const queryCategorygoods = params => { return axios.get(`${local_host}/indexgoods/`) }
 

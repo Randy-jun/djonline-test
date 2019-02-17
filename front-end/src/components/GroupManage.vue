@@ -86,7 +86,6 @@ export default {
         // tempData: [],
         data:[],
       },
-      api:'http://127.0.0.1:9090/acct/agencies/',
       currentPage4: 4,
     }
   },
@@ -218,14 +217,15 @@ export default {
     
     // const api='http://127.0.0.1:9090/acct/agencies/';
     Group.get().then((response) => {
+      console.log(response);
       // this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
       // this.table.data = JSON.parse(JSON.stringify(response.result));
-      this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
-      // this.table.data = JSON.parse(JSON.stringify(response.data));
-      this.table.data = response.data;
-      this.table.data.forEach(item => {
-        this.$set(item, 'isSet', false);
-      });
+      // this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
+      // // this.table.data = JSON.parse(JSON.stringify(response.data));
+      // this.table.data = response.data;
+      // this.table.data.forEach(item => {
+      //   this.$set(item, 'isSet', false);
+      // });
       // console.log(typeof(this.table.data))
       // this.table.data = response.result;
     }).catch((error) => {
