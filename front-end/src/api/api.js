@@ -6,25 +6,51 @@ import axios from '@/axios';
 export const login = params => {
   return axios.post('/user/login/', params)
 }
+
 //获取组织机构列表
 export const groupList = () => {
-  return axios.get('/user/get_organization')
+  return axios.get('/user/get_org')
 }
 
 //新增组织机构
 export const groupAdd = params => {
-  return axios.post('/user/add_organization/', params)
+  return axios.post('/user/add_org/', params)
 }
 
 //更新组织机构
 export const groupUpdate = params => {
-  return axios.post('/user/add_organization/', params)
+  return axios.post('/user/update_org/', params)
 }
 
 //删除组织机构
 export const groupDel = params => {
+  return axios.post('/user/delete_org/', params)
+}
+
+//获取用户列表
+export const userList = () => {
+  return axios.get('/user/get_org')
+}
+
+//新增用户
+export const userAdd = params => {
   return axios.post('/user/add_organization/', params)
 }
+
+//更新用户
+export const userUpdate = params => {
+  return axios.post('/user/add_organization/', params)
+}
+
+//删除用户
+export const userDel = params => {
+  return axios.post('/user/add_organization/', params)
+}
+
+
+
+
+
 // //获取商品类别信息
 // export const queryCategorygoods = params => { return axios.get(`${local_host}/indexgoods/`) }
 

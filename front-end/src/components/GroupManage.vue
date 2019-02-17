@@ -23,12 +23,12 @@
                 </el-option>
               </el-select>
             </span>
-            <span v-else class="el-tag el-tag--mini">{{scope.row.statusflag}}</span>
+            <el-tag v-else size="mini" :type="scope.row.statuscode?'success':'danger'">{{scope.row.statusflag}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column align='center' fixed="right" label="操作" width="150">
           <template slot-scope="scope">
-            <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
+            <span class="el-tag el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
                 {{scope.row.isSet?'保存':"修改"}}
             </span>
             <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="doDel(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
@@ -140,7 +140,9 @@ export default {
           });
         }else{
           Group.insert(this.table.currentRow).then((response) => {
+            console.log(response)
             this.table.countAll+=1;
+            this.$set(response, 'isSet', false)
             this.table.data.splice(index,1,response);
             this.$message({
               type: 'success',
@@ -178,7 +180,7 @@ export default {
         type: 'warning'
       }).then(() => {
         console.log(rowContent, index);
-        Group.delete(rowContent.id).then((response) => {
+        Group.delete(rowContent).then((response) => {
           this.table.countAll-=1;
           this.table.data.splice(index,1);
           this.$message({
