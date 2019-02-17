@@ -143,6 +143,7 @@ def delete_organization(request):
     org = organization.objects.get(pk=org_id)
     org.is_delete = True
     org.delete_time = datetime.datetime.now()
+    org.save()
     return JsonResponse({"is_success":True},status=200)
 
 def update_organization(request):
