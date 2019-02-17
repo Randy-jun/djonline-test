@@ -11,7 +11,7 @@ axios.defaults.baseURL = 'http://127.0.0.1:9090'
 axios.interceptors.request.use(
   config => {
     if (Sstorage.get('tonken')) {
-      config.headers.Authorization = Sstorage.get('tonken');
+      config.headers.Authorization = 'tonken' + Sstorage.get('tonken');
     }
     return config
   },
@@ -30,13 +30,16 @@ axios.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           // 401 清除token信息并跳转到登录页面
-          
           // 只有在当前路由不是登录页面才跳转
           router.currentRoute.path !== 'login' &&
             router.replace({
               path: 'login',
               query: { redirect: router.currentRoute.path },
-            })
+            });
+        case 403:
+            console.log('您没有该操作权限');
+        case 500:
+            console.log('服务器错误');
       }
     }
     // console.log(JSON.stringify(error));//console : Error: Request failed with status code 402
