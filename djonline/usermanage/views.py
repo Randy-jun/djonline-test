@@ -114,7 +114,7 @@ def get_organization(request):
         return HttpResponse("Authentication Failed !", status=404)
 
     if ut.user.id :                                                                                                         
-        data = serializers.serialize("json", organization.objects.filter(is_active=True),ensure_ascii=False)
+        data = serializers.serialize("json", organization.objects.filter(is_delete=False),ensure_ascii=False)
         data = json.loads(data)
         result = []
         statusflag = {True:"正常",False:"禁用"}
@@ -130,12 +130,13 @@ def get_organization(request):
 
     return JsonResponse({"item_num":len(data),"data":result})
 
-def inactivate_organization(request):
+def delete_organization(request):
     #失效组织
     data = json.loads(request.body)
     org_id = data['org_id']
     org = organization.objects.get(pk=org_id)
-    org.is_active = False
+    org.is_delete = True
+    org.delete_time = datetime.datetime.now()
     return JsonResponse({"is_success":True},status=200)
 
 def update_organization(request):
@@ -145,6 +146,7 @@ def update_organization(request):
     org = organization.objects.get(id=org_id)
     org.name = data['org_name']
     org.remark = data['org_remark']
+    org.is_active = data['org_is_active']
     org.save()
     d = {}
     d['id'] = org.id
