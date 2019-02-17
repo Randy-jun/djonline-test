@@ -6,12 +6,13 @@ import Sstorage from '@/module/sstorage.js';
 // axios 配置
 axios.defaults.timeout = 5000
 axios.defaults.baseURL = 'http://127.0.0.1:9090'
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 
 // http request 拦截器
 axios.interceptors.request.use(
   config => {
     if (Sstorage.get('tonken')) {
-      config.headers.Username = Sstorage.get('username');
+      config.headers.authKey = Sstorage.get('username');
       config.headers.Authorization = Sstorage.get('tonken');
     }
     return config
