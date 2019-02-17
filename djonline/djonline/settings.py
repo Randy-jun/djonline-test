@@ -26,7 +26,7 @@ SECRET_KEY = '5+1*#c5=v_ci7zef+i(ef+t_ie6h@)mgc0g6#j=@fc1oac-u(4'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
@@ -66,6 +66,8 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_WHITELIST = (
       'localhost:8080',
+      '127.0.0.1:8080',
+      'localhost:9090',
 )
 ROOT_URLCONF = 'djonline.urls'
 

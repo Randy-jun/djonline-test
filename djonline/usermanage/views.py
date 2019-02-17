@@ -15,6 +15,7 @@ def user_login(request):
         #从post中获取username和password
         #username = request.POST.get('username')
         #password = request.POST.get('password', '')
+        print(request.body)
         data = json.loads(request.body)
         username = data['username']
         password = data['password']
