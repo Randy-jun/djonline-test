@@ -6,7 +6,7 @@
     <el-main>
       <div class="login-box">
         <form id="jsLoginForm" autocomplete="off">
-          <input type="hidden" name="csrfmiddlewaretoken" value="YgezAZugvEEiADKS1yFQFwW75jez80R9dEVXbaVLSrilwzeZ2cnsTWvXGmXPyVE1">
+          <!-- <input type="hidden" name="csrfmiddlewaretoken" value="YgezAZugvEEiADKS1yFQFwW75jez80R9dEVXbaVLSrilwzeZ2cnsTWvXGmXPyVE1"> -->
           <el-row>
             <el-col :span="8">
               <el-input id="username"  v-model="userInfo.userName" placeholder="请输入帐号">
