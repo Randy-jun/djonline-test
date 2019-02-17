@@ -79,6 +79,7 @@ var userInfo = {
                 // console.log(response);
                 if (response.data.isLogin && null !== response.data.tonkenID) {
                     // console.log(response)
+                    Sstorage.set('username', response.data.username);
                     Sstorage.set('tonken', response.data.tokenID);
                     Sstorage.set('nickName', response.data.unickname);
                     Sstorage.set('userLevel', response.data.ulevel);

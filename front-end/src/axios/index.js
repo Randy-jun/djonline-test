@@ -11,7 +11,8 @@ axios.defaults.baseURL = 'http://127.0.0.1:9090'
 axios.interceptors.request.use(
   config => {
     if (Sstorage.get('tonken')) {
-      config.headers.Authorization = 'tonken' + Sstorage.get('tonken');
+      config.headers.Username = Sstorage.get('username');
+      config.headers.Authorization = Sstorage.get('tonken');
     }
     return config
   },
