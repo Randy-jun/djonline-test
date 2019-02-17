@@ -126,7 +126,9 @@ var group = {
         params.append("pk", value.id);
 
         return new Promise((resolve, reject) => {
-            resolve(1);
+            resolve(true);
+        }).catch((errot) => {
+            reject(error);
         })
         // return new Promise((resolve, reject) => {
         //     Axios.post(api, params).then((response) => {

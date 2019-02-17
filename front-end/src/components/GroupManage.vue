@@ -185,7 +185,6 @@ export default {
         type: 'warning'
       }).then(() => {
         console.log(rowContent, index);
-
         Group.delete(rowContent.id).then((response) => {
           this.table.countAll-=1;
           this.table.data.splice(index,1);
@@ -203,7 +202,7 @@ export default {
       }).catch((error) => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: '已取消删除!'
           });          
         });
     },

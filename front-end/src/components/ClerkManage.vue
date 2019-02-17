@@ -188,7 +188,6 @@ export default {
         type: 'warning'
       }).then(() => {
         console.log(rowContent, index);
-
         User.delete(rowContent.id).then((response) => {
           this.table.countAll-=1;
           this.table.data.splice(index,1);
@@ -203,10 +202,10 @@ export default {
             message: "删除失败！"
           });
         })
-      }).catch(() => {
+      }).catch((error) => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: '已取消删除!'
           });          
         });
     },
