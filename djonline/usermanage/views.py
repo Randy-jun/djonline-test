@@ -180,8 +180,7 @@ def add_level1_partner(request):
     return JsonResponse({"result":data})
 
 def add_level2_partner(request):
-    def add_level1_partner(request):
-       #接受json数据，新增职员
+    #接受json数据，新增职员
     if request.method != 'POST':
         return HttpResponse(status=404)
     data = json.loads(request.body)
