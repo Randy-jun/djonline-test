@@ -30,7 +30,7 @@ class u_token_list(models.Model):
 
 class employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    e_type = models.IntegerField(default=1)#类型
+    e_type = models.IntegerField(default=1)#类型0:manager,1:employee,2:partner,3:p-empl
     e_org = models.ForeignKey(organization, on_delete=models.CASCADE)#组织
     e_remark = models.CharField(max_length=256, blank=True, default='')#备注
 
@@ -41,24 +41,7 @@ class employee(models.Model):
     def inactive(self):
         self.user.is_active = False
 
-
-    class Meta:
-        verbose_name_plural = "职员"
-
 class partner(models.Model):
-    user = models.OneToOneField(User, verbose_name=("伙伴"), on_delete=models.CASCADE)
-    p_level = models.IntegerField(default=1)#级别
-    p_org = models.ForeignKey(organization, on_delete=models.CASCADE)#组织
-    p_remark = models.CharField(max_length=256, blank=True, default='')#备注 
+    pass
 
-    def __str__(self):
-        return self.user.username
-
-
-    def inactive(self):
-        self.user.is_active = False
-
-
-    class Meta:
-        verbose_name_plural = "伙伴"
 
