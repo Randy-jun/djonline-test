@@ -8,6 +8,7 @@ urlpatterns = [
     path('add_organization/',views.add_organization,name='add_organization'),
     path('get_organization/',views.get_organization,name='add_organization'),
     path('inactivate_org/',views.inactivate_organization,name='inactivate_org'),
+    path('update_org/',views.update_organization,name='update_org'),
     path('add_employee/',views.add_employee,name='add_employee'),
     path('get_employee/',views.get_employee,name='add_employee'),
 ]

@@ -138,6 +138,23 @@ def inactivate_organization(request):
     org.is_active = False
     return JsonResponse({"is_success":True},status=200)
 
+def update_organization(request):
+    #update
+    data = json.loads(request.body)
+    org_id = data['org_id']
+    org = organization.objects.get(id=org_id)
+    org.name = data['org_name']
+    org.remark = data['org_remark']
+    org.save()
+    d = {}
+    d['id'] = org.id
+    d['name'] = org.name
+    d['remark'] = org.remark
+    d['statuscode'] = org.is_active
+    statusflag = {True:"正常",False:"禁用"}
+    d['statusflag'] = statusflag[d['statuscode']]
+    return JsonResponse({"is_success":True,"data":d})
+
 
 def add_employee(request):
     #接受json数据，新增职员
