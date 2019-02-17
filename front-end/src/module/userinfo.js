@@ -76,7 +76,7 @@ var userInfo = {
                 username:userInfo.userName,
                 password:userInfo.passWord,
             }).then((response) => {
-                // console.log(response);
+                console.log(response);
                 if (response.data.isLogin && null !== response.data.tonkenID) {
                     // console.log(response)
                     Sstorage.set('username', response.data.username);

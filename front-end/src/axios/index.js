@@ -12,8 +12,8 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
 axios.interceptors.request.use(
   config => {
     if (Sstorage.get('tonken')) {
-      config.headers.authKey = Sstorage.get('username');
-      config.headers.Authorization = Sstorage.get('tonken');
+    //   config.headers.authKey = Sstorage.get('username');
+      config.headers.Authorization = Sstorage.get('username') + '_' + Sstorage.get('tonken');
     }
     return config
   },
