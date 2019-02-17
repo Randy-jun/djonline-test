@@ -15,7 +15,6 @@ def user_login(request):
         #从post中获取username和password
         #username = request.POST.get('username')
         #password = request.POST.get('password', '')
-        print(request.body)
         data = json.loads(request.body)
         username = data['username']
         password = data['password']
@@ -64,6 +63,8 @@ def index(request):
 
 def add_organization(request):
     #新增组织
+    token = request.META.get('HTTP_TOKEN',0)
+    print(token)
     data = json.loads(request.body)
     name = data['org_name'] 
     remark = data['org_remark']
@@ -73,9 +74,21 @@ def add_organization(request):
 
 def get_organization(request):
     #获取组织
+    token = request.META.get('HTTP_TOKEN',0)
+    print(token)
     data = serializers.serialize("json", organization.objects.all(),ensure_ascii=False)
     data = json.loads(data)
-    return JsonResponse(data,safe=False)
+    result = []
+    statusflag = {True:"正常",False:"禁用"}
+    for i in data:
+        d = {}
+        d['id'] = i['pk']
+        d['name'] = i['fields']['name']
+        d['remark'] = i['fields']['remark']
+        d['statuscode'] = i['fields']['is_active']
+        d['statusflag'] = statusflag[d['statuscode']]
+        result.append(d)
+    return JsonResponse(result,safe=False)
 
 def inactivate_organization(request):
     #失效组织
