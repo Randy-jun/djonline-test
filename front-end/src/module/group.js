@@ -38,7 +38,7 @@ var group = {
                 org_id:value.id,
                 org_name: value.name,
                 org_remark:value.remark,
-                org_statuscode:value.statuscode,
+                org_is_activee:value.statuscode,
             }).then((response) => {
                 console.log(response);
                 resolve(response.data) ;
@@ -70,31 +70,20 @@ var group = {
         });
     },
     delete : function(value){
-        var params = new URLSearchParams();
-        params.append("userID",Sstorage.get('userID'));
-        params.append("tokeID",Sstorage.get('localAgencyFk'));
-        params.append("local_agency_fk",Sstorage.get('tokenID'));
-
-        params.append("req_method","DELETE");
-        params.append("pk", value.id);
-
         return new Promise((resolve, reject) => {
-            resolve(true);
-        }).catch((errot) => {
+            groupDel({
+                org_id: value.id,
+            }).then((response) => {
+                console.log(response);
+                resolve(response.data) ;
+            }).catch((error) => {
+                console.log(error);
+                reject(error);
+            });
+        }).catch((error) => {
+            // console.log(error);
             reject(error);
-        })
-        // return new Promise((resolve, reject) => {
-        //     Axios.post(api, params).then((response) => {
-        //         if(response.data.status_flag){
-        //             // console.log(response);
-
-        //             resolve(tempData) ;
-        //         }
-        //     }).catch((error) => {
-        //         // console.log(error);
-        //         reject(error);
-        //     })
-        // })
+        });
     }
 }
 
