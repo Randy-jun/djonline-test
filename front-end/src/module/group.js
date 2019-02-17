@@ -56,7 +56,7 @@ var group = {
             groupAdd({
                 org_name: value.name,
                 org_remark:value.remark,
-                org_statuscode:value.statuscode,
+                org_is_active:value.statuscode,
             }).then((response) => {
                 console.log(response);
                 resolve(response.data) ;
