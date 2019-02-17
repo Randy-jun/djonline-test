@@ -13,7 +13,7 @@ axios.interceptors.request.use(
   config => {
     if (Sstorage.get('tonken')) {
     //   config.headers.authKey = Sstorage.get('username');
-      config.headers.Authorization = Sstorage.get('username') + '_' + Sstorage.get('tonken');
+      config.headers.Authorization = Sstorage.get('username') + ':' + Sstorage.get('tonken');
         // config.headers.Authorization = {
         //     username:Sstorage.get('username'),
         //     tonken:Sstorage.get('tonken'),
