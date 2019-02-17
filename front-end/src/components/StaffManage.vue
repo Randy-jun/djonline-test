@@ -76,16 +76,11 @@ export default {
   },
   data() {
     return {
-      statusList: [{
-          value: 0,
-          label: '正常'
-        },{
-          value: 1,
-          label: '异常'
-        },{
-          value: 2,
-          label: '禁用'
-        },],
+      statusList: [
+          {value: 0,label: '正常'},
+          {value: 1,label: '异常'},
+          {value: 2,label: '禁用'},
+        ],
         groupList: [{
           value: 0,
           label: '百恒国际'

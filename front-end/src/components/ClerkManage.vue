@@ -65,16 +65,11 @@ export default {
   },
   data() {
     return {
-      statusList: [{
-          value: 0,
-          label: '正常'
-        },{
-          value: 1,
-          label: '异常'
-        },{
-          value: 2,
-          label: '禁用'
-        },],
+      statusList: [
+          {value: 0,label: '正常'},
+          {value: 1,label: '异常'},
+          {value: 2,label: '禁用'},
+        ],
       table: {
         countAll: null,
         currentRow: null,//选中行   

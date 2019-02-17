@@ -84,7 +84,7 @@ var userInfo = {
                     Sstorage.set('nickName', response.data.unickname);
                     Sstorage.set('userLevel', response.data.ulevel);
                     Sstorage.set('nickName', response.data.ulevelname);
-                    Sstorage.set('group', response.data.ulevelname);
+                    Sstorage.set('group', response.data.uorg);
                     resolve(response.data);
                 } else {
                     reject(response.data.loginResultString);

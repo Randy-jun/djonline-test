@@ -141,16 +141,11 @@ export default {
   data() {
     return {
       checkedList:[],
-      statusList: [{
-          value: 0,
-          label: '已提交'
-        },{
-          value: 1,
-          label: '受理中'
-        },{
-          value: 2,
-          label: '已结算'
-        },],
+      statusList: [
+            {value: 0,label: '暂存'},
+            {value: 1,label: '已提交'},
+            {value: 2,label: '已结算'},
+          ],
       buttonShow:false,
       dateValue:null,
       value:true,

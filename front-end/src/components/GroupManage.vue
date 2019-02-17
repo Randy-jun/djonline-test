@@ -65,16 +65,10 @@ export default {
   },
   data() {
     return {
-      statusList: [{
-          value: 0,
-          label: '正常'
-        },{
-          value: 1,
-          label: '异常'
-        },{
-          value: 2,
-          label: '禁用'
-        },],
+      statusList: [
+          {value: true,label: '正常'},
+          {value: false,label: '禁用'},
+        ],
       table: {
         countAll: 0,
         currentRow: null,//选中行   
@@ -172,7 +166,7 @@ export default {
       for (let item of this.table.data) {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
-      let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
+      let tempAddData = {id: null, name: "", remark: "", statuscode: true, statusflag: "正常",isSet: true,};
       this.table.data.push(tempAddData);
       this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
@@ -218,14 +212,12 @@ export default {
     // const api='http://127.0.0.1:9090/acct/agencies/';
     Group.get().then((response) => {
       console.log(response);
-      // this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
-      // this.table.data = JSON.parse(JSON.stringify(response.result));
-      // this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
-      // // this.table.data = JSON.parse(JSON.stringify(response.data));
-      // this.table.data = response.data;
-      // this.table.data.forEach(item => {
-      //   this.$set(item, 'isSet', false);
-      // });
+      this.table.data = response.data;
+      this.table.countAll = response.item_num;
+      // console.log(this.table.countAll, this.table.data)
+      this.table.data.forEach(item => {
+        this.$set(item, 'isSet', false);
+      });
       // console.log(typeof(this.table.data))
       // this.table.data = response.result;
     }).catch((error) => {

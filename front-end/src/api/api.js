@@ -10,6 +10,17 @@ export const login = params => {
 export const groupList = () => {
   return axios.get('/user/get_organization')
 }
+
+//新增组织机构
+export const groupAdd = params => {
+  return axios.post('/user/add_organization/', params)
+}
+
+//更新组织机构
+export const groupUpdate = params => {
+  return axios.post('/user/add_organization/', params)
+}
+
 // //获取商品类别信息
 // export const queryCategorygoods = params => { return axios.get(`${local_host}/indexgoods/`) }
 
