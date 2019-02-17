@@ -24,7 +24,7 @@ class u_token_list(models.Model):
     gen_date = models.DateField() #生成时间
     
     def __str__(self):
-        return self.user.name
+        return self.user.username
 
 
 
