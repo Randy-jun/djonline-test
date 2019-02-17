@@ -85,10 +85,16 @@ def add_organization(request):
     #新增组织 
     try: 
         data = json.loads(request.body)
-        name = data['org_name'] 
+        name = data['org_name']
         remark = data['org_remark']
         is_active = data['org_is_active']
-        org = organization.objects.create(name=name,remark=remark,is_active=is_active)
+        try:
+            org =  organization.objects.get(name=name,is_delete=True)
+            org.remark = remark
+            org.is_acitve = is_active
+        except:
+            org = organization.objects.create(name=name,remark=remark,is_active=is_active)
+        
         org.save()
         d = {}
         d['id'] = org.id
