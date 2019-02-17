@@ -21,6 +21,10 @@ export const groupUpdate = params => {
   return axios.post('/user/add_organization/', params)
 }
 
+//删除组织机构
+export const groupDel = params => {
+  return axios.post('/user/add_organization/', params)
+}
 // //获取商品类别信息
 // export const queryCategorygoods = params => { return axios.get(`${local_host}/indexgoods/`) }
 
