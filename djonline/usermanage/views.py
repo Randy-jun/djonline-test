@@ -114,7 +114,7 @@ def get_organization(request):
         return HttpResponse("Authentication Failed !", status=404)
 
     if ut.user.id :                                                                                                         
-        data = serializers.serialize("json", organization.objects.all(),ensure_ascii=False)
+        data = serializers.serialize("json", organization.objects.filter(is_active=True),ensure_ascii=False)
         data = json.loads(data)
         result = []
         statusflag = {True:"正常",False:"禁用"}
@@ -136,7 +136,7 @@ def inactivate_organization(request):
     org_id = data['org_id']
     org = organization.objects.get(pk=org_id)
     org.is_active = False
-    return HttpResponse(status=200)
+    return JsonResponse({"is_success":True},status=200)
 
 
 def add_employee(request):

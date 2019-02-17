@@ -10,8 +10,6 @@ class organization(models.Model):
     def __str__(self):
         return self.name
 
-    def inactive(self):
-        self.is_active = False
 
     class Meta:
         verbose_name_plural = "组织信息表 (organization)"
