@@ -66,9 +66,10 @@ export default {
       console.log(event)
       const api='http://127.0.0.1:9090/user/login/';
       if (event.type == 'click' || event.keyCode == 13) {
-        var params = new URLSearchParams();
-        params.append("username",this.userInfo.userName);
-        params.append("password",this.userInfo.passWord); 
+        var params = {
+          username: this.userInfo.userName,
+          password: this.userInfo.passWord
+        }
         Axios.post(api, params).then((response) => {
           console.log(response);
         }).catch(error => {
