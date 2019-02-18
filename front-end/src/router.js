@@ -37,17 +37,17 @@ const router = new Router({
         },
         component: () => import(/* webpackChunkName: "home/managegroup" */ '@/components/GroupManage.vue'),
       },{
+        path: 'partner',
+        meta: {
+          requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+        },
+        component: () => import(/* webpackChunkName: "home/manageuser" */ '@/components/PartnerManage.vue'),
+      },{
         path: 'staff',
         meta: {
           requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
         },
         component: () => import(/* webpackChunkName: "home/manageuser" */ '@/components/StaffManage.vue'),
-      },{
-        path: 'clerk',
-        meta: {
-          requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
-        },
-        component: () => import(/* webpackChunkName: "home/manageuser" */ '@/components/ClerkManage.vue'),
       },{
         path: 'orderlist',
         meta: {

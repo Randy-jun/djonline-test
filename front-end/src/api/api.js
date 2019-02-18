@@ -1,7 +1,5 @@
 import axios from '@/axios';
 
-// let local_host = 'http://127.0.0.1:9090'
-
 //登录
 export const login = params => {
   return axios.post('/user/login/', params)
@@ -27,22 +25,22 @@ export const groupDel = params => {
   return axios.post('/user/delete_org/', params)
 }
 
-//获取用户列表
+//获取伙伴列表
 export const userList = () => {
-  return axios.get('/user/get_org')
+  return axios.get('/user/get_partner')
 }
 
-//新增用户
+//新增伙伴
 export const userAdd = params => {
-  return axios.post('/user/add_organization/', params)
+  return axios.post('/user/add_partner/', params)
 }
 
-//更新用户
+//更新伙伴
 export const userUpdate = params => {
   return axios.post('/user/add_organization/', params)
 }
 
-//删除用户
+//删除伙伴
 export const userDel = params => {
   return axios.post('/user/add_organization/', params)
 }

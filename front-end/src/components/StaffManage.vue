@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import User from '@/module/user.js';
+import Staff from '@/module/staff.js';
 import InputCheck from '@/module/inputcheck.js';
 
 export default {
@@ -174,7 +174,7 @@ export default {
         if(InputCheck.namecheck(this.table.currentRow.name)) return this.$message.warning("组织名称不能为空或空格!");
         
         if(null !== rowContent.id){
-          User.update(this.table.currentRow).then((response) => {
+          Staff.update(this.table.currentRow).then((response) => {
             this.table.data.splice(index,1,response);
             this.$message({
               type: 'success',
@@ -188,7 +188,7 @@ export default {
             });
           })
         }else{
-          User.insert(this.table.currentRow).then((response) => {
+          Staff.insert(this.table.currentRow).then((response) => {
             this.table.countAll+=1;
             this.table.data.splice(index,1,response);
             this.$message({
@@ -228,7 +228,7 @@ export default {
         type: 'warning'
       }).then(() => {
         console.log(rowContent, index);
-        User.delete(rowContent.id).then((response) => {
+        Staff.delete(rowContent.id).then((response) => {
           this.table.countAll-=1;
           this.table.data.splice(index,1);
           this.$message({
@@ -260,7 +260,7 @@ export default {
     // var list = JSON.parse(localStorage.getItem('list'));
     
     // const api='http://127.0.0.1:9090/acct/agencies/';
-    User.get().then((response) => {
+    Staff.get().then((response) => {
       // this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
       // this.table.data = JSON.parse(JSON.stringify(response.result));
       this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
