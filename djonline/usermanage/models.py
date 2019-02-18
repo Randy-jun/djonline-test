@@ -8,7 +8,7 @@ class organization(models.Model):
     is_active = models.BooleanField(default=True)
 
     is_delete = models.BooleanField(default=False)
-    delete_time = models.DateField(auto_now_add=True)#delete_time
+    delete_time = models.DateTimeField(auto_now_add=True)#delete_time
 
     def __str__(self):
         return self.name
@@ -22,7 +22,7 @@ class u_token_list(models.Model):
     '''token表，记录用户token及生成时间'''
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     token = models.CharField(max_length=128) #token
-    gen_date = models.DateField() #生成时间
+    gen_date = models.DateTimeField() #生成时间
     
     def __str__(self):
         return self.user.username
@@ -36,7 +36,7 @@ class employee(models.Model):
     e_remark = models.CharField(max_length=256, blank=True, default='')#备注
 
     is_delete = models.BooleanField(default=False)
-    delete_time = models.DateField(auto_now_add=True)#delete_time
+    delete_time = models.DateTimeField(auto_now_add=True)#delete_time
 
     def __str__(self):
         return self.user.username    

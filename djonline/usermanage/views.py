@@ -230,26 +230,35 @@ def inactive_employee(request):
     user.save()
     return True
 
-def add_level1_partner(request):
+def add_partner(request):
        #接受json数据，新增职员
     if request.method != 'POST':
         return HttpResponse(status=404)
+    try:
+        auth = request.META["HTTP_AUTHORIZATION"]
+        c_username,token = auth.split(":")
+        ut = u_token_list.objects.get(token=token) # 检查token是否过期
+        ut.user.employee
+        if (datetime.datetime.now().replace(tzinfo=None) - ut.gen_date.replace(tzinfo=None)).days > 1:
+            return JsonResponse({"error_msg:":"token已过期请重新登陆"},status=404)
+    except Exception as e:
+        return JsonResponse({"error_msg:":str(e)},status=404)
+
+    c_user = User.objects.get(username=c_username)
+    if not c_user.employee.is_manager():
+        return JsonResponse({"error_msg:":"非管理员无法新增伙伴"},status=404)
+    if not c_user.is_active or c_user.employee.is_delete:#判断用户是激活状态
+        return JsonResponse({"error_msg:":"账号已失效"},status=404)
+    
+
     data = json.loads(request.body)
     username = data['p_username']
     password = data['p_password']
     p_org_id = data['p_org_id']
     email = data['email']
     first_name = data['p_first_name']
-    p_level = 1
-    p_remark = data['p_remark']
-
-
-    #权限验证
-    user_id = data['user_id']
-    user = User.objects.get(pk=user_id)
-    if not user.is_staff and not user.is_superuser:
-        #非职员和超级管理员无法新增1级伙伴
-        return JsonResponse({"error":"非职员和管理员无法新增1级伙伴"}, status=404)
+    e_type = 3
+    p_remark = data['p_remark']    
 
     if email == '':
         email = username+'@djonline.com'
@@ -258,11 +267,12 @@ def add_level1_partner(request):
     try:
         user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
         user.is_staff = False
+        user.save()
     except Exception as e:
         return JsonResponse({"result":str(e)})
     try:
         p_org = organization.objects.get(pk=p_org_id)
-        result = employee.objects.create(user=user,p_org=p_org,p_level=p_level,p_remark=p_remark)
+        result = employee.objects.create(user=user,e_org=p_org,e_type=e_type,e_remark=p_remark)
         result=[result]
         data = serializers.serialize("json",result,ensure_ascii=False)
         data = json.loads(data)
@@ -315,9 +325,9 @@ def add_level2_partner(request):
         return JsonResponse({"result":str(e)})
     return JsonResponse({"result":data})
 
-def get_level1_partner(request):
+def get_partner(request):
     #获取1级伙伴
-    data = serializers.serialize("json", partner.objects.filter(p_level=1))
+    data = serializers.serialize("json", employee.objects.filter(e_level=3))
     data = json.loads(data)
     return JsonResponse(data)
 
