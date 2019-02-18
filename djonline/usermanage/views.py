@@ -327,13 +327,26 @@ def add_level2_partner(request):
 
 def get_partner(request):
     #获取1级伙伴
-    data = serializers.serialize("json", employee.objects.filter(e_level=3))
+    data = serializers.serialize("json", employee.objects.filter(e_type=3))
     data = json.loads(data)
-    return JsonResponse(data)
+    result = []
+    ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
+
+    for i in data:
+        d = {}
+        d['id']=i['pk']
+        d['username']=User.objects.get(pk=i['fields']['user']).username
+        d['e_type']=i['fields']['e_type']
+        d['e_type_name']=ulevelname[d['e_type']]
+        d['e_org']=organization.objects.get(pk=i['fields']['e_org']).name
+        d['e_remark']=i['fields']['e_remark']
+        result.append(d)
+
+    return JsonResponse({"item_num":len(data),"result":result},status=200)
 
 def get_level2_partner(request):
     #获取2级伙伴
-    data = serializers.serialize("json", partner.objects.filter(p_level=2))
+    data = serializers.serialize("json", partner.objects.filter(e_type=4))
     data = json.loads(data)
     return JsonResponse(data)
 
