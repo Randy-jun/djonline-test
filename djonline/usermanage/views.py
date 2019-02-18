@@ -133,6 +133,7 @@ def get_organization(request):
             d['statusflag'] = statusflag[d['statuscode']]
             result.append(d)
         print(result)
+        ut.gen_date = datetime.datetime.now()
 
     return JsonResponse({"item_num":len(data),"data":result})
 
