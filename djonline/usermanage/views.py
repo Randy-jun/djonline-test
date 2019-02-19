@@ -116,7 +116,7 @@ def get_organization(request):
         user,token = auth.split(":")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
         print(user,token)                                                                                                                           
         ut = u_token_list.objects.get(token=token)
-    except Exception as e:
+    except Exception :
         return HttpResponse("Authentication Failed !", status=404)
 
     if ut.user.id :                                                                                                         
@@ -265,6 +265,10 @@ def add_partner(request):
         email = username+'@djonline.com'
     if first_name == '':
         first_name = username
+
+    
+
+
     try:
         user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
         user.is_staff = False
@@ -280,51 +284,54 @@ def add_partner(request):
     except Exception as e:
         user.delete()
         return JsonResponse({"result":str(e)})
-    return JsonResponse({"result":data})
-
-def add_level2_partner(request):
-    #接受json数据，新增职员
-    if request.method != 'POST':
-        return HttpResponse(status=404)
-    data = json.loads(request.body)
-    username = data['p_username']
-    password = data['p_password']
-    p_org_id = data['p_org_id']
-    email = data['email']
-    first_name = data['p_first_name']
-    p_level = 2
-    p_remark = data['p_remark']
 
 
-    #权限验证
-    user_id = data['user_id']
-    user = User.objects.get(pk=user_id)
-    if not user.is_staff and not user.is_superuser:
-        #非职员和超级管理员无法新增1级伙伴
-        partner = partner.objects.get(user=user)
-        if partner.level !=1:
-            #非一级伙伴，无法新增二级伙伴
-            return JsonResponse({"error":"非职员、管理员或1级伙伴无法新增2级伙伴"}, status=404)
-
-    if email == '':
-        email = username+'@djonline.com'
-    if first_name == '':
-        first_name = username
     try:
+        user = User.objects.get(username=username,is_active=False)
+        #是否有已删除的用户重名，有则启用
+        if user.employee.is_delete == False:
+            return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=404)
+        user.employee.is_delete = False
+        user.is_active = True
+        user.employee.delete_time = datetime.datetime.now()
+        user.email = email
+        user.set_password(password)
+        user.first_name = first_name
+        user.is_staff = False
+        user.save()
+
+        try:
+            p_org = organization.objects.get(pk=p_org_id)
+            employee = user.employee
+            employee.e_org = p_org
+            employee.e_type = e_type
+            employee.e_remark = p_remark
+            employee.save()
+            result=[employee]
+            data = serializers.serialize("json",result,ensure_ascii=False)
+            data = json.loads(data)
+        except Exception as e:
+            user.is_active = False
+            return JsonResponse({"result":str(e)})
+
+    except:
         user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
         user.is_staff = False
-    except Exception as e:
-        return JsonResponse({"result":str(e)})
-    try:
-        p_org = organization.objects.get(pk=p_org_id)
-        result = employee.objects.create(user=user,p_org=p_org,p_level=p_level,p_remark=p_remark)
-        result=[result]
-        data = serializers.serialize("json",result,ensure_ascii=False)
-        data = json.loads(data)
-    except Exception as e:
-        user.delete()
-        return JsonResponse({"result":str(e)})
+        user.save()
+
+        try:
+            p_org = organization.objects.get(pk=p_org_id)
+            result = employee.objects.create(user=user,e_org=p_org,e_type=e_type,e_remark=p_remark)
+            result=[result]
+            data = serializers.serialize("json",result,ensure_ascii=False)
+            data = json.loads(data)
+        except Exception as e:
+            user.delete()
+            return JsonResponse({"result":str(e)})
+
     return JsonResponse({"result":data})
+
+
 
 def get_partner(request):
     #获取1级伙伴
@@ -345,22 +352,46 @@ def get_partner(request):
 
     return JsonResponse({"item_num":len(data),"result":result},status=200)
 
-def get_level2_partner(request):
-    #获取2级伙伴
-    data = serializers.serialize("json", partner.objects.filter(e_type=4))
-    data = json.loads(data)
-    return JsonResponse(data)
-
-def inactive_partner(request):
-    #失效伙伴账号
-    if request.method != 'POST':
-        return HttpResponse(status=404)
+def delete_partner(request):
+    #删除1级伙伴
     data = json.loads(request.body)
-    user_id = data['user_id']
-    user = User.objects.get(pk=user_id)
-    user.is_active = False
+    p_id = data['partner_id']
+    partner = User.objects.get(pk=p_id)
+    partner.is_active = False
+    partner.employee.is_delete = True
+    partner.employee.delete_time = datetime.datetime.now()
+    partner.save()
+    return JsonResponse({"is_success":True},status=200)
+
+def update_partner(request):
+       #update
+    data = json.loads(request.body)
+    p_id = data['partner_id']
+    user = User.objects.get(pk=p_id)    
+    p_org_id = data['p_org_id']
+    org = organization.objects.get(pk=p_org_id)
+    user.employee.e_org = org
+    user.email = data['email']
+    user.is_active = data['p_is_active']#是否有效用户
+    user.first_name = data['p_first_name']
+    user.employee.e_type = 3
+    user.employee.p_remark = data['p_remark']
     user.save()
-    return True
+
+    #处理要返回的数据
+    d = {}
+    d['id'] = user.id
+    d['name'] = user.first_name
+    d['remark'] = user.employee.e_remark
+    d['org_name']=org.name
+    d['email']=user.email
+    d['e_type']=user.employee.e_type
+    d['statuscode'] = user.is_active
+    statusflag = {True:"正常",False:"禁用"}
+    d['statusflag'] = statusflag[d['statuscode']]
+
+    return JsonResponse({"is_success":True,"data":d})
+
 
 def change_first_name(request):
     if request.method != 'POST':
