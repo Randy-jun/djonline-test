@@ -102,7 +102,7 @@ def add_organization(request):
         d['remark'] = org.remark
         d['statuscode'] = org.is_active
         statusflag = {True:"正常",False:"禁用"}
-        d['statusflag'] = statusflag[d['statuscode']]
+        d['status_flag'] = statusflag[d['statuscode']]
     except Exception as e:
         return JsonResponse({"is_success":False,"error_msg":str(e)})    
     return JsonResponse({"is_success":True,"data":d})
@@ -119,7 +119,8 @@ def get_organization(request):
     except Exception :
         return HttpResponse("Authentication Failed !", status=401)
     
-    is_all = request.GET.get('all',0)
+    is_all = request.GET.get('all')
+    print('is_all:',is_all)
    
     if ut.user.id :
         if is_all == 1:
@@ -337,8 +338,8 @@ def get_partner(request):
         d['e_org']=organization.objects.get(pk=i['fields']['e_org']).name
         d['e_org_id']= i['fields']['e_org']
         d['e_remark']=i['fields']['e_remark']
-        d['status_code']=User.objects.get(pk=i['fields']['user']).is_active
-        d['status_flag']=statusflag[d['status_code']]
+        d['statuscode']=User.objects.get(pk=i['fields']['user']).is_active
+        d['statusflag']=statusflag[d['statuscode']]
         result.append(d)
 
     return JsonResponse({"item_num":len(data),"data":result},status=200)
