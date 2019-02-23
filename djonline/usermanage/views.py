@@ -107,7 +107,7 @@ def add_organization(request):
         return JsonResponse({"is_success":False,"error_msg":str(e)})    
     return JsonResponse({"is_success":True,"data":d})
 
-@check_token
+#@check_token
 def get_organization(request):
     #获取组织                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
     #token = request.META.get('Authorization',0)
@@ -120,9 +120,9 @@ def get_organization(request):
         return HttpResponse("Authentication Failed !", status=401)
     
     is_all = request.GET.get('all',0)
-
+   
     if ut.user.id :
-        if is_all:
+        if is_all == 1:
             data = serializers.serialize("json", organization.objects.filter(is_delete=False,is_active=True),ensure_ascii=False)                                                                                                       
         else:
             data = serializers.serialize("json", organization.objects.filter(is_delete=False),ensure_ascii=False)
@@ -326,6 +326,7 @@ def get_partner(request):
     data = json.loads(data)
     result = []
     ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
+    statusflag = {True:"正常",False:"禁用"}
 
     for i in data:
         d = {}
@@ -336,7 +337,8 @@ def get_partner(request):
         d['e_org']=organization.objects.get(pk=i['fields']['e_org']).name
         d['e_org_id']= i['fields']['e_org']
         d['e_remark']=i['fields']['e_remark']
-        d['e_is_active']=User.objects.get(pk=i['fields']['user']).is_active
+        d['status_code']=User.objects.get(pk=i['fields']['user']).is_active
+        d['status_flag']=statusflag[d['status_code']]
         result.append(d)
 
     return JsonResponse({"item_num":len(data),"data":result},status=200)
