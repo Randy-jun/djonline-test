@@ -31,6 +31,7 @@ var partner = {
     },
     update : function(value){
         return new Promise((resolve, reject) => {
+            console.log(value)
             partnerUpdate({
                 org_id:value.id,
                 org_name: value.name,
@@ -46,6 +47,7 @@ var partner = {
         });
     },
     insert : function(value){
+        console.log(value)
         return new Promise((resolve, reject) => {
             partnerAdd({
                 org_name: value.name,

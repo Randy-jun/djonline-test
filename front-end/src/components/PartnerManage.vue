@@ -191,7 +191,7 @@ export default {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
       // let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
-      let tempAddData = {id: null, name : "", nickname : "", level:"管理员", group:"",status:"正常",remark:"", "isSet": true};
+      let tempAddData = {id: null, username: "", e_remark: "", e_type: 2, e_type_name: "伙伴", e_org_id: this.groupList[0].value, e_org: this.groupList[0].label, statuscode: true, statusflag: "正常",isSet: true,};
       this.table.data.push(tempAddData);
       this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
