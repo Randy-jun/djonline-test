@@ -311,7 +311,7 @@ def add_partner(request):
             user.delete()
             return JsonResponse({"result":str(e)})
 
-    return JsonResponse({"result":data})
+    return JsonResponse({"data":data})
 
 
 
@@ -332,7 +332,7 @@ def get_partner(request):
         d['e_remark']=i['fields']['e_remark']
         result.append(d)
 
-    return JsonResponse({"item_num":len(data),"result":result},status=200)
+    return JsonResponse({"item_num":len(data),"data":result},status=200)
 
 def delete_partner(request):
     #删除1级伙伴
@@ -426,8 +426,8 @@ def add_employee(request):
                 emp.e_remark = e_remark
             else:
                 emp = employee.objects.create(user=user, e_org=e_org, e_type=1, e_remark=e_remark)
-            result = [emp]
-            data = serializers.serialize("json",result,ensure_ascii=False)
+            data = [emp]
+            data = serializers.serialize("json",data,ensure_ascii=False)
             data = json.loads(data)
         except Exception as e:
             if is_delete:
@@ -436,7 +436,7 @@ def add_employee(request):
                 emp.delete_time = datetime.datetime.now()
             else:
                 user.delete()
-            return JsonResponse({"result":str(e)})
+            return JsonResponse({"data":str(e)})
         return JsonResponse(data, safe = False)
        
     
@@ -493,8 +493,8 @@ def add_employee(request):
                 emp.e_remark = e_remark
             else:
                 emp = employee.objects.create(user=user, e_org=e_org, e_type=4, e_remark=e_remark)
-            result = [emp]
-            data = serializers.serialize("json",result,ensure_ascii=False)
+            data = [emp]
+            data = serializers.serialize("json",data,ensure_ascii=False)
             data = json.loads(data)
         except Exception as e:
             if is_delete:
@@ -503,7 +503,7 @@ def add_employee(request):
                 emp.delete_time = datetime.datetime.now()
             else:
                 user.delete()
-            return JsonResponse({"result":str(e)})
+            return JsonResponse({"data":str(e)})
         return JsonResponse(data, safe = False)
     return JsonResponse({"error_msg":"No permission to add employee"},status=400)
         
