@@ -123,7 +123,7 @@ def get_organization(request):
     print('is_all:',is_all)
    
     if ut.user.id :
-        if is_all == 1:
+        if is_all == '1':
             data = serializers.serialize("json", organization.objects.filter(is_delete=False,is_active=True),ensure_ascii=False)                                                                                                       
         else:
             data = serializers.serialize("json", organization.objects.filter(is_delete=False),ensure_ascii=False)
