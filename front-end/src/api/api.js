@@ -6,8 +6,14 @@ export const login = params => {
 }
 
 //获取组织机构列表
-export const groupList = () => {
-  return axios.get('/user/get_org')
+export const groupList = params => {
+  console.log(params)
+  if ("status" in params) {
+    return axios.get('/user/get_org/?all=', params.status)
+  } else {
+    return axios.get('/user/get_org')
+  }
+  
 }
 
 //新增组织机构

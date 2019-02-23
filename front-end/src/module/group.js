@@ -17,10 +17,13 @@ import { groupList, groupUpdate, groupAdd, groupDel } from '@/api/api'
 //=========================================================
 
 var group = {
-    get : function(){
+    get : function(value){
 //=========================================================        
         return new Promise((resolve, reject) => {
-            groupList().then((response) => {
+            groupList({
+                "status":value,
+            }
+            ).then((response) => {
                 // console.log(response);
                 resolve(response.data) ;
             }).catch((error) => {

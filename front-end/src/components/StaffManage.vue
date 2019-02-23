@@ -15,17 +15,6 @@
             <span v-else>{{scope.row[value.field]}}</span>
           </template>
         </el-table-column>
-        <el-table-column align='center' width="200" label="归属组织">
-          <template slot-scope="scope">
-            <div v-if="scope.row.isSet">
-              <el-select size="mini" @change="groupChange" v-model="scope.row.guuid" >
-                <el-option v-for="item in groupList" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </div>
-            <div v-else>{{scope.row.ugroup}}</div>
-          </template>
-        </el-table-column>
         <el-table-column align='center' width="100" label="状态">
           <template slot-scope="scope">
             <span v-if="scope.row.isSet">
@@ -81,31 +70,6 @@ export default {
           {value: 1,label: '异常'},
           {value: 2,label: '禁用'},
         ],
-        groupList: [{
-          value: 0,
-          label: '百恒国际'
-        },{
-          value: 1,
-          label: '青年旅行'
-        },{
-          value: 2,
-          label: '青2年旅行'
-        },{
-          value: 3,
-          label: '青3年旅行'
-        },{
-          value: 4,
-          label: '青4年旅行'
-        },{
-          value: 5,
-          label: '青5年旅行'
-        },{
-          value: 6,
-          label: '青6年旅行'
-        },{
-          value: 7,
-          label: '中国旅行'
-        },],
       table: {
         countAll: null,
         currentRow: null,//选中行   
