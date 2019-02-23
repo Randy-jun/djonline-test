@@ -118,9 +118,14 @@ def get_organization(request):
         ut = u_token_list.objects.get(token=token)
     except Exception :
         return HttpResponse("Authentication Failed !", status=401)
+    
+    is_all = request.GET.get('all',0)
 
-    if ut.user.id :                                                                                                         
-        data = serializers.serialize("json", organization.objects.filter(is_delete=False),ensure_ascii=False)
+    if ut.user.id :
+        if is_all:
+            data = serializers.serialize("json", organization.objects.filter(is_delete=False,is_active=True),ensure_ascii=False)                                                                                                       
+        else:
+            data = serializers.serialize("json", organization.objects.filter(is_delete=False),ensure_ascii=False)
         data = json.loads(data)
         result = []
         statusflag = {True:"正常",False:"禁用"}
@@ -329,6 +334,7 @@ def get_partner(request):
         d['e_type']=i['fields']['e_type']
         d['e_type_name']=ulevelname[d['e_type']]
         d['e_org']=organization.objects.get(pk=i['fields']['e_org']).name
+        d['e_org_id']= i['fields']['e_org']
         d['e_remark']=i['fields']['e_remark']
         result.append(d)
 
