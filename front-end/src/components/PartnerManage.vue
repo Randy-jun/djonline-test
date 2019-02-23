@@ -262,7 +262,10 @@ export default {
       // console.log(error);
     })
     Group.get(1).then((response) => {
-      console.log("dsad",response)
+      console.log("dsad",response.data)
+      response.data.forEach(item => {
+        console.log(item);
+      })
     }).catch((error) => {
       // console.log(error);
     })

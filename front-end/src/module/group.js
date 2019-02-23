@@ -20,10 +20,11 @@ var group = {
     get : function(value){
 //=========================================================        
         return new Promise((resolve, reject) => {
-            groupList({
-                "status":value,
+            var params = new URLSearchParams();
+            if ("undefined" != typeof(value)) {
+                params.append("all",value);
             }
-            ).then((response) => {
+            groupList(params).then((response) => {
                 // console.log(response);
                 resolve(response.data) ;
             }).catch((error) => {
