@@ -66,7 +66,7 @@ export default {
         UserInfo.check(this.userInfo).then((response) => {
           // console.log(response); 
           setTimeout(()=>{
-              this.$router.replace({ path: 'home' });
+              this.$router.replace({ path: '/home' });
           },500)
           this.$message({
             message: response.unickname + '登录成功！',

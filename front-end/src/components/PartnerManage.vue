@@ -215,16 +215,12 @@ export default {
     
     // const api='http://127.0.0.1:9090/acct/agencies/';
     Partner.get().then((response) => {
-      // this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
-      // this.table.data = JSON.parse(JSON.stringify(response.result));
-      this.table.countAll = JSON.parse(JSON.stringify(response.item_num));
-      // this.table.data = JSON.parse(JSON.stringify(response.result));
       this.table.data = response.data;
+      this.table.countAll = response.item_num;
+      // console.log(this.table.countAll, this.table.data)
       this.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
       });
-      // console.log(typeof(this.table.data))
-      // this.table.data = response.result;
     }).catch((error) => {
       // console.log(error);
     })

@@ -17,7 +17,7 @@ var userData = {
     ],
 }
 
-var user = {
+var partner = {
     get : function(){
         return new Promise((resolve, reject) => {
             staffList().then((response) => {

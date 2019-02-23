@@ -26,22 +26,22 @@ export const groupDel = params => {
 }
 
 //获取伙伴列表
-export const userList = () => {
+export const partnerList = () => {
   return axios.get('/user/get_partner')
 }
 
 //新增伙伴
-export const userAdd = params => {
+export const partnerAdd = params => {
   return axios.post('/user/add_partner/', params)
 }
 
 //更新伙伴
-export const userUpdate = params => {
+export const partnerUpdate = params => {
   return axios.post('/user/add_organization/', params)
 }
 
 //删除伙伴
-export const userDel = params => {
+export const partnerDel = params => {
   return axios.post('/user/add_organization/', params)
 }
 

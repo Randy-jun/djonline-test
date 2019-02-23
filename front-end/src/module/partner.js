@@ -17,11 +17,11 @@ var userData = {
     ],
 }
 
-var user = {
+var partner = {
     get : function(){
         return new Promise((resolve, reject) => {
             partnerList().then((response) => {
-                // console.log(response);
+                console.log(response);
                 resolve(response.data) ;
             }).catch((error) => {
                 console.log(error);
