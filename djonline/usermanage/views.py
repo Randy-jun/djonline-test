@@ -410,7 +410,7 @@ def add_employee(request):
             user.is_active = True 
             user.first_name = first_name
             if user.employee.is_delete == False:
-            return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=401)        
+                return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=401)        
             user.email = email
             user.set_password(password)        
             user.is_staff = False
@@ -444,7 +444,7 @@ def add_employee(request):
     
     if ut.uer.employee.e_type == 2:
         if request.method != 'POST':
-        return HttpResponse(status=401)
+            return HttpResponse(status=401)
     try:
         auth = request.META["HTTP_AUTHORIZATION"]
         c_username,token = auth.split(":")
@@ -477,7 +477,7 @@ def add_employee(request):
             user.is_active = True 
             user.first_name = first_name
             if user.employee.is_delete == False:
-            return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=401)        
+                return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=401)        
             user.email = email
             user.set_password(password)        
             user.is_staff = False
@@ -507,7 +507,7 @@ def add_employee(request):
                 user.delete()
             return JsonResponse({"result":str(e)})
         return JsonResponse(data, safe = False)
-    return JsonResponse({"error_msg":"No permission to add employee",status=400})
+    return JsonResponse({"error_msg":"No permission to add employee"},status=400)
         
 
 def change_first_name(request):
