@@ -66,9 +66,8 @@ export default {
   data() {
     return {
       statusList: [
-          {value: 0,label: '正常'},
-          {value: 1,label: '异常'},
-          {value: 2,label: '禁用'},
+          {value: true,label: '正常'},
+          {value: false,label: '禁用'},
         ],
       table: {
         countAll: null,

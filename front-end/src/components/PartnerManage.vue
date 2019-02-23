@@ -18,7 +18,7 @@
         <el-table-column align='center' width="200" label="归属组织">
           <template slot-scope="scope">
             <div v-if="scope.row.isSet">
-              <el-select size="mini" @change="groupChange" v-model="scope.row.guuid" >
+              <el-select size="mini" @change="groupChange" v-model="scope.row.e_org_id" >
                 <el-option v-for="item in groupList" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -34,7 +34,7 @@
                 </el-option>
               </el-select>
             </span>
-            <span v-else class="el-tag el-tag--mini">{{scope.row.statusflag}}</span>
+            <el-tag v-else size="mini" :type="scope.row.statuscode?'success':'danger'">{{scope.row.statusflag}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column align='center' fixed="right" label="操作" width="150">
@@ -78,35 +78,10 @@ export default {
   data() {
     return {
       statusList: [
-          {value: 0,label: '正常'},
-          {value: 1,label: '异常'},
-          {value: 2,label: '禁用'},
+          {value: true,label: '正常'},
+          {value: false,label: '禁用'},
         ],
-      groupList: [{
-        value: 0,
-        label: '百恒国际'
-      },{
-        value: 1,
-        label: '青年旅行'
-      },{
-        value: 2,
-        label: '青2年旅行'
-      },{
-        value: 3,
-        label: '青3年旅行'
-      },{
-        value: 4,
-        label: '青4年旅行'
-      },{
-        value: 5,
-        label: '青5年旅行'
-      },{
-        value: 6,
-        label: '青6年旅行'
-      },{
-        value: 7,
-        label: '中国旅行'
-      },],
+      groupList: [],
       table: {
         countAll: null,
         currentRow: null,//选中行 
@@ -138,6 +113,15 @@ export default {
       // console.log(obj)
       this.table.currentRow.statuscode = obj.value;
       this.table.currentRow.statusflag = obj.label;
+    },
+    groupChange(value){
+      let obj = {};
+      obj = this.groupList.find((item)=>{//这里的selectList就是上面遍历的数据源
+          return item.value === value;//筛选出匹配数据
+      });
+      // console.log(obj)
+      this.table.currentRow.e_org_id = obj.value;
+      this.table.currentRow.e_org = obj.label;
     },
     // handleCurrentChange(selectRow){
     //   this.table.currentRow = selectRow;
@@ -265,6 +249,7 @@ export default {
       console.log("dsad",response.data)
       response.data.forEach(item => {
         console.log(item);
+        this.groupList.push({value: item.id,label: item.name},)
       })
     }).catch((error) => {
       // console.log(error);
