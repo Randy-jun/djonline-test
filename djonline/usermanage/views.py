@@ -266,24 +266,7 @@ def add_partner(request):
     if first_name == '':
         first_name = username
 
-    
-
-
-    try:
-        user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
-        user.is_staff = False
-        user.save()
-    except Exception as e:
-        return JsonResponse({"result":str(e)})
-    try:
-        p_org = organization.objects.get(pk=p_org_id)
-        result = employee.objects.create(user=user,e_org=p_org,e_type=e_type,e_remark=p_remark)
-        result=[result]
-        data = serializers.serialize("json",result,ensure_ascii=False)
-        data = json.loads(data)
-    except Exception as e:
-        user.delete()
-        return JsonResponse({"result":str(e)})
+ 
 
 
     try:
@@ -425,7 +408,13 @@ def add_employee(request):
             user = User.objects.get(username=username,is_active=False)  
             is_delete = True
             user.is_active = True 
-            user.first_name = first_name     
+            user.first_name = first_name
+            if user.employee.is_delete == False:
+            return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=401)        
+            user.email = email
+            user.set_password(password)        
+            user.is_staff = False
+            user.save()
         except Exception as e:
             user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
         
@@ -486,7 +475,13 @@ def add_employee(request):
             user = User.objects.get(username=username,is_active=False)  
             is_delete = True
             user.is_active = True 
-            user.first_name = first_name     
+            user.first_name = first_name
+            if user.employee.is_delete == False:
+            return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=401)        
+            user.email = email
+            user.set_password(password)        
+            user.is_staff = False
+            user.save()     
         except Exception as e:
             user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
         
@@ -512,7 +507,6 @@ def add_employee(request):
                 user.delete()
             return JsonResponse({"result":str(e)})
         return JsonResponse(data, safe = False)
-
     return JsonResponse({"error_msg":"No permission to add employee",status=400})
         
 
