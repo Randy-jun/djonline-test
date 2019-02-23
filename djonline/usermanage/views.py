@@ -73,12 +73,12 @@ def check_token(func):
             print(user,token)                                                                                                                           
             ut = u_token_list.objects.get(token=token)
         except Exception as e:
-            return JsonResponse({'msg': 'Unauthorized Access'}, status=404)
+            return JsonResponse({'msg': 'Unauthorized Access'}, status=401)
         if ut.user.id:
             result = func(request, **kwargs)
             return result
         else:
-            return JsonResponse({'msg': 'Unauthorized Access'}, status=404)
+            return JsonResponse({'msg': 'Unauthorized Access'}, status=401)
     return inner
 
 def add_organization(request):
@@ -117,7 +117,7 @@ def get_organization(request):
         print(user,token)                                                                                                                           
         ut = u_token_list.objects.get(token=token)
     except Exception :
-        return HttpResponse("Authentication Failed !", status=404)
+        return HttpResponse("Authentication Failed !", status=401)
 
     if ut.user.id :                                                                                                         
         data = serializers.serialize("json", organization.objects.filter(is_delete=False),ensure_ascii=False)
@@ -169,7 +169,7 @@ def update_organization(request):
 def add_employee(request):
     #接受json数据，新增职员
     if request.method != 'POST':
-        return HttpResponse(status=404)
+        return HttpResponse(status=401)
 
     auth = request.META["HTTP_AUTHORIZATION"]
     user,token = auth.split(":")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
@@ -196,7 +196,7 @@ def add_employee(request):
     #权限验证
     user = User.objects.get(id=user_id)
     if not user.employee.is_manager():
-        return JsonResponse({"error":"非管理员无法新增职员"},status=404)
+        return JsonResponse({"error":"非管理员无法新增职员"},status=401)
 
     try:
         user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
@@ -223,7 +223,7 @@ def get_employee(request):
 def inactive_employee(request):
     #失效职员账号
     if request.method != 'POST':
-        return HttpResponse(status=404)
+        return HttpResponse(status=401)
     data = json.loads(request.body)
     user_id = data['user_id']
     user = User.objects.get(pk=user_id)
@@ -234,22 +234,22 @@ def inactive_employee(request):
 def add_partner(request):
        #接受json数据，新增职员
     if request.method != 'POST':
-        return HttpResponse(status=404)
+        return HttpResponse(status=401)
     try:
         auth = request.META["HTTP_AUTHORIZATION"]
         c_username,token = auth.split(":")
         ut = u_token_list.objects.get(token=token) # 检查token是否过期
         ut.user.employee
         if (datetime.datetime.now().replace(tzinfo=None) - ut.gen_date.replace(tzinfo=None)).days > 1:
-            return JsonResponse({"error_msg:":"token已过期请重新登陆"},status=404)
+            return JsonResponse({"error_msg:":"token已过期请重新登陆"},status=401)
     except Exception as e:
-        return JsonResponse({"error_msg:":str(e)},status=404)
+        return JsonResponse({"error_msg:":str(e)},status=401)
 
     c_user = User.objects.get(username=c_username)
     if not c_user.employee.is_manager():
-        return JsonResponse({"error_msg:":"非管理员无法新增伙伴"},status=404)
+        return JsonResponse({"error_msg:":"非管理员无法新增伙伴"},status=401)
     if not c_user.is_active or c_user.employee.is_delete:#判断用户是激活状态
-        return JsonResponse({"error_msg:":"账号已失效"},status=404)
+        return JsonResponse({"error_msg:":"账号已失效"},status=401)
     
 
     data = json.loads(request.body)
@@ -290,7 +290,7 @@ def add_partner(request):
         user = User.objects.get(username=username,is_active=False)
         #是否有已删除的用户重名，有则启用
         if user.employee.is_delete == False:
-            return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=404)
+            return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=401)
         user.employee.is_delete = False
         user.is_active = True
         user.employee.delete_time = datetime.datetime.now()
@@ -392,10 +392,133 @@ def update_partner(request):
 
     return JsonResponse({"is_success":True,"data":d})
 
+def add_employee(request):
+    if request.method != 'POST':
+        return HttpResponse(status=401)
+    try:
+        auth = request.META["HTTP_AUTHORIZATION"]
+        c_username,token = auth.split(":")
+        ut = u_token_list.objects.get(token=token) # 检查token是否过期
+        ut.user.employee
+        if (datetime.datetime.now().replace(tzinfo=None) - ut.gen_date.replace(tzinfo=None)).days > 1:
+            return JsonResponse({"error_msg:":"token已过期请重新登陆"},status=401)
+    except Exception as e:
+        return JsonResponse({"error_msg:":str(e)},status=401)
+
+    data = json.loads(request.body)
+    username = data['e_username']
+    password = data['e_password']
+    e_org_id = data['e_org_id']
+    email = data['email']
+    first_name = data['e_first_name']
+    e_type = data['e_type']
+    e_remark = data['e_remark']
+    user_id = data['user_id']
+
+    if email == '':
+        email = username+'@djonline.com'
+    if first_name == '':
+        first_name = username
+
+    if ut.user.employee.e_type == 0:
+        try:
+            user = User.objects.get(username=username,is_active=False)  
+            is_delete = True
+            user.is_active = True 
+            user.first_name = first_name     
+        except Exception as e:
+            user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
+        
+        try:
+            e_org = organization.objects.get(pk=e_org_id)
+            if is_delete == True:
+                emp = user.employee
+                emp.is_delete=False
+                emp.e_org=e_org
+                emp.e_type = 1
+                emp.e_remark = e_remark
+            else:
+                emp = employee.objects.create(user=user, e_org=e_org, e_type=1, e_remark=e_remark)
+            result = [emp]
+            data = serializers.serialize("json",result,ensure_ascii=False)
+            data = json.loads(data)
+        except Exception as e:
+            if is_delete:
+                user.is_active = False
+                emp.is_delete = True
+                emp.delete_time = datetime.datetime.now()
+            else:
+                user.delete()
+            return JsonResponse({"result":str(e)})
+        return JsonResponse(data, safe = False)
+       
+    
+    if ut.uer.employee.e_type == 2:
+        if request.method != 'POST':
+        return HttpResponse(status=401)
+    try:
+        auth = request.META["HTTP_AUTHORIZATION"]
+        c_username,token = auth.split(":")
+        ut = u_token_list.objects.get(token=token) # 检查token是否过期
+        ut.user.employee
+        if (datetime.datetime.now().replace(tzinfo=None) - ut.gen_date.replace(tzinfo=None)).days > 1:
+            return JsonResponse({"error_msg:":"token已过期请重新登陆"},status=401)
+    except Exception as e:
+        return JsonResponse({"error_msg:":str(e)},status=401)
+
+    data = json.loads(request.body)
+    username = data['e_username']
+    password = data['e_password']
+    e_org_id = data['e_org_id']
+    email = data['email']
+    first_name = data['e_first_name']
+    e_type = data['e_type']
+    e_remark = data['e_remark']
+    user_id = data['user_id']
+
+    if email == '':
+        email = username+'@djonline.com'
+    if first_name == '':
+        first_name = username
+
+    if ut.user.employee.e_type == 0:
+        try:
+            user = User.objects.get(username=username,is_active=False)  
+            is_delete = True
+            user.is_active = True 
+            user.first_name = first_name     
+        except Exception as e:
+            user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
+        
+        try:
+            e_org = organization.objects.get(pk=e_org_id)
+            if is_delete == True:
+                emp = user.employee
+                emp.is_delete=False
+                emp.e_org=e_org
+                emp.e_type = 1
+                emp.e_remark = e_remark
+            else:
+                emp = employee.objects.create(user=user, e_org=e_org, e_type=4, e_remark=e_remark)
+            result = [emp]
+            data = serializers.serialize("json",result,ensure_ascii=False)
+            data = json.loads(data)
+        except Exception as e:
+            if is_delete:
+                user.is_active = False
+                emp.is_delete = True
+                emp.delete_time = datetime.datetime.now()
+            else:
+                user.delete()
+            return JsonResponse({"result":str(e)})
+        return JsonResponse(data, safe = False)
+
+    return JsonResponse({"error_msg":"No permission to add employee",status=400})
+        
 
 def change_first_name(request):
     if request.method != 'POST':
-        return HttpResponse(status=404)
+        return HttpResponse(status=401)
     data = json.loads(request.body)
     user_id = data['user_id']
     first_name = data['first_name']
@@ -406,11 +529,11 @@ def change_first_name(request):
 
 def change_password(request):
     if request.method != 'POST':
-        return HttpResponse(status=404)
+        return HttpResponse(status=401)
     token = request.META['HTTP_TOKEN']
     token_list = token_list.objects.all()#需要过滤
     if token not in token_list:
-       return HttpResponse(status=404) 
+       return HttpResponse(status=401) 
     user_id = data['user_id']
     user_password = data['user_password']
     new_password = data['new_password']
