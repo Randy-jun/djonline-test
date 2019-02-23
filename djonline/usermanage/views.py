@@ -317,7 +317,7 @@ def add_partner(request):
 
 def get_partner(request):
     #获取1级伙伴
-    data = serializers.serialize("json", employee.objects.filter(e_type=3))
+    data = serializers.serialize("json", employee.objects.filter(e_type=2))
     data = json.loads(data)
     result = []
     ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
