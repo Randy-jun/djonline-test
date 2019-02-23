@@ -8,10 +8,8 @@ export const login = params => {
 //获取组织机构列表
 export const groupList = params => {
   if (null !== params.get("all")) {
-    console.log("1111111111")
-    return axios.get('/user/get_org/', params)
+    return axios.get('/user/get_org/', {params:{all:1}})
   } else {
-    console.log("00000000000")
     return axios.get('/user/get_org/')
   }
   
