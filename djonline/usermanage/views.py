@@ -336,6 +336,7 @@ def get_partner(request):
         d['e_org']=organization.objects.get(pk=i['fields']['e_org']).name
         d['e_org_id']= i['fields']['e_org']
         d['e_remark']=i['fields']['e_remark']
+        d['e_is_active']=i['fields']['is_active']
         result.append(d)
 
     return JsonResponse({"item_num":len(data),"data":result},status=200)
