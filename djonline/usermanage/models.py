@@ -8,7 +8,7 @@ class organization(models.Model):
     is_active = models.BooleanField(default=True)
 
     is_delete = models.BooleanField(default=False)
-    delete_time = models.DateTimeField(auto_now_add=True)#delete_time
+    last_modify_time = models.DateTimeField(auto_now=True)#delete_time
 
     def __str__(self):
         return self.name
@@ -36,7 +36,7 @@ class employee(models.Model):
     e_remark = models.CharField(max_length=256, blank=True, default='')#备注
 
     is_delete = models.BooleanField(default=False)
-    delete_time = models.DateTimeField(auto_now_add=True)#delete_time
+    last_modify_time = models.DateTimeField(auto_now=True)#delete_time
 
     def __str__(self):
         return self.user.username    

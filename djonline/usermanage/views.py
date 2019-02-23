@@ -143,7 +143,6 @@ def delete_organization(request):
     org_id = data['org_id']
     org = organization.objects.get(pk=org_id)
     org.is_delete = True
-    org.delete_time = datetime.datetime.now()
     org.save()
     return JsonResponse({"is_success":True},status=200)
 
@@ -342,7 +341,6 @@ def delete_partner(request):
     partner = User.objects.get(pk=p_id)
     partner.is_active = False
     partner.employee.is_delete = True
-    partner.employee.delete_time = datetime.datetime.now()
     partner.save()
     return JsonResponse({"is_success":True},status=200)
 
