@@ -57,7 +57,7 @@ var partner = {
         console.log(value)
         return new Promise((resolve, reject) => {
             partnerAdd({
-                e_username:value.username,
+                username:value.username,
                 nickname:value.nickname,
                 org_id:value.e_org_id,
                 remark:value.e_remark,
