@@ -89,8 +89,8 @@ export default {
         currentRow: null,//选中行 
         columns: [
           // { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
-          { field: "username", title: "用户名称", width: 320, isEdit: true, sortable: true },
-          // { field: "level", title: "用户类型", width: 320, isEdit: true, sortable: true },
+          { field: "username", title: "用户名", width: 320, isEdit: true, sortable: true },
+          { field: "nickname", title: "用户昵称", width: 320, isEdit: true, sortable: true },
           // { field: "status", title: "用户状态", width: 320, isEdit: true, sortable: true },
           { field: "e_remark", title: "备注", width: 320, isEdit: true, sortable: false },
         ],
@@ -148,7 +148,7 @@ export default {
       if (rowContent.isSet) {
         // let tempData = JSON.parse(JSON.stringify(this.table.currentRow));
 
-        if(InputCheck.namecheck(this.table.currentRow.name)) return this.$message.warning("组织名称不能为空或空格!");
+        if(InputCheck.namecheck(this.table.currentRow.name)) return this.$message.warning("用户名称不能为空或空格!");
         
         if(null !== rowContent.id){
           Partner.update(this.table.currentRow).then((response) => {
@@ -193,7 +193,7 @@ export default {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
       // let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
-      let tempAddData = {id: null, username: "", e_remark: "", e_type: 2, e_type_name: "伙伴", e_org_id: this.groupList[0].value, e_org: this.groupList[0].label, statuscode: true, statusflag: "正常",isSet: true,};
+      let tempAddData = {id: null, username: "", nickname: "", e_remark: "", e_type: 2, e_type_name: "伙伴", e_org_id: this.groupList[0].value, e_org: this.groupList[0].label, statuscode: true, statusflag: "正常",isSet: true,};
       this.table.data.push(tempAddData);
       this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
