@@ -33,12 +33,13 @@ def user_login(request):
                 ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
                 ustatusflag = {True:"可用",False:"禁用"}
                 uorg = user.employee.e_org.name
+                uorgid = user.employee.org
 
                 return JsonResponse({"isLogin": True, "loginResultString": "Success",
                  "tokenID": token, "userID": user.id, "username":user.username, "unickname":user.first_name,
                   "ulevel":user.employee.e_type,"ulevelname":ulevelname[user.employee.e_type],
                   "ustatuscode":user.is_active,"ustatusflag":ustatusflag[user.is_active],"uorg":uorg,
-                  "umark":user.employee.e_remark})
+                  "umark":user.employee.e_remark,"uorgid":uorgid})
             else:
                 return JsonResponse({"isLogin": False, "loginResultString": "Invalid login details supplied.",
                  "user": user.name, "password": user.password})
