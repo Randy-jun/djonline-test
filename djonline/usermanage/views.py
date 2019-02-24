@@ -228,7 +228,7 @@ def get_employee(request):
 
     if ut.user.employee == 0:
         data = serializers.serialize("json", employee.objects.filter(e_type=1))
-    elif ut.uesr.employee == 2:
+    elif ut.user.employee == 2:
         data = serializers.serialize("json", employee.objects.filter(e_type=3))
     else:
         JsonResponse({"error_msg:":"permission error"},status=401)
