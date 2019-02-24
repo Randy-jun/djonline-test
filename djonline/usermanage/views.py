@@ -355,7 +355,7 @@ def update_employee(request):
     #处理要返回的数据
     d = {}
     d['id'] = user.id
-    d['username']=user.username   
+    d['e_username']=user.username   
     d['nickname'] = user.first_name
     d['e_remark'] = user.employee.e_remark
     d['e_org_id']=org.id
