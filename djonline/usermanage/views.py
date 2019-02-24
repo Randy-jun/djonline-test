@@ -189,21 +189,20 @@ def add_employee(request):
     e_org_id = data['e_org_id']
     email = data['email']
     first_name = data['e_first_name']
-    e_type = data['e_type']
+
+    if ut.user.employee.e_type == 0:
+        e_type = 1
+    elif ut.user.employee.e_type == 2:
+        e_type = 3
+    else:
+        JsonResponse({'error_msg:':'permission error'},status=401)
+
     e_remark = data['e_remark']
     user_id = data['user_id']
     if email == '':
         email = username+'@djonline.com'
     if first_name == '':
         first_name = username
-
-
-
-    #权限验证
-    user = User.objects.get(id=user_id)
-    if not user.employee.is_manager():
-        return JsonResponse({"error":"非管理员无法新增职员"},status=401)
-
     try:
         user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
         user.is_staff = True
@@ -248,9 +247,14 @@ def delete_employee(request):
     data = json.loads(request.body)
     #print(data)
     p_id = data['id']
-    emp = employee.objects.get(pk=p_id)
-    if emp.e_type != 1 or 3:
-        JsonResponse({"error_msg":"emp is not employee"},status=401)
+
+    auth = request.META["HTTP_AUTHORIZATION"]
+    user,token = auth.split(":") 
+    if ut.user.employee.e_type == 0 and ut.user.employee.e_type == 2:       
+        JsonResponse({'error_msg:':'permission error'},status=401)       
+
+
+    emp = employee.objects.get(pk=p_id)    
     emp.user.is_active = False
     emp.is_delete = True
     emp.save()
@@ -258,6 +262,12 @@ def delete_employee(request):
 
 def update_employee(request):
        #update
+    
+    auth = request.META["HTTP_AUTHORIZATION"]
+    user,token = auth.split(":")
+    if ut.user.employee.e_type == 0 and ut.user.employee.e_type == 2:       
+        JsonResponse({'error_msg:':'permission error'},status=401)        
+
     data = json.loads(request.body)
     p_id = data['id']
     emp = employee.objects.get(pk=p_id)
