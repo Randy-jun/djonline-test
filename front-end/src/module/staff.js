@@ -21,7 +21,7 @@ var staff = {
     get : function(){
         return new Promise((resolve, reject) => {
             staffList().then((response) => {
-                // console.log(response);
+                console.log(response);
                 resolve(response.data) ;
             }).catch((error) => {
                 console.log(error);

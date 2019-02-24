@@ -7,6 +7,9 @@
       <small>{{nickname}}</small>
     </el-col>
     <el-col :span=2>
+      <el-tooltip class="item" effect="dark" content="Top Left 提示文字" placement="top-start">
+      <el-button>上左</el-button>
+    </el-tooltip>
       <small :title=group>{{group}}</small>
     </el-col>
     <el-col :span=1>
@@ -33,7 +36,7 @@ export default {
   },
   methods: {
     passwordChange(){
-      
+
     },
     logout(){
       // alert("setting")

@@ -78,10 +78,10 @@ export default {
         currentRow: null,//选中行   
         columns: [
           // { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
-          { field: "username", title: "用户名", width: 120, isEdit: true, sortable: false },
+          { field: "e_username", title: "用户名", width: 120, isEdit: true, sortable: false },
           { field: "nickname", title: "用户昵称", width: 120, isEdit: true, sortable: false },
           // { field: "ugroup", title: "归属组织", width: 220, isEdit: true, sortable: true },
-          { field: "uremark", title: "备注", width: 220, isEdit: true, sortable: false },
+          { field: "e_remark", title: "备注", width: 220, isEdit: true, sortable: false },
         ],
         // tempData: [],
         data: [],
