@@ -57,7 +57,6 @@ var partner = {
         console.log(value)
         return new Promise((resolve, reject) => {
             partnerAdd({
-                id:value.id,
                 username:value.username,
                 nickname:value.nickname,
                 org_id:value.e_org_id,
@@ -82,8 +81,12 @@ var partner = {
             partnerDel({
                 org_id: value.id,
             }).then((response) => {
-                console.log(response);
-                resolve(response.data) ;
+                if (response.data.is_success) {
+                    console.log(response);
+                    resolve(response.data) ;
+                } else {
+                    reject(response.error_msg);
+                }
             }).catch((error) => {
                 console.log(error);
                 reject(error);
