@@ -242,7 +242,7 @@ def add_partner(request):
     if request.method != 'POST':
         return HttpResponse(status=401)
     d={}
-    '''try:
+    try:
         auth = request.META["HTTP_AUTHORIZATION"]
         c_username,token = auth.split(":")
         ut = u_token_list.objects.get(token=token) # 检查token是否过期
@@ -256,7 +256,7 @@ def add_partner(request):
     if not c_user.employee.is_manager():
         return JsonResponse({"error_msg:":"非管理员无法新增伙伴"},status=401)
     if not c_user.is_active or c_user.employee.is_delete:#判断用户是激活状态
-        return JsonResponse({"error_msg:":"账号已失效"},status=401)'''
+        return JsonResponse({"error_msg:":"账号已失效"},status=401)
     
 
     data = json.loads(request.body)
@@ -342,7 +342,7 @@ def add_partner(request):
 
 
 def get_partner(request):
-    #获取1级伙伴
+    #获取1级伙伴,return employee id not user id!!
     data = serializers.serialize("json", employee.objects.filter(e_type=2))
     data = json.loads(data)
     result = []
@@ -368,27 +368,29 @@ def get_partner(request):
 def delete_partner(request):
     #删除1级伙伴
     data = json.loads(request.body)
+    print(data)
     p_id = data['partner_id']
-    partner = User.objects.get(pk=p_id)
-    partner.is_active = False
-    partner.employee.is_delete = True
-    partner.save()
+    emp = employee.objects.get(pk=p_id)
+    emp.user.is_active = False
+    emp.is_delete = True
+    emp.save()
     return JsonResponse({"is_success":True},status=200)
 
 def update_partner(request):
        #update
     data = json.loads(request.body)
-    p_id = data['partner_id']
-    user = User.objects.get(pk=p_id)    
-    p_org_id = data['p_org_id']
+    p_id = data['id']
+    emp = employee.objects.get(pk=p_id)
+    user = emp.user
+    p_org_id = data['org_id']
     org = organization.objects.get(pk=p_org_id)
-    user.employee.e_org = org
-    user.email = data['email']
-    user.is_active = data['p_is_active']#是否有效用户
-    user.first_name = data['p_first_name']
-    user.employee.e_type = 3
-    user.employee.p_remark = data['p_remark']
-    user.save()
+    emp.e_org = org
+    #user.email = data['email']
+    user.is_active = data['statuscode']#是否有效用户
+    user.first_name = data['nickname']
+    emp.e_type = 2
+    emp.e_remark = data['remark']
+    emp.save()
 
     #处理要返回的数据
     d = {}
@@ -562,6 +564,36 @@ def get_employee(request):
         result.append(d)
 
     return JsonResponse({"item_num":len(data),"data":result},status=200)
+
+def update_employee(request):
+
+    data = json.loads(request.body)
+    e_id = data['employee_id']
+    user = User.objects.get(pk=p_id)    
+    e_org_id = data['org_id']
+    org = organization.objects.get(pk=p_org_id)
+    user.employee.e_org = org
+    user.email = data['email']
+    user.is_active = data['is_active']#是否有效用户
+    user.first_name = data['first_name']
+    user.employee.e_type = data['e_type']
+    user.employee.e_remark = data['remark']
+    user.save()
+
+    #处理要返回的数据
+    d = {}
+    d['id'] = user.id
+    d['name'] = user.first_name
+    d['remark'] = user.employee.e_remark
+    d['org_name']=org.name
+    d['email']=user.email
+    d['e_type']=user.employee.e_type
+    d['statuscode'] = user.is_active
+    statusflag = {True:"正常",False:"禁用"}
+    d['statusflag'] = statusflag[d['statuscode']]
+    
+    return JsonResponse({"is_success":True,"data":d})
+
 def change_first_name(request):
     if request.method != 'POST':
         return HttpResponse(status=401)
