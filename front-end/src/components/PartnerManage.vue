@@ -1,6 +1,11 @@
 <template>
   <div>
     <el-row>
+      <el-col :span="2">
+        <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新用户</el-button>
+      </el-col>
+    </el-row>
+    <el-row>
       <el-table v-if="0 !== table.countAll" :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
         <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
         <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
@@ -47,9 +52,6 @@
           </template>
         </el-table-column>
       </el-table>
-    </el-row>
-    <el-row>
-      <el-button type="primary" size="medium" plain style="width: 98.2%" icon="el-icon-circle-plus-outline" v-on:click="doAdd()">添加新的职员</el-button>
     </el-row>
     <el-row>
       <el-pagination  
@@ -246,9 +248,8 @@ export default {
       // console.log(error);
     })
     Group.get(1).then((response) => {
-      console.log("dsad",response.data)
       response.data.forEach(item => {
-        console.log(item);
+        // console.log(item);
         this.groupList.push({value: item.id,label: item.name},)
       })
     }).catch((error) => {
