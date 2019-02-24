@@ -329,7 +329,10 @@ def update_employee(request):
     ut = u_token_list.objects.get(token=token)
     if ut.user.employee.e_type == 0 and ut.user.employee.e_type == 2:       
         JsonResponse({'error_msg:':'permission error'},status=401)        
-
+    if ut.user.employee.e_type == 0:
+        e_type = 1
+    elif ut.user.employee.e_type == 2:
+        e_type = 3
     data = json.loads(request.body)
     print("update data",data)
     p_id = data['id']
@@ -343,7 +346,7 @@ def update_employee(request):
     #user.email = data['email']
     user.is_active = data['statuscode']#是否有效用户
     user.first_name = data['nickname']
-    emp.e_type = data['e_type']
+    emp.e_type = e_type
     emp.e_remark = data['remark']
     emp.save()
     
