@@ -128,6 +128,7 @@ export default {
         
         if(null !== rowContent.id){
           Group.update(this.table.currentRow).then((response) => {
+            this.$set(response, 'isSet', false);
             this.table.data.splice(index,1,response);
             this.$message({
               type: 'success',
@@ -144,7 +145,7 @@ export default {
           Group.insert(this.table.currentRow).then((response) => {
             console.log(response)
             this.table.countAll+=1;
-            this.$set(response, 'isSet', false)
+            this.$set(response, 'isSet', false);
             this.table.data.splice(index,1,response);
             this.$message({
               type: 'success',

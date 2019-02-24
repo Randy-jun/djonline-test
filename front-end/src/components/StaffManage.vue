@@ -130,6 +130,7 @@ export default {
         
         if(null !== rowContent.id){
           Staff.update(this.table.currentRow).then((response) => {
+            this.$set(response, 'isSet', false);
             this.table.data.splice(index,1,response);
             this.$message({
               type: 'success',
@@ -145,6 +146,7 @@ export default {
         }else{
           Staff.insert(this.table.currentRow).then((response) => {
             this.table.countAll+=1;
+            this.$set(response, 'isSet', false);
             this.table.data.splice(index,1,response);
             this.$message({
               type: 'success',

@@ -41,7 +41,11 @@ var staff = {
                 statuscode:value.statuscode,
             }).then((response) => {
                 console.log(response);
-                resolve(response.data) ;
+                if (response.data.is_success) {
+                    resolve(response.data.data);
+                } else {
+                    reject(response.error_msg);
+                }
             }).catch((error) => {
                 console.log(error);
                 reject(error);
@@ -60,7 +64,11 @@ var staff = {
                 statuscode:value.statuscode,
             }).then((response) => {
                 console.log(response);
-                resolve(response.data) ;
+                if (response.data.is_success) {
+                    resolve(response.data.data);
+                } else {
+                    reject(response.error_msg);
+                }
             }).catch((error) => {
                 console.log(error);
                 reject(error);

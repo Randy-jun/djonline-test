@@ -42,12 +42,12 @@ export const partnerAdd = params => {
 
 //更新伙伴
 export const partnerUpdate = params => {
-  return axios.post('/user/add_organization/', params)
+  return axios.post('/user/update_partner/', params)
 }
 
 //删除伙伴
 export const partnerDel = params => {
-  return axios.post('/user/add_organization/', params)
+  return axios.post('/user/delete_partner/', params)
 }
 
 
