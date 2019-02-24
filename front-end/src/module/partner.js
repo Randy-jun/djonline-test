@@ -60,6 +60,7 @@ var partner = {
                 username:value.username,
                 nickname:value.nickname,
                 org_id:value.e_org_id,
+                type: value.e_type,
                 remark:value.e_remark,
                 statuscode:value.statuscode,
             }).then((response) => {
