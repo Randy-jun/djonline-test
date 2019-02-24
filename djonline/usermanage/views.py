@@ -102,7 +102,7 @@ def add_organization(request):
         d['remark'] = org.remark
         d['statuscode'] = org.is_active
         statusflag = {True:"正常",False:"禁用"}
-        d['status_flag'] = statusflag[d['statuscode']]
+        d['statusflag'] = statusflag[d['statuscode']]
     except Exception as e:
         return JsonResponse({"is_success":False,"error_msg":str(e)})    
     return JsonResponse({"is_success":True,"data":d})
@@ -187,8 +187,8 @@ def add_employee(request):
     username = data['e_username']
     password = data['e_password']
     e_org_id = data['e_org_id']
-    email = data['email']
-    first_name = data['e_first_name']
+    email = ''
+    first_name = data['nickname']
 
     if ut.user.employee.e_type == 0:
         e_type = 1
@@ -198,7 +198,6 @@ def add_employee(request):
         JsonResponse({'error_msg:':'permission error'},status=401)
 
     e_remark = data['e_remark']
-    user_id = data['user_id']
     if email == '':
         email = username+'@djonline.com'
     if first_name == '':
@@ -250,13 +249,15 @@ def delete_employee(request):
 
     auth = request.META["HTTP_AUTHORIZATION"]
     user,token = auth.split(":") 
+    ut = u_token_list.objects.get(token=token)
     if ut.user.employee.e_type == 0 and ut.user.employee.e_type == 2:       
-        JsonResponse({'error_msg:':'permission error'},status=401)       
-
-
+        JsonResponse({'error_msg:':'permission error'},status=401)
+    
+    
     emp = employee.objects.get(pk=p_id)    
     emp.user.is_active = False
     emp.is_delete = True
+    emp.user.save()
     emp.save()
     return JsonResponse({"is_success":True},status=200)
 
@@ -265,6 +266,7 @@ def update_employee(request):
     
     auth = request.META["HTTP_AUTHORIZATION"]
     user,token = auth.split(":")
+    ut = u_token_list.objects.get(token=token)
     if ut.user.employee.e_type == 0 and ut.user.employee.e_type == 2:       
         JsonResponse({'error_msg:':'permission error'},status=401)        
 
@@ -439,6 +441,7 @@ def delete_partner(request):
         JsonResponse({"error_msg":"emp is not partner"},status=401)
     emp.user.is_active = False
     emp.is_delete = True
+    emp.user.save()
     emp.save()
     return JsonResponse({"is_success":True},status=200)
 
@@ -477,193 +480,7 @@ def update_partner(request):
 
     return JsonResponse({"is_success":True,"data":d})
 
-def add_employee(request):
-    if request.method != 'POST':
-        return HttpResponse(status=401)
-    try:
-        auth = request.META["HTTP_AUTHORIZATION"]
-        c_username,token = auth.split(":")
-        ut = u_token_list.objects.get(token=token) # 检查token是否过期
-        ut.user.employee
-        if (datetime.datetime.now().replace(tzinfo=None) - ut.gen_date.replace(tzinfo=None)).days > 1:
-            return JsonResponse({"error_msg:":"token已过期请重新登陆"},status=401)
-    except Exception as e:
-        return JsonResponse({"error_msg:":str(e)},status=401)
 
-    data = json.loads(request.body)
-    username = data['e_username']
-    password = data['e_password']
-    e_org_id = data['e_org_id']
-    email = data['email']
-    first_name = data['e_first_name']
-    e_type = data['e_type']
-    e_remark = data['e_remark']
-    user_id = data['user_id']
-
-    if email == '':
-        email = username+'@djonline.com'
-    if first_name == '':
-        first_name = username
-
-    if ut.user.employee.e_type == 0:
-        try:
-            user = User.objects.get(username=username,is_active=False)  
-            is_delete = True
-            user.is_active = True 
-            user.first_name = first_name
-            if user.employee.is_delete == False:
-                return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=401)        
-            user.email = email
-            user.set_password(password)        
-            user.is_staff = False
-            user.save()
-        except Exception as e:
-            user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
-        
-        try:
-            e_org = organization.objects.get(pk=e_org_id)
-            if is_delete == True:
-                emp = user.employee
-                emp.is_delete=False
-                emp.e_org=e_org
-                emp.e_type = 1
-                emp.e_remark = e_remark
-            else:
-                emp = employee.objects.create(user=user, e_org=e_org, e_type=1, e_remark=e_remark)
-            data = [emp]
-            data = serializers.serialize("json",data,ensure_ascii=False)
-            data = json.loads(data)
-        except Exception as e:
-            if is_delete:
-                user.is_active = False
-                emp.is_delete = True
-                emp.delete_time = datetime.datetime.now()
-            else:
-                user.delete()
-            return JsonResponse({"data":str(e)})
-        return JsonResponse(data, safe = False)
-       
-    
-    if ut.uer.employee.e_type == 2:
-        if request.method != 'POST':
-            return HttpResponse(status=401)
-    try:
-        auth = request.META["HTTP_AUTHORIZATION"]
-        c_username,token = auth.split(":")
-        ut = u_token_list.objects.get(token=token) # 检查token是否过期
-        ut.user.employee
-        if (datetime.datetime.now().replace(tzinfo=None) - ut.gen_date.replace(tzinfo=None)).days > 1:
-            return JsonResponse({"error_msg:":"token已过期请重新登陆"},status=401)
-    except Exception as e:
-        return JsonResponse({"error_msg:":str(e)},status=401)
-
-    data = json.loads(request.body)
-    username = data['e_username']
-    password = data['e_password']
-    e_org_id = data['e_org_id']
-    email = data['email']
-    first_name = data['e_first_name']
-    e_type = data['e_type']
-    e_remark = data['e_remark']
-    user_id = data['user_id']
-
-    if email == '':
-        email = username+'@djonline.com'
-    if first_name == '':
-        first_name = username
-
-    if ut.user.employee.e_type == 0:
-        try:
-            user = User.objects.get(username=username,is_active=False)  
-            is_delete = True
-            user.is_active = True 
-            user.first_name = first_name
-            if user.employee.is_delete == False:
-                return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=401)        
-            user.email = email
-            user.set_password(password)        
-            user.is_staff = False
-            user.save()     
-        except Exception as e:
-            user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
-        
-        try:
-            e_org = organization.objects.get(pk=e_org_id)
-            if is_delete == True:
-                emp = user.employee
-                emp.is_delete=False
-                emp.e_org=e_org
-                emp.e_type = 1
-                emp.e_remark = e_remark
-            else:
-                emp = employee.objects.create(user=user, e_org=e_org, e_type=4, e_remark=e_remark)
-            data = [emp]
-            data = serializers.serialize("json",data,ensure_ascii=False)
-            data = json.loads(data)
-        except Exception as e:
-            if is_delete:
-                user.is_active = False
-                emp.is_delete = True
-                emp.delete_time = datetime.datetime.now()
-            else:
-                user.delete()
-            return JsonResponse({"data":str(e)})
-        return JsonResponse(data, safe = False)
-    return JsonResponse({"error_msg":"No permission to add employee"},status=400)
-        
-
-def get_employee(request):
-    #获取employee
-    data = serializers.serialize("json", employee.objects.filter(e_type=1))
-    data = json.loads(data)
-    result = []
-    ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
-    statusflag = {True:"正常",False:"禁用"}
-
-
-    for i in data:
-        d = {}
-        d['id']=i['pk']
-        d['username']=User.objects.get(pk=i['fields']['user']).username
-        d['e_type']=i['fields']['e_type']
-        d['e_type_name']=ulevelname[d['e_type']]
-        d['e_org']=organization.objects.get(pk=i['fields']['e_org']).name
-        d['e_org_id']= i['fields']['e_org']
-        d['e_remark']=i['fields']['e_remark']
-        d['statuscode']=User.objects.get(pk=i['fields']['user']).is_active
-        d['statusflag']=statusflag[d['statuscode']]
-        result.append(d)
-
-    return JsonResponse({"item_num":len(data),"data":result},status=200)
-
-def update_employee(request):
-
-    data = json.loads(request.body)
-    e_id = data['employee_id']
-    user = User.objects.get(pk=p_id)    
-    e_org_id = data['org_id']
-    org = organization.objects.get(pk=p_org_id)
-    user.employee.e_org = org
-    user.email = data['email']
-    user.is_active = data['is_active']#是否有效用户
-    user.first_name = data['first_name']
-    user.employee.e_type = data['e_type']
-    user.employee.e_remark = data['remark']
-    user.save()
-
-    #处理要返回的数据
-    d = {}
-    d['id'] = user.id
-    d['name'] = user.first_name
-    d['remark'] = user.employee.e_remark
-    d['org_name']=org.name
-    d['email']=user.email
-    d['e_type']=user.employee.e_type
-    d['statuscode'] = user.is_active
-    statusflag = {True:"正常",False:"禁用"}
-    d['statusflag'] = statusflag[d['statuscode']]
-    
-    return JsonResponse({"is_success":True,"data":d})
 
 def change_first_name(request):
     if request.method != 'POST':
