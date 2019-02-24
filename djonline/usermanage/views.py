@@ -251,7 +251,7 @@ def add_employee(request):
     statusflag = {True:"启用",False:"禁用"}
     data = data[0]
     d={}
-    d['id']=user.id
+    d['id']=d['pk']
     d['e_username']=user.username    
     d['e_type']= data['fields']['e_type']
     d['e_type_name']=ulevelname[d['e_type']]
