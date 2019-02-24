@@ -47,6 +47,7 @@ export const partnerUpdate = params => {
 
 //删除伙伴
 export const partnerDel = params => {
+  console.log(params)
   return axios.post('/user/delete_partner/', params)
 }
 

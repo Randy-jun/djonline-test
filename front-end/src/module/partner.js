@@ -79,7 +79,7 @@ var partner = {
     delete : function(value){
         return new Promise((resolve, reject) => {
             partnerDel({
-                partner_id: value.id,
+                partner_id: value,
             }).then((response) => {
                 if (response.data.is_success) {
                     console.log(response);
