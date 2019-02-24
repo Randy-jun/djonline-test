@@ -76,7 +76,7 @@ export default {
         currentRow: null,//选中行   
         columns: [
           // { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
-          { field: "name", title: "组织名称", width: 200, isEdit: true, sortable: true },
+          { field: "name", title: "组织名称", width: 200, isEdit: true, sortable: false },
           { field: "remark", title: "备注", width: 200, isEdit: true, sortable: false },
         ],
         // tempData: [],
