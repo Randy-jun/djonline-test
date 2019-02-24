@@ -77,7 +77,7 @@ var staff = {
     delete : function(value){
         return new Promise((resolve, reject) => {
             staffDel({
-                org_id: value.id,
+                partner_id: value.id,
             }).then((response) => {
                 if (response.data.is_success) {
                     console.log(response);
