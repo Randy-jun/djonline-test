@@ -391,17 +391,20 @@ def update_partner(request):
     emp.e_type = 2
     emp.e_remark = data['remark']
     emp.save()
-
+    
+    ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
+    statusflag = {True:"正常",False:"禁用"}
     #处理要返回的数据
     d = {}
     d['id'] = user.id
-    d['name'] = user.first_name
-    d['remark'] = user.employee.e_remark
-    d['org_name']=org.name
-    d['email']=user.email
+    d['username']=user.username   
+    d['nickname'] = user.first_name
+    d['e_remark'] = user.employee.e_remark
+    d['e_org_id']=org.id
+    d['e_org_name']=org.name
     d['e_type']=user.employee.e_type
+    d['e_type_name']=ulevelname[d['e_type']]
     d['statuscode'] = user.is_active
-    statusflag = {True:"正常",False:"禁用"}
     d['statusflag'] = statusflag[d['statuscode']]
 
     return JsonResponse({"is_success":True,"data":d})
