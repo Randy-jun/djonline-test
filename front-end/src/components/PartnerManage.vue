@@ -53,7 +53,7 @@
         </el-table-column>
       </el-table>
     </el-row>
-    <el-row>
+    <!-- <el-row>
       <el-pagination  
         v-on:size-change="handleSizeChange"
         v-on:current-change="handleCurrentChange"
@@ -63,7 +63,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="table.countAll">
       </el-pagination>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
@@ -89,8 +89,8 @@ export default {
         currentRow: null,//选中行 
         columns: [
           // { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
-          { field: "username", title: "用户名", width: 320, isEdit: true, sortable: true },
-          { field: "nickname", title: "用户昵称", width: 320, isEdit: true, sortable: true },
+          { field: "username", title: "用户名", width: 320, isEdit: true, sortable: false },
+          { field: "nickname", title: "用户昵称", width: 320, isEdit: true, sortable: false },
           // { field: "status", title: "用户状态", width: 320, isEdit: true, sortable: true },
           { field: "e_remark", title: "备注", width: 320, isEdit: true, sortable: false },
         ],
