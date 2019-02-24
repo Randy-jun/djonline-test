@@ -252,7 +252,7 @@ def add_employee(request):
     data = data[0]
     d={}
     d['id']=user.id
-    d['username']=user.username    
+    d['e_username']=user.username    
     d['e_type']= data['fields']['e_type']
     d['e_type_name']=ulevelname[d['e_type']]
     d['e_org']=organization.objects.get(pk=data['fields']['e_org']).name
@@ -262,7 +262,7 @@ def add_employee(request):
     d['statuscode']=User.objects.get(pk=data['fields']['user']).is_active
     d['statusflag']=statusflag[d['statuscode']]
     print('ok')  
-    return JsonResponse({"result":d},status=200)
+    return JsonResponse({"is_success":True,"data":d})
 
 def get_employee(request):
     #获取职员
