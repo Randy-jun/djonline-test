@@ -155,6 +155,7 @@ def delete_organization(request):
 def update_organization(request):
     #update
     data = json.loads(request.body)
+    print(data)
     org_id = data['org_id']
     org = organization.objects.get(id=org_id)
     org.name = data['org_name']
@@ -240,7 +241,8 @@ def add_partner(request):
        #接受json数据，新增职员
     if request.method != 'POST':
         return HttpResponse(status=401)
-    try:
+    d={}
+    '''try:
         auth = request.META["HTTP_AUTHORIZATION"]
         c_username,token = auth.split(":")
         ut = u_token_list.objects.get(token=token) # 检查token是否过期
@@ -254,7 +256,7 @@ def add_partner(request):
     if not c_user.employee.is_manager():
         return JsonResponse({"error_msg:":"非管理员无法新增伙伴"},status=401)
     if not c_user.is_active or c_user.employee.is_delete:#判断用户是激活状态
-        return JsonResponse({"error_msg:":"账号已失效"},status=401)
+        return JsonResponse({"error_msg:":"账号已失效"},status=401)'''
     
 
     data = json.loads(request.body)
@@ -319,9 +321,23 @@ def add_partner(request):
         except Exception as e:
             user.delete()
             return JsonResponse({"result":str(e)})
-        
 
-    return JsonResponse({"data":data})
+    ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
+    statusflag = {True:"正常",False:"禁用"}
+    
+    data = data[0]
+    d['id']=user.id
+    d['username']=user.username    
+    d['e_type']= data['fields']['e_type']
+    d['e_type_name']=ulevelname[d['e_type']]
+    d['e_org']=organization.objects.get(pk=data['fields']['e_org']).name
+    d['e_org_id']= data['fields']['e_org']
+    d['e_remark']=data['fields']['e_remark']
+    d['nickname']= User.objects.get(pk=data['fields']['user']).first_name
+    d['statuscode']=User.objects.get(pk=data['fields']['user']).is_active
+    d['statusflag']=statusflag[d['statuscode']]
+  
+    return JsonResponse({"is_success":True,"data":d})
 
 
 
