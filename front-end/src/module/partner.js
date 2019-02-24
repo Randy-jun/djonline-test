@@ -33,10 +33,13 @@ var partner = {
         return new Promise((resolve, reject) => {
             console.log(value)
             partnerUpdate({
-                org_id:value.id,
-                org_name: value.name,
-                org_remark:value.remark,
-                org_is_activee:value.statuscode,
+                id:value.id,
+                username:value.username,
+                nickname:value.nickname,
+                org_id:value.e_org_id,
+                type: value.e_type,
+                remark:value.e_remark,
+                statuscode:value.statuscode,
             }).then((response) => {
                 console.log(response);
                 resolve(response.data) ;
@@ -50,9 +53,13 @@ var partner = {
         console.log(value)
         return new Promise((resolve, reject) => {
             partnerAdd({
-                org_name: value.name,
-                org_remark:value.remark,
-                org_is_active:value.statuscode,
+                id:value.id,
+                username:value.username,
+                nickname:value.nickname,
+                org_id:value.e_org_id,
+                type: value.e_type,
+                remark:value.e_remark,
+                statuscode:value.statuscode,
             }).then((response) => {
                 console.log(response);
                 resolve(response.data) ;
