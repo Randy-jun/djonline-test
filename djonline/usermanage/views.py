@@ -547,7 +547,7 @@ def update_partner(request):
     statusflag = {True:"启用",False:"禁用"}
     #处理要返回的数据
     d = {}
-    d['id'] = user.id
+    d['id'] = user.employee.id
     d['username']=user.username   
     d['nickname'] = user.first_name
     d['e_remark'] = user.employee.e_remark
