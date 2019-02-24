@@ -58,6 +58,7 @@ export const staffList = () => {
 
 //新增职员
 export const staffAdd = params => {
+  console.log(params)
   return axios.post('/user/add_employee/', params)
 }
 

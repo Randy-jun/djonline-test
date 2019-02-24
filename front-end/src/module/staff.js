@@ -33,9 +33,9 @@ var staff = {
         return new Promise((resolve, reject) => {
             staffUpdate({
                 id:value.id,
-                username:value.username,
+                username:value.e_username,
                 nickname:value.nickname,
-                org_id:Sstorage.get('groupid'),
+                org_id:Sstorage.get('groupID'),
                 remark:value.e_remark,
                 statuscode:value.statuscode,
             }).then((response) => {
@@ -54,9 +54,9 @@ var staff = {
     insert : function(value){
         return new Promise((resolve, reject) => {
             staffAdd({
-                username:value.username,
+                username:value.e_username,
                 nickname:value.nickname,
-                org_id:Sstorage.get('groupid'),
+                org_id:Sstorage.get('groupID'),
                 remark:value.e_remark,
                 statuscode:value.statuscode,
             }).then((response) => {

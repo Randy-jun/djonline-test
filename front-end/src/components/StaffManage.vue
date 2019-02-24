@@ -175,7 +175,7 @@ export default {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
       // let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
-      let tempAddData = {id: null, username: "", nickname: "", e_remark: "", statuscode: true, statusflag: "正常",isSet: true,};
+      let tempAddData = {id: null, e_username: "", nickname: "", e_remark: "", statuscode: true, statusflag: "正常",isSet: true,};
       this.table.data.push(tempAddData);
       this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
