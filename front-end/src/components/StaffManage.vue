@@ -42,7 +42,7 @@
         </el-table-column>
       </el-table>
     </el-row>
-    <el-row>
+    <!-- <el-row>
       <el-pagination  
         v-on:size-change="handleSizeChange"
         v-on:current-change="handleCurrentChange"
@@ -52,7 +52,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="table.countAll">
       </el-pagination>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
