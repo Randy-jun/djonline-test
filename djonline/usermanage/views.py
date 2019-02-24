@@ -179,13 +179,11 @@ def add_employee(request):
         return HttpResponse(status=401)
 
     auth = request.META["HTTP_AUTHORIZATION"]
-    user,token = auth.split(":")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-    #(user,token)                                                                                                                           
+    user,token = auth.split(":")                                                                                                           
     ut = u_token_list.objects.get(token=token)
 
     
     data = json.loads(request.body)
-    print("data",data)
     username = data['username']
     password = 'William798'
     e_org_id = data['org_id']
@@ -252,6 +250,7 @@ def add_employee(request):
     ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
     statusflag = {True:"启用",False:"禁用"}
     data = data[0]
+    d={}
     d['id']=user.id
     d['username']=user.username    
     d['e_type']= data['fields']['e_type']
@@ -262,8 +261,8 @@ def add_employee(request):
     d['nickname']= User.objects.get(pk=data['fields']['user']).first_name
     d['statuscode']=User.objects.get(pk=data['fields']['user']).is_active
     d['statusflag']=statusflag[d['statuscode']]
-        
-    return JsonResponse({"result":data})
+    print('ok')  
+    return JsonResponse({"result":d},status=200)
 
 def get_employee(request):
     #获取职员
@@ -392,6 +391,11 @@ def add_partner(request):
     username = data['username']
     password = 'William798'#data['password']
     p_org_id = data['org_id']
+    try:
+        employee.objects.get(e_org__id=p_org_id)
+        return JsonResponse({"one organizaiton can only have one partner user!"},status=401)
+    except:
+        pass
     email = ''#data['email']
     first_name = data['nickname']
     if data['type']!=2:
