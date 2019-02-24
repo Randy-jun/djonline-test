@@ -354,7 +354,7 @@ def update_employee(request):
     statusflag = {True:"启用",False:"禁用"}
     #处理要返回的数据
     d = {}
-    d['id'] = user.id
+    d['id'] = emp.id
     d['e_username']=user.username   
     d['nickname'] = user.first_name
     d['e_remark'] = user.employee.e_remark
@@ -464,7 +464,7 @@ def add_partner(request):
     statusflag = {True:"启用",False:"禁用"}
     
     data = data[0]
-    d['id']=user.id
+    d['id']=data['pk']
     d['username']=user.username    
     d['e_type']= data['fields']['e_type']
     d['e_type_name']=ulevelname[d['e_type']]
