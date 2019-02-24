@@ -166,6 +166,7 @@ export default {
         this.table.currentRow = JSON.parse(JSON.stringify(rowContent));
         // this.table.currentRow = rowContent;
         rowContent.isSet = true;
+        this.table.columns[0].isEdit = false;
         // this.$set(this.table.data, index, rowContent);
         this.table.data.splice(index, 1, rowContent)
       }
@@ -175,6 +176,7 @@ export default {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
       // let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
+      this.table.columns[0].isEdit = true;
       let tempAddData = {id: null, e_username: "", nickname: "", e_remark: "", statuscode: true, statusflag: "正常",isSet: true,};
       this.table.data.push(tempAddData);
       this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));

@@ -189,6 +189,7 @@ export default {
         this.table.currentRow = JSON.parse(JSON.stringify(rowContent));
         // this.table.currentRow = rowContent;
         rowContent.isSet = true;
+        this.table.columns[0].isEdit = false;
         // this.$set(this.table.data, index, rowContent);
         this.table.data.splice(index, 1, rowContent)
       }
@@ -198,6 +199,7 @@ export default {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
       // let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
+      this.table.columns[0].isEdit = true;
       let tempAddData = {id: null, username: "", nickname: "", e_remark: "", e_type: 2, e_type_name: "伙伴", e_org_id: this.groupList[0].value, e_org: this.groupList[0].label, statuscode: true, statusflag: "正常",isSet: true,};
       this.table.data.push(tempAddData);
       this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
