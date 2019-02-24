@@ -244,7 +244,7 @@ def get_employee(request):
     for i in data:
         d = {}
         d['id']=i['pk']
-        d['username']=User.objects.get(pk=i['fields']['user']).username
+        d['e_username']=User.objects.get(pk=i['fields']['user']).username
         d['e_type']=i['fields']['e_type']
         d['e_type_name']=ulevelname[d['e_type']]
         d['e_org']=organization.objects.get(pk=i['fields']['e_org']).name
@@ -341,11 +341,14 @@ def add_partner(request):
     
 
     data = json.loads(request.body)
+    print('data',data)
     username = data['username']
     password = 'William798'#data['password']
     p_org_id = data['org_id']
     email = ''#data['email']
     first_name = data['nickname']
+    if data['type']!=2:
+        return JsonResponse({"error-msg":"type error"},status=401)
     e_type = data['type']
     p_remark = data['remark']
     is_active = data['statuscode']    
@@ -482,7 +485,7 @@ def update_partner(request):
     #user.email = data['email']
     user.is_active = data['statuscode']#是否有效用户
     user.first_name = data['nickname']
-    emp.e_type = data['e_type']
+    emp.e_type = data['type']
     emp.e_remark = data['remark']
     emp.save()
     
