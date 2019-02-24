@@ -14,11 +14,11 @@
         <i class="el-icon-menu"></i>
         <span slot="title">组织管理</span>
       </el-menu-item>
-      <el-menu-item v-if="menu[2]" index="3" v-on:click="navgo('partner')">
+      <el-menu-item v-if="menu[1]" index="3" v-on:click="navgo('partner')">
         <i class="el-icon-menu"></i>
         <span slot="title">用户管理</span>
       </el-menu-item>
-      <el-menu-item v-if="menu[1]" index="4" v-on:click="navgo('staff')">
+      <el-menu-item v-if="menu[2]" index="4" v-on:click="navgo('staff')">
         <i class="el-icon-menu"></i>
         <span slot="title">职员管理</span>
       </el-menu-item>

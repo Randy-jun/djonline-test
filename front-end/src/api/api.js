@@ -14,7 +14,7 @@ export const groupList = params => {
   }
   
 }
-
+//=====================================================
 //新增组织机构
 export const groupAdd = params => {
   return axios.post('/user/add_org/', params)
@@ -29,7 +29,7 @@ export const groupUpdate = params => {
 export const groupDel = params => {
   return axios.post('/user/delete_org/', params)
 }
-
+//=====================================================
 //获取伙伴列表
 export const partnerList = () => {
   return axios.get('/user/get_partner')
@@ -50,8 +50,28 @@ export const partnerDel = params => {
   console.log(params)
   return axios.post('/user/delete_partner/', params)
 }
+//=====================================================
+//获取职员列表
+export const staffList = () => {
+  return axios.get('/user/get_employee')
+}
 
+//新增职员
+export const staffAdd = params => {
+  return axios.post('/user/add_employee/', params)
+}
 
+//更新职员
+export const staffUpdate = params => {
+  return axios.post('/user/update_employee/', params)
+}
+
+//删除职员
+export const staffDel = params => {
+  console.log(params)
+  return axios.post('/user/delete_employee/', params)
+}
+//=====================================================
 
 
 

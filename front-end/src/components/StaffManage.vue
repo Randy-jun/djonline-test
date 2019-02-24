@@ -28,7 +28,9 @@
                 </el-option>
               </el-select>
             </span>
-            <span v-else class="el-tag el-tag--mini">{{scope.row.statusflag}}</span>
+            <span v-else>
+              <el-tag size="mini" :type="scope.row.statuscode?'success':'danger'">{{scope.row.statusflag}}</el-tag>
+            </span>
           </template>
         </el-table-column>
         <el-table-column align='center' fixed="right" label="操作" width="150">
@@ -68,7 +70,7 @@ export default {
   data() {
     return {
       statusList: [
-          {value: true,label: '正常'},
+          {value: true,label: '启用'},
           {value: false,label: '禁用'},
         ],
       table: {
@@ -76,8 +78,8 @@ export default {
         currentRow: null,//选中行   
         columns: [
           // { field: "id", title: "编号", width: 150, isEdit: false, sortable: true },
-          { field: "uname", title: "用户名称", width: 120, isEdit: true, sortable: false },
-          { field: "ulevelname", title: "用户类型", width: 120, isEdit: true, sortable: false },
+          { field: "username", title: "用户名", width: 120, isEdit: true, sortable: false },
+          { field: "nickname", title: "用户昵称", width: 120, isEdit: true, sortable: false },
           // { field: "ugroup", title: "归属组织", width: 220, isEdit: true, sortable: true },
           { field: "uremark", title: "备注", width: 220, isEdit: true, sortable: false },
         ],
@@ -173,7 +175,7 @@ export default {
         if (item.isSet) return this.$message.warning("请先保存当前编辑项!");
       }
       // let tempAddData = {id: null, "name": "", "remark": "", "isSet": true,};
-      let tempAddData = {id: null, name : "", nickname : "", level:"管理员", group:"",status:"正常",remark:"", "isSet": true};
+      let tempAddData = {id: null, username: "", nickname: "", e_remark: "", statuscode: true, statusflag: "正常",isSet: true,};
       this.table.data.push(tempAddData);
       this.table.currentRow = JSON.parse(JSON.stringify(tempAddData));
       // console.log(this.table.data)
