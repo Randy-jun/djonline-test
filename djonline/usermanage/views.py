@@ -195,7 +195,7 @@ def add_employee(request):
     elif ut.user.employee.e_type == 2:
         e_type = 3
     else:
-        JsonResponse('error_msg:':'permission error',status=401)
+        JsonResponse({'error_msg:':'permission error'},status=401)
 
     e_remark = data['e_remark']
     user_id = data['user_id']
@@ -203,11 +203,6 @@ def add_employee(request):
         email = username+'@djonline.com'
     if first_name == '':
         first_name = username
-
-
-
-   )
-
     try:
         user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
         user.is_staff = True
@@ -256,7 +251,7 @@ def delete_employee(request):
     auth = request.META["HTTP_AUTHORIZATION"]
     user,token = auth.split(":") 
     if ut.user.employee.e_type == 0 and ut.user.employee.e_type == 2:       
-        JsonResponse('error_msg:':'permission error',status=401)       
+        JsonResponse({'error_msg:':'permission error'},status=401)       
 
 
     emp = employee.objects.get(pk=p_id)    
@@ -271,7 +266,7 @@ def update_employee(request):
     auth = request.META["HTTP_AUTHORIZATION"]
     user,token = auth.split(":")
     if ut.user.employee.e_type == 0 and ut.user.employee.e_type == 2:       
-        JsonResponse('error_msg:':'permission error',status=401)        
+        JsonResponse({'error_msg:':'permission error'},status=401)        
 
     data = json.loads(request.body)
     p_id = data['id']
