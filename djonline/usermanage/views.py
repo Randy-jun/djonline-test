@@ -102,7 +102,7 @@ def add_organization(request):
         d['name'] = org.name
         d['remark'] = org.remark
         d['statuscode'] = org.is_active
-        statusflag = {True:"正常",False:"禁用"}
+        statusflag = {True:"启用",False:"禁用"}
         d['statusflag'] = statusflag[d['statuscode']]
     except Exception as e:
         return JsonResponse({"is_success":False,"error_msg":str(e)})    
@@ -130,7 +130,7 @@ def get_organization(request):
             data = serializers.serialize("json", organization.objects.filter(is_delete=False),ensure_ascii=False)
         data = json.loads(data)
         result = []
-        statusflag = {True:"正常",False:"禁用"}
+        statusflag = {True:"启用",False:"禁用"}
         for i in data:
             d = {}
             d['id'] = i['pk']
@@ -168,7 +168,7 @@ def update_organization(request):
     d['name'] = org.name
     d['remark'] = org.remark
     d['statuscode'] = org.is_active
-    statusflag = {True:"正常",False:"禁用"}
+    statusflag = {True:"启用",False:"禁用"}
     d['statusflag'] = statusflag[d['statuscode']]
     return JsonResponse({"is_success":True,"data":d})
 
@@ -221,11 +221,24 @@ def add_employee(request):
 
 def get_employee(request):
     #获取职员
-    data = serializers.serialize("json", employee.objects.filter(e_type=1))
+    auth = request.META["HTTP_AUTHORIZATION"]
+    user,token = auth.split(":")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+    #(user,token)                                                                                                                           
+    ut = u_token_list.objects.get(token=token)
+
+    if ut.user.employee == 0:
+        data = serializers.serialize("json", employee.objects.filter(e_type=1))
+    elif ut.uesr.employee == 2:
+        data = serializers.serialize("json", employee.objects.filter(e_type=3))
+    else:
+        JsonResponse({"error_msg:":"permission error"},status=401)
+    
+
+
     data = json.loads(data)
     result = []
     ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
-    statusflag = {True:"正常",False:"禁用"}
+    statusflag = {True:"启用",False:"禁用"}
 
     for i in data:
         d = {}
@@ -288,7 +301,7 @@ def update_employee(request):
     emp.save()
     
     ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
-    statusflag = {True:"正常",False:"禁用"}
+    statusflag = {True:"启用",False:"禁用"}
     #处理要返回的数据
     d = {}
     d['id'] = user.id
@@ -390,7 +403,7 @@ def add_partner(request):
             return JsonResponse({"result":str(e)})
 
     ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
-    statusflag = {True:"正常",False:"禁用"}
+    statusflag = {True:"启用",False:"禁用"}
     
     data = data[0]
     d['id']=user.id
@@ -410,11 +423,19 @@ def add_partner(request):
 
 def get_partner(request):
     #获取1级伙伴,return employee id not user id!!
+    auth = request.META["HTTP_AUTHORIZATION"]
+    user,token = auth.split(":")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+    #(user,token)                                                                                                                           
+    ut = u_token_list.objects.get(token=token)
+
+    if ut.user.employee != 0:
+        JsonResponse({"error_msg":"permission error"},status=401)
+    data = serializers.serialize("json", employee.objects.filter(e_type=1))
     data = serializers.serialize("json", employee.objects.filter(e_type=2))
     data = json.loads(data)
     result = []
     ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
-    statusflag = {True:"正常",False:"禁用"}
+    statusflag = {True:"启用",False:"禁用"}
 
     for i in data:
         d = {}
@@ -465,7 +486,7 @@ def update_partner(request):
     emp.save()
     
     ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
-    statusflag = {True:"正常",False:"禁用"}
+    statusflag = {True:"启用",False:"禁用"}
     #处理要返回的数据
     d = {}
     d['id'] = user.id
