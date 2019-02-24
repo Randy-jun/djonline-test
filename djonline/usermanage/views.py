@@ -33,7 +33,7 @@ def user_login(request):
                 ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
                 ustatusflag = {True:"可用",False:"禁用"}
                 uorg = user.employee.e_org.name
-                uorgid = user.employee.org
+                uorgid = user.employee.e_org.id
 
                 return JsonResponse({"isLogin": True, "loginResultString": "Success",
                  "tokenID": token, "userID": user.id, "username":user.username, "unickname":user.first_name,
