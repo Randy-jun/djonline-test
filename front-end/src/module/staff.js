@@ -33,10 +33,10 @@ var staff = {
         return new Promise((resolve, reject) => {
             staffUpdate({
                 id:value.id,
-                e_username:value.username,
+                username:value.username,
                 nickname:value.nickname,
-                e_org_id:Sstorage.get('groupid'),
-                e_remark:value.e_remark,
+                org_id:Sstorage.get('groupid'),
+                remark:value.e_remark,
                 statuscode:value.statuscode,
             }).then((response) => {
                 console.log(response);
@@ -54,10 +54,10 @@ var staff = {
     insert : function(value){
         return new Promise((resolve, reject) => {
             staffAdd({
-                e_username:value.username,
+                username:value.username,
                 nickname:value.nickname,
-                e_org_id:Sstorage.get('groupid'),
-                e_remark:value.e_remark,
+                org_id:Sstorage.get('groupid'),
+                remark:value.e_remark,
                 statuscode:value.statuscode,
             }).then((response) => {
                 console.log(response);

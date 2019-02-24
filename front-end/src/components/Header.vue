@@ -1,10 +1,19 @@
 <template>
   <el-row>
-    <el-col :span=20>
+    <el-col :span=19>
       <h1>DJonline</h1>
     </el-col>
-    <el-col :span=4>
-      <small>{{nickname}} | {{group}} | <a class="badge badge-second el-icon-setting" v-on:click="logout()">退出</a></small>
+    <el-col :span=1>
+      <small>{{nickname}}</small>
+    </el-col>
+    <el-col :span=2>
+      <small :title=group>{{group}}</small>
+    </el-col>
+    <el-col :span=1>
+      <small><a class="badge badge-second el-icon-setting" v-on:click="passwordChange()">修改密码</a></small>
+    </el-col>
+    <el-col :span=1>
+      <small><a class="badge badge-second el-icon-setting" v-on:click="logout()">退出</a></small>
     </el-col>
   </el-row>
 </template>
@@ -23,6 +32,9 @@ export default {
     }
   },
   methods: {
+    passwordChange(){
+      
+    },
     logout(){
       // alert("setting")
       Sstorage.clearAll();
