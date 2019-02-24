@@ -186,7 +186,7 @@ def add_employee(request):
     
     data = json.loads(request.body)
     username = data['e_username']
-    password = data['e_password']
+    password = 'William798'
     e_org_id = data['e_org_id']
     email = ''
     first_name = data['nickname']
