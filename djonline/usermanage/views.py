@@ -120,7 +120,7 @@ def get_organization(request):
         return HttpResponse("Authentication Failed !", status=401)
     
     is_all = request.GET.get('all')
-    print('is_all:',is_all)
+    #print('is_all:',is_all)
    
     if ut.user.id :
         if is_all == '1':
@@ -138,7 +138,7 @@ def get_organization(request):
             d['statuscode'] = i['fields']['is_active']
             d['statusflag'] = statusflag[d['statuscode']]
             result.append(d)
-        print(result)
+        #print(result)
         ut.gen_date = datetime.datetime.now()
 
     return JsonResponse({"item_num":len(data),"data":result})
@@ -155,7 +155,7 @@ def delete_organization(request):
 def update_organization(request):
     #update
     data = json.loads(request.body)
-    print(data)
+    #print(data)
     org_id = data['org_id']
     org = organization.objects.get(id=org_id)
     org.name = data['org_name']
@@ -179,7 +179,7 @@ def add_employee(request):
 
     auth = request.META["HTTP_AUTHORIZATION"]
     user,token = auth.split(":")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-    print(user,token)                                                                                                                           
+    #(user,token)                                                                                                                           
     ut = u_token_list.objects.get(token=token)
 
     
@@ -222,20 +222,74 @@ def add_employee(request):
 
 def get_employee(request):
     #获取职员
-    data = serializers.serialize("json", employee.objects.all())
+    data = serializers.serialize("json", employee.objects.filter(e_type=1))
     data = json.loads(data)
-    return JsonResponse(data, safe=False)
+    result = []
+    ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
+    statusflag = {True:"正常",False:"禁用"}
 
-def inactive_employee(request):
-    #失效职员账号
-    if request.method != 'POST':
-        return HttpResponse(status=401)
+    for i in data:
+        d = {}
+        d['id']=i['pk']
+        d['username']=User.objects.get(pk=i['fields']['user']).username
+        d['e_type']=i['fields']['e_type']
+        d['e_type_name']=ulevelname[d['e_type']]
+        d['e_org']=organization.objects.get(pk=i['fields']['e_org']).name
+        d['e_org_id']= i['fields']['e_org']
+        d['e_remark']=i['fields']['e_remark']
+        d['nickname']= User.objects.get(pk=i['fields']['user']).first_name
+        d['statuscode']=User.objects.get(pk=i['fields']['user']).is_active
+        d['statusflag']=statusflag[d['statuscode']]
+        result.append(d)
+
+    return JsonResponse({"item_num":len(data),"data":result},status=200)
+
+def delete_employee(request):
     data = json.loads(request.body)
-    user_id = data['user_id']
-    user = User.objects.get(pk=user_id)
-    user.is_active = False
-    user.save()
-    return True
+    #print(data)
+    p_id = data['id']
+    emp = employee.objects.get(pk=p_id)
+    if emp.e_type != 1 or 3:
+        JsonResponse({"error_msg":"emp is not employee"},status=401)
+    emp.user.is_active = False
+    emp.is_delete = True
+    emp.save()
+    return JsonResponse({"is_success":True},status=200)
+
+def update_employee(request):
+       #update
+    data = json.loads(request.body)
+    p_id = data['id']
+    emp = employee.objects.get(pk=p_id)
+    if emp.e_type != 1 or 3:
+        JsonResponse({'error_msg':'error type'},status=401)
+    user = emp.user
+    p_org_id = data['org_id']
+    org = organization.objects.get(pk=p_org_id)
+    emp.e_org = org
+    #user.email = data['email']
+    user.is_active = data['statuscode']#是否有效用户
+    user.first_name = data['nickname']
+    emp.e_type = data['e_type']
+    emp.e_remark = data['remark']
+    emp.save()
+    
+    ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
+    statusflag = {True:"正常",False:"禁用"}
+    #处理要返回的数据
+    d = {}
+    d['id'] = user.id
+    d['username']=user.username   
+    d['nickname'] = user.first_name
+    d['e_remark'] = user.employee.e_remark
+    d['e_org_id']=org.id
+    d['e_org']=org.name
+    d['e_type']=user.employee.e_type
+    d['e_type_name']=ulevelname[d['e_type']]
+    d['statuscode'] = user.is_active
+    d['statusflag'] = statusflag[d['statuscode']]
+
+    return JsonResponse({"is_success":True,"data":d})
 
 def add_partner(request):
        #接受json数据，新增职员
@@ -368,9 +422,11 @@ def get_partner(request):
 def delete_partner(request):
     #删除1级伙伴
     data = json.loads(request.body)
-    print(data)
+    #print(data)
     p_id = data['partner_id']
     emp = employee.objects.get(pk=p_id)
+    if emp.e_type != 2:
+        JsonResponse({"error_msg":"emp is not partner"},status=401)
     emp.user.is_active = False
     emp.is_delete = True
     emp.save()
@@ -381,6 +437,8 @@ def update_partner(request):
     data = json.loads(request.body)
     p_id = data['id']
     emp = employee.objects.get(pk=p_id)
+    if emp.e_type != 2:
+        JsonResponse({'error_msg':'error type'},status=401)
     user = emp.user
     p_org_id = data['org_id']
     org = organization.objects.get(pk=p_org_id)
@@ -388,7 +446,7 @@ def update_partner(request):
     #user.email = data['email']
     user.is_active = data['statuscode']#是否有效用户
     user.first_name = data['nickname']
-    emp.e_type = 2
+    emp.e_type = data['e_type']
     emp.e_remark = data['remark']
     emp.save()
     
@@ -401,7 +459,7 @@ def update_partner(request):
     d['nickname'] = user.first_name
     d['e_remark'] = user.employee.e_remark
     d['e_org_id']=org.id
-    d['e_org_name']=org.name
+    d['e_org']=org.name
     d['e_type']=user.employee.e_type
     d['e_type_name']=ulevelname[d['e_type']]
     d['statuscode'] = user.is_active
