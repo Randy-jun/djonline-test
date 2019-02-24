@@ -185,9 +185,10 @@ def add_employee(request):
 
     
     data = json.loads(request.body)
-    username = data['e_username']
+    print("data",data)
+    username = data['username']
     password = 'William798'
-    e_org_id = data['e_org_id']
+    e_org_id = data['org_id']
     email = ''
     first_name = data['nickname']
 
@@ -197,26 +198,71 @@ def add_employee(request):
         e_type = 3
     else:
         JsonResponse({'error_msg:':'permission error'},status=401)
+    
+    
 
-    e_remark = data['e_remark']
+    e_remark = data['remark']
+    is_active = data['statuscode']    
     if email == '':
         email = username+'@djonline.com'
     if first_name == '':
         first_name = username
+    data=""
     try:
-        user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
-        user.is_staff = True
+        user = User.objects.get(username=username, is_active=False)
+        if user.employee.is_delete == False:
+            return JsonResponse({"error_msg":"已有同名的未激活的用户"},status=401)
+        
+        user.employee.is_delete = False
+        user.is_active = is_active
+        user.employee.delete_time = datetime.datetime.now()
+        user.email = email
+        user.set_password(password)
+        user.first_name = first_name
+        user.is_staff = False
+        user.save()
+        try:
+            e_org = organization.objects.get(pk=e_org_id)
+            emp = user.employee
+            emp,org = e_org
+            emp.e_type= e_type
+            emp.e_remark = e_remark
+            emp.save()
+            data = serializers.serialize("json",result,ensure_ascii=False)
+            data = json.loads(data)
+        except Exception as e:
+            user.is_active = False
+            return JsonResponse({"result":str(e)},status=401)
+
     except Exception as e:
-        return JsonResponse({"result":str(e)})
-    try:
-        e_org = organization.objects.get(pk=e_org_id)
-        result = employee.objects.create(user=user,e_org=e_org,e_type=e_type,e_remark=e_remark)
-        result=[result]
-        data = serializers.serialize("json",result,ensure_ascii=False)
-        data = json.loads(data)
-    except Exception as e:
-        user.delete()
-        return JsonResponse({"result":str(e)})
+        user = User.objects.create_user(username=username,email=email,password=password,first_name=first_name,is_active=is_active)
+        user.is_staff = False
+        user.save()
+        try:
+            e_org= organization.objects.get(pk=e_org_id)
+            result = employee.objects.create(user=user,e_org=e_org,e_type=e_type,
+            e_remark=e_remark)
+            result = [result]
+            data = serializers.serialize("json",result,ensure_ascii=False)
+            data = json.loads(data)
+        except:
+            user.delete()
+            return JsonResponse({"result":str(e)},status=401)
+
+    ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
+    statusflag = {True:"启用",False:"禁用"}
+    data = data[0]
+    d['id']=user.id
+    d['username']=user.username    
+    d['e_type']= data['fields']['e_type']
+    d['e_type_name']=ulevelname[d['e_type']]
+    d['e_org']=organization.objects.get(pk=data['fields']['e_org']).name
+    d['e_org_id']= data['fields']['e_org']
+    d['e_remark']=data['fields']['e_remark']
+    d['nickname']= User.objects.get(pk=data['fields']['user']).first_name
+    d['statuscode']=User.objects.get(pk=data['fields']['user']).is_active
+    d['statusflag']=statusflag[d['statuscode']]
+        
     return JsonResponse({"result":data})
 
 def get_employee(request):
@@ -286,6 +332,7 @@ def update_employee(request):
         JsonResponse({'error_msg:':'permission error'},status=401)        
 
     data = json.loads(request.body)
+    print("update data",data)
     p_id = data['id']
     emp = employee.objects.get(pk=p_id)
     if emp.e_type != 1 or 3:
@@ -385,9 +432,9 @@ def add_partner(request):
             result=[employee]
             data = serializers.serialize("json",result,ensure_ascii=False)
             data = json.loads(data)
-        except :
+        except Exception as e:
             user.is_active = False
-            return JsonResponse({"result":str('e')})
+            return JsonResponse({"result":str(e)},status=401)
         
 
     except:
@@ -404,7 +451,7 @@ def add_partner(request):
             data = json.loads(data)
         except Exception as e:
             user.delete()
-            return JsonResponse({"result":str(e)})
+            return JsonResponse({"result":str(e)},status=401)
 
     ulevelname = {0:"管理员",1:"职员",2:"伙伴",3:"伙伴职员"}
     statusflag = {True:"启用",False:"禁用"}
