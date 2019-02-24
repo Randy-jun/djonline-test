@@ -32,6 +32,7 @@ var staff = {
     update : function(value){
         return new Promise((resolve, reject) => {
             staffUpdate({
+                id:value.id,
                 e_username:value.username,
                 nickname:value.nickname,
                 e_org_id:Sstorage.get('groupid'),
@@ -53,7 +54,6 @@ var staff = {
     insert : function(value){
         return new Promise((resolve, reject) => {
             staffAdd({
-                id:value.id,
                 e_username:value.username,
                 nickname:value.nickname,
                 e_org_id:Sstorage.get('groupid'),
