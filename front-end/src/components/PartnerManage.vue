@@ -39,7 +39,9 @@
                 </el-option>
               </el-select>
             </span>
-            <el-tag v-else size="mini" :type="scope.row.statuscode?'success':'danger'">{{scope.row.statusflag}}</el-tag>
+            <span v-else>
+              <el-tag size="mini" :type="scope.row.statuscode?'success':'danger'">{{scope.row.statusflag}}</el-tag>
+            </span>
           </template>
         </el-table-column>
         <el-table-column align='center' fixed="right" label="操作" width="150">
@@ -80,7 +82,7 @@ export default {
   data() {
     return {
       statusList: [
-          {value: true,label: '正常'},
+          {value: true,label: '启用'},
           {value: false,label: '禁用'},
         ],
       groupList: [],
