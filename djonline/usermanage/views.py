@@ -430,7 +430,7 @@ def get_partner(request):
     ut = u_token_list.objects.get(token=token)
 
     if ut.user.employee.e_type != 0:
-        JsonResponse({"error_msg":"permission error"},status=401)
+        return JsonResponse({"error_msg":"permission error"},status=401)
     data = serializers.serialize("json", employee.objects.filter(e_type=1))
     data = serializers.serialize("json", employee.objects.filter(e_type=2))
     data = json.loads(data)
