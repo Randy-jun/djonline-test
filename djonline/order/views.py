@@ -182,12 +182,19 @@ def delete_order(request):
 #@permission_classes((CustomerAccessPermission,))
 def change_order_status(request):
     if request.method == 'POST':
+        auth = request.META["HTTP_AUTHORIZATION"]
+        user,token = auth.split(":")                                                                                                             
+        ut = u_token_list.objects.get(token=token)
         try:            
             data = json.loads(request.body)
             order_id = data['order_id']
             order = o_order.objects.get(pk=order_id)
             if data['order_status'] not in ['打回','提交','已付款','已结算','暂存']:
                 raise Exception('状态无效')
+
+            if  data['order_status'] in ['打回','已付款','已结算'] and ut.user.employee.e_type not in [0,1]:
+                return JsonResponse({"error_msg":"非管理员和职员无法打回，修改已付款、已结算"},status=401)
+            
             order.o_status = data['order_status']
             order.save()            
         except Exception as e:
