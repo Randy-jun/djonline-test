@@ -3,7 +3,7 @@ from order.models import o_jieji,o_order,o_songji,o_tourist
 from openpyxl import Workbook
 import json,time,datetime
 from tempfile import NamedTemporaryFile
-from django.http import HttpResponseBadRequest,HttpResponse
+from django.http import HttpResponseBadRequest,HttpResponse,JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
@@ -16,6 +16,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
 from .permissions import CustomerAccessPermission
+
+from usermanage.models import u_token_list
 
 from order.serializers import o_jiejiSerializer, o_orderSerializer, o_songjiSerializer, o_touristSerializer
 
@@ -87,9 +89,18 @@ def add_order(request):
                 return HttpResponse(content=e,status=400)
         mark = 0 
     
-    return render(request, 'index1.html', context={'data':data})
+    #return render(request, 'index1.html', context={'data':data})
+    return JsonResponse({"is_success":True,"data":data})
 
 def index(request):
+    try:
+        auth = request.META["HTTP_AUTHORIZATION"]
+        user,token = auth.split(":")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+        print(user,token)                                                                                                                           
+        #ut = u_token_list.objects.get(token=token)
+    except Exception as e:
+        return JsonResponse({'msg': 'Unauthorized Access'}, status=401)
+        
     if request.method == 'GET':
         orders = o_order.objects.all()
         orders_serializer = o_orderSerializer(orders, many=True)
@@ -105,6 +116,7 @@ def export_excel(request):
     title = ['单据编号','单据状态','游客姓名','人数','联系电话','备注','接机日期','结算金额','送达地址',
     '航班号','起飞城市','到达城市','起飞时间','落地时间','航站楼','送单门市','送单时间','制单人','提交人','受理人',
     '付款人','收款人','结算方式','打回信息']
+    
     if request.method=='GET':
         orders = o_order.objects.all()
     else:
@@ -180,8 +192,9 @@ def change_order_status(request):
             order.save()            
         except Exception as e:
             error_msg = str(e)
-            return Response({'error_msg':error_msg}, status=400)
-    return Response({'result_str':'changed succeed'},status=200)
+            return Response({'error_msg':error_msg}, status=401)
+    #return Response({'result_str':'changed succeed'},status=200)
+    return JsonResponse({"is_success":True})
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,CustomerAccessPermission,))
@@ -199,7 +212,8 @@ def multi_change_order_status(request):
         except Exception as e:
             error_msg = str(e)
             return Response({'error_msg':error_msg}, status=400)
-    return Response({'result_str':'changed succeed'},status=200)
+    #return Response({'result_str':'changed succeed'},status=200)
+    return JsonResponse({"is_success":True,"order_ids":order_ids})
 
 
 
