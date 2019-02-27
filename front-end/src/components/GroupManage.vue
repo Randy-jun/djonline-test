@@ -23,7 +23,7 @@
         <el-table-column align='center' width="100" label="状态">
           <template slot-scope="scope">
             <span v-if="scope.row.isSet">
-              <el-select size="mini" @change="statusChange" v-model="scope.row.statuscode" >
+              <el-select size="mini" v-model="scope.row.statuscode" >
                 <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -35,7 +35,7 @@
         </el-table-column>
         <el-table-column align='center' fixed="right" label="操作" width="150">
           <template slot-scope="scope">
-            <span class="el-tag el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
+            <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" v-on:click="currentRowChange(scope.row,scope.$index,false)">
                 {{scope.row.isSet?'保存':"修改"}}
             </span>
             <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" v-on:click="doDel(scope.row,scope.$index)" style="cursor: pointer;">删除</span>
@@ -94,15 +94,15 @@ export default {
     choice(id){
       // console.log(zuid)
     },
-    statusChange(value){
-      let obj = {};
-      obj = this.statusList.find((item)=>{//这里的selectList就是上面遍历的数据源
-          return item.value === value;//筛选出匹配数据
-      });
-      // console.log(obj)
-      this.table.currentRow.statuscode = obj.value;
-      this.table.currentRow.statusflag = obj.label;
-    },
+    // statusChange(value){
+    //   let obj = {};
+    //   obj = this.statusList.find((item)=>{//这里的selectList就是上面遍历的数据源
+    //       return item.value === value;//筛选出匹配数据
+    //   });
+    //   // console.log(obj)
+    //   this.table.currentRow.statuscode = obj.value;
+    //   this.table.currentRow.statusflag = obj.label;
+    // },
     // handleCurrentChange(selectRow){
     //   this.table.currentRow = selectRow;
     //   console.log(this.table.currentRow);
@@ -120,6 +120,7 @@ export default {
       if (isCancel) {
         if (null === this.table.currentRow.id) return this.table.data.splice(index, 1);
         rowContent.isSet = !rowContent.isSet;
+        rowContent.statuscode = this.table.currentRow.statuscode;
         return this.$set(this.table.data, index, rowContent)
       }
 
@@ -221,7 +222,7 @@ export default {
       // console.log(response);
       this.table.data = response.data;
       this.table.countAll = response.item_num;
-      // console.log(this.table.countAll, this.table.data)
+      console.log(this.table.countAll, this.table.data)
       this.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
       });

@@ -23,7 +23,7 @@
         <el-table-column align='center' width="100" label="状态">
           <template slot-scope="scope">
             <span v-if="scope.row.isSet">
-              <el-select size="mini" @change="statusChange" v-model="scope.row.statuscode" >
+              <el-select size="mini" v-model="scope.row.statuscode" >
                 <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -96,15 +96,15 @@ export default {
     choice(id){
       // console.log(zuid)
     },
-    statusChange(value){
-      let obj = {};
-      obj = this.statusList.find((item)=>{//这里的selectList就是上面遍历的数据源
-          return item.value === value;//筛选出匹配数据
-      });
-      // console.log(obj)
-      this.table.currentRow.statuscode = obj.value;
-      this.table.currentRow.statusflag = obj.label;
-    },
+    // statusChange(value){
+    //   let obj = {};
+    //   obj = this.statusList.find((item)=>{//这里的selectList就是上面遍历的数据源
+    //       return item.value === value;//筛选出匹配数据
+    //   });
+    //   // console.log(obj)
+    //   this.table.currentRow.statuscode = obj.value;
+    //   this.table.currentRow.statusflag = obj.label;
+    // },
     // handleCurrentChange(selectRow){
     //   this.table.currentRow = selectRow;
     //   console.log(this.table.currentRow);
@@ -122,6 +122,7 @@ export default {
       if (isCancel) {
         if (null === this.table.currentRow.id) return this.table.data.splice(index, 1);
         rowContent.isSet = !rowContent.isSet;
+        rowContent.statuscode = this.table.currentRow.statuscode;
         return this.$set(this.table.data, index, rowContent)
       }
 

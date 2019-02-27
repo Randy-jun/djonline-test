@@ -23,7 +23,7 @@
         <el-table-column align='center' width="200" label="归属组织">
           <template slot-scope="scope">
             <div v-if="scope.row.isSet">
-              <el-select size="mini" @change="groupChange" v-model="scope.row.e_org_id" >
+              <el-select size="mini" v-model="scope.row.e_org_id" >
                 <el-option v-for="item in groupList" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -34,7 +34,7 @@
         <el-table-column align='center' width="100" label="状态">
           <template slot-scope="scope">
             <span v-if="scope.row.isSet">
-              <el-select size="mini" @change="statusChange" v-model="scope.row.statuscode" >
+              <el-select size="mini" v-model="scope.row.statuscode" >
                 <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -109,24 +109,24 @@ export default {
     choice(id){
       // console.log(zuid)
     },
-    statusChange(value){
-      let obj = {};
-      obj = this.statusList.find((item)=>{//这里的selectList就是上面遍历的数据源
-          return item.value === value;//筛选出匹配数据
-      });
-      // console.log(obj)
-      this.table.currentRow.statuscode = obj.value;
-      this.table.currentRow.statusflag = obj.label;
-    },
-    groupChange(value){
-      let obj = {};
-      obj = this.groupList.find((item)=>{//这里的selectList就是上面遍历的数据源
-          return item.value === value;//筛选出匹配数据
-      });
-      // console.log(obj)
-      this.table.currentRow.e_org_id = obj.value;
-      this.table.currentRow.e_org = obj.label;
-    },
+    // statusChange(value){
+    //   let obj = {};
+    //   obj = this.statusList.find((item)=>{//这里的selectList就是上面遍历的数据源
+    //       return item.value === value;//筛选出匹配数据
+    //   });
+    //   // console.log(obj)
+    //   this.table.currentRow.statuscode = obj.value;
+    //   this.table.currentRow.statusflag = obj.label;
+    // },
+    // groupChange(){
+    //   let obj = {};
+    //   obj = this.groupList.find((item)=>{//这里的selectList就是上面遍历的数据源
+    //       return item.value === value;//筛选出匹配数据
+    //   });
+    //   // console.log(obj)
+    //   this.table.currentRow.e_org_id = obj.value;
+    //   this.table.currentRow.e_org = obj.label;
+    // },
     // handleCurrentChange(selectRow){
     //   this.table.currentRow = selectRow;
     //   console.log(this.table.currentRow);
@@ -144,6 +144,9 @@ export default {
       if (isCancel) {
         if (null === this.table.currentRow.id) return this.table.data.splice(index, 1);
         rowContent.isSet = !rowContent.isSet;
+        rowContent.e_org_id = this.table.currentRow.e_org_id;
+        rowContent.statuscode = this.table.currentRow.statuscode;
+        // console.log(rowContent)
         return this.$set(this.table.data, index, rowContent)
       }
 
@@ -255,10 +258,11 @@ export default {
       // console.log(error);
     })
     Group.get(1).then((response) => {
-      response.data.forEach(item => {
+      response.data.forEach((item) => {
         // console.log(item);
         this.groupList.push({value: item.id,label: item.name},)
-      })
+      });
+      console.log(this.groupList);
     }).catch((error) => {
       // console.log(error);
     })
