@@ -46,18 +46,20 @@ def add_order(request):
         tourist_dict = {}
         jieji_dict = {}
         songji_dict = {}
+        result = {}
         mark = 0
         data = json.loads(request.body)
         print(data)
         for i in order_item:
             order_dict[i] = data['order'].get(i, None)
-           
+        result.update(order_dict)  
         order = o_order.objects.create(**order_dict) 
 
         for i in tourist_item:
             tourist_dict[i] = data['tourist'].get(i, None)
         tourist_dict['o_order'] = order
-        tourist = o_tourist.objects.create(**tourist_dict)       
+        tourist = o_tourist.objects.create(**tourist_dict)
+        result.update(tourist_dict)       
         
         mark = mark+1
         jieji = None
@@ -73,6 +75,7 @@ def add_order(request):
                 jieji_dict['o_order'] = order
                 jieji = o_jieji.objects.create(**jieji_dict)
                 mark = mark+1
+                result.update(jiejie_dict)
             except Exception as e:
                 order.delete()
                 return HttpResponse(content=e,status=400)
@@ -84,13 +87,14 @@ def add_order(request):
                 songji_dict['o_order']=order
                 songji = o_songji.objects.create(**songji_dict)          
                 mark = mark+1
+                result.update(songji_dict)
             except Exception as e:
                 order.delete()
                 return HttpResponse(content=e,status=400)
         mark = 0 
     
     #return render(request, 'index1.html', context={'data':data})
-    return JsonResponse({"is_success":True,"data":data})
+    return JsonResponse({"is_success":True,"data":result})
 
 def index(request):
     try:
@@ -164,7 +168,12 @@ def order(request,order_id):
             songji = o_songji.objects.get(o_order__id=order_id)
             air_serializer = o_songjiSerializer(songji)
 
-    return Response({'order':order_serializer.data,'tourist':tourist_serializer.data,'air':air_serializer.data})
+        result ={}
+        result.update(order_serializer.data)
+        result.update(tourist_serializer.data)
+        result.update(air_serializer.data)
+
+    return Response({"data":result})
 
 @api_view( ['POST'])
 def delete_order(request):
