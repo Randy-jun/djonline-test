@@ -59,8 +59,8 @@
         </el-col>
         <el-col :span="4">
           <el-button-group>
-            <el-button type="success" style="cursor: pointer;">受理订单</el-button>
-            <!-- <el-button type="warning" style="cursor: pointer;">打回订单</el-button> -->
+            <el-button type="success" @click="changeStatus(2)" style="cursor: pointer;">受理订单</el-button>
+            <el-button type="warning" @click="changeStatus(3)" style="cursor: pointer;">打回订单</el-button>
           </el-button-group>
         </el-col>
         <el-col :span="4" v-if="buttonShow">
@@ -76,10 +76,10 @@
       <el-row>
     <!-- <el-col :span=24> -->
       <!-- <el-scrollbar style="height:100%"> -->
-        <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip>
+        <el-table :data="table.data" style="width: 100%" @selection-change="handleSelectionChange"> highlight-current-row show-overflow-tooltip>
           <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
           <!-- <el-table :data="table.data" style="width: 100%" highlight-current-row v-on:current-change="handleCurrentChange" show-overflow-tooltip :default-sort = "{prop: 'id', order: 'ascending'}"> -->
-          <el-table-column type="selection" width="55" @selection-change="handleSelectionChange"></el-table-column>
+          <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column fixed type="index" width="20"></el-table-column>
           <!-- <el-table-column v-for="(v,i) in table.columns" :prop="v.field" :label="v.title" :sortable="v.sortable"> -->
           <el-table-column v-for="(value, key) in table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
@@ -166,8 +166,12 @@ export default {
     // CustomeAlert,
   },
   methods: {
-    handleSelectionChange(){
-      console.log(value)
+    handleSelectionChange(value){
+      this.checkedList = [];
+      value.forEach((item) => {
+        // console.log(item.id)
+        this.checkedList.push(item.id);
+      });
     },
     statusChange(value){
       let obj = {};
@@ -287,7 +291,13 @@ export default {
         });
     },
     exportOrder(){
-      window.open("http://60.205.204.124:8080/order/export/")
+      console.log(this.checkedList);
+      Order.export(this.checkedList).then((response) => {
+        window.open(response);
+      }).catch((error) => {
+        console.log(error);
+      });
+      // window.open("http://60.205.204.124:8080/order/export/")
       // Order.exportOrder((response) => {
       //   console.log("exportOrder");
       // }).catch((error) => {

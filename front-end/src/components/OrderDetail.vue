@@ -18,7 +18,7 @@
     <el-col :span="4">
       <el-button-group v-if="!isAdd || !isEdit">
         <el-button type="primary" @click="orderChange" style="cursor: pointer;">{{isEdit?"取消修改":"修改订单"}}</el-button>
-        <el-button type="danger" style="cursor: pointer;">删除订单</el-button>
+        <el-button type="danger" @click="doDel" style="cursor: pointer;">删除订单</el-button>
       </el-button-group>
       <el-button v-else type="primary" @click="goBack" style="cursor: pointer;">返回</el-button>
     </el-col>
@@ -246,7 +246,7 @@ export default {
   },
   methods: {
     goBack() {
-       var orderlist = "/home/orderlist";
+      var orderlist = "/home/orderlist";
       // console.log(goadd)
       this.$router.replace({ path: orderlist })
     },
@@ -280,6 +280,32 @@ export default {
       }).catch((error) => {
         // console.log(error);
       });
+    },
+    doDel(){
+      this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+       Order.delete(this.order.id).then((response) => {
+          this.$message({
+            type: 'success',
+            message: "删除成功！"
+          });
+          this.goBack();
+        }).catch((error) => {
+          console.log(error);
+          this.$message({
+            type: 'error',
+            message: "删除失败！"
+          });
+        });
+      }).catch((error) => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
     },
   },
   mounted() {
