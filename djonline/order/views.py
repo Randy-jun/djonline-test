@@ -144,11 +144,12 @@ def update_order(request):
             order_dict[i] = data.get(i, None)
         order_dict['o_zhidan_time']=o_zhidan_time
         result.update(order_dict)  
-        order = o_order.objects.update(**order_dict)
+        o_order.objects.update(**order_dict)
 
         for i in tourist_item:
             tourist_dict[i] = data.get(i, None)
         tourist_dict['o_order'] = order
+        print('t_d',tourist_dict)
         tourist = o_tourist.objects.update(**tourist_dict)
         tourist_dict['o_order'] = order.id
         result.update(tourist_dict)       
