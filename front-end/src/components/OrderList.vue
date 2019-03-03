@@ -60,13 +60,7 @@
         <el-col :span="4">
           <el-button-group>
             <el-button type="success" @click="statusChange(2)" style="cursor: pointer;">受理订单</el-button>
-            <el-button type="warning" @click="statusChange(3)" style="cursor: pointer;">打回订单</el-button>
-          </el-button-group>
-        </el-col>
-        <el-col :span="4" v-if="buttonShow">
-          <el-button-group>
-            <el-button type="success" style="cursor: pointer;">确认结算</el-button>
-            <el-button type="danger" style="cursor: pointer;">取消结算</el-button>
+            <el-button type="warning" @click="statusChange(3)" style="cursor: pointer;">确认结算</el-button>
           </el-button-group>
         </el-col>
         <el-col :span="2" :push="12">
@@ -132,6 +126,7 @@ export default {
   data() {
     return {
       checkedList:[],
+      checkedIndexList:[],
       statusList: ['暂存', '提交', '受理', '结算'],
       typeList: ['接机', '送机'],
       buttonShow:false,
@@ -169,16 +164,25 @@ export default {
     handleSelectionChange(value){
       this.checkedList = [];
       value.forEach((item) => {
-        console.log(item.id)
+        // console.log(item)
         this.checkedList.push(item.id);
+        // this.checkedIndexList.push(item.index);
       });
     },
     statusChange(statusCode){
       console.log(this.checkedList,statusCode)
       Order.changeStatus(statusCode, this.checkedList).then((response) => {
         console.log(response);
+        this.$message({
+          type: 'success',
+          message: "状态修改失败！"
+        });
       }).catch((error) => {
         console.log(error);
+        this.$message({
+          type: 'danger',
+          message: "状态修改失败！"
+        });
       });
     },
     // handleCurrentChange(selectRow){

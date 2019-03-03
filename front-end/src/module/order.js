@@ -131,15 +131,9 @@ var order = {
                 order_status: statusCode,
                 order_ids: value,
             }).then((response) => {
-                console.log(response);
+                // console.log(response);
                 if (response.data.is_success) {
-                    let data = response.data.data;
-                    var orderData = {};
-                    for (var key in orderDict) {
-                        // console.log(key + ":" + orderDict[key]);
-                        orderData[key] = data[orderDict[key]];
-                    }
-                    resolve(orderData)
+                    resolve(response.data.order_ids)
                 } else {
                     reject(response.error_msg);
                 }
