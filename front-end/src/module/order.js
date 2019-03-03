@@ -143,28 +143,6 @@ var order = {
             });
         });
     },
-    insert : function(value){
-        return new Promise((resolve, reject) => {
-            let tempData = value;
-            tempData.isSet = false;
-            resolve(tempData);
-        })
-        // return new Promise((resolve, reject) => {
-        //     Axios.post(api, params).then((response) => {
-        //         if(response.data.status_flag){
-        //             // console.log(response);
-        //             let tempData = response.data.result;
-        //             console.log(tempData);
-        //             tempData.isSet = false;
-
-        //             resolve(tempData) ;
-        //         }
-        //     }).catch((error) => {
-        //         // console.log(error);
-        //         reject(error);
-        //     })
-        // })
-    },
     delete : function(value){
         return new Promise((resolve, reject) => {
             orderDel({
