@@ -132,18 +132,19 @@ def update_order(request):
         order_id = data['order_id']
         
         order = o_order.objects.get(pk=order_id)
-        tourist = o_tourist.obejcts.get(o_order=order)
+        o_zhidan_time = order.o_zhidan_time
+        tourist = o_tourist.objects.get(o_order=order)
         if data['o_type']=='0':
-            o_air = o_jiejie.objects.get(o_order=order)
+            o_air = o_jieji.objects.get(o_order=order)
         elif data['o_type']=='1':
             o_air = o_songji.objects.get(o_order=order)
         else:
             JsonResponse({"error_msg:":"error o_type"},status=401)
         for i in order_item:
             order_dict[i] = data.get(i, None)
+        order_dict['o_zhidan_time']=o_zhidan_time
         result.update(order_dict)  
         order = o_order.objects.update(**order_dict)
-        order.save() 
 
         for i in tourist_item:
             tourist_dict[i] = data.get(i, None)
@@ -166,7 +167,7 @@ def update_order(request):
             print(jieji_dict)
             jieji = o_jieji.objects.update(**jieji_dict)
             mark = mark+1
-            jieji_dict['o_order'] = order.id
+            jieji_dict['o_order'] = order.id            
             result.update(jieji_dict)
             
         if data['o_type'] == '1':
