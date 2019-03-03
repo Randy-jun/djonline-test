@@ -1,7 +1,7 @@
 //sesstatuscode:0,sionstflagorage function packae
 import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
-import { orderList, orderDetail, orderChange, orderDel } from '@/api/api'
+import { orderList, orderDetail, orderChange, orderDel, orderChangeStatus, orderExport} from '@/api/api'
 
 // var orderData = {
 //     item_num : 7,
@@ -15,7 +15,7 @@ import { orderList, orderDetail, orderChange, orderDel } from '@/api/api'
 //     }
 
 const orderDict = {
-    id: "id",
+    id: "order_id",
     remark: "remark",
     statusCode:"o_status",
     typeCode:"o_type",
@@ -123,22 +123,30 @@ var order = {
             }).catch ((error) => {
                 console.log(error);
             });
-        })
-        // return new Promise((resolve, reject) => {
-        //     Axios.post(api, params).then((response) => {
-        //         if(response.data.status_flag){
-        //             // console.log(response);
-        //             let tempData = response.data.result;
-        //             console.log(tempData);
-        //             tempData.isSet = false;
+        });
+    },
+    changeStatus : function(value){
+        return new Promise((resolve, reject) => {
+            var params = {};
+            
+            orderChangeStatus(params).then((response) => {
+                console.log(response);
+                if (response.data.is_success) {
+                    let data = response.data.data;
+                    var orderData = {};
+                    for (var key in orderDict) {
+                        // console.log(key + ":" + orderDict[key]);
+                        orderData[key] = data[orderDict[key]];
+                    }
+                    resolve(orderData)
+                } else {
+                    reject(response.error_msg);
+                }
 
-        //             resolve(tempData) ;
-        //         }
-        //     }).catch((error) => {
-        //         // console.log(error);
-        //         reject(error);
-        //     })
-        // })
+            }).catch ((error) => {
+                console.log(error);
+            });
+        });
     },
     insert : function(value){
         return new Promise((resolve, reject) => {
@@ -180,34 +188,23 @@ var order = {
             });
         });
     },
-    exportOrder : function(){
-        var params = new URLSearchParams();
-        params.append("userID",Sstorage.get('userID'));
-        params.append("tokeID",Sstorage.get('localAgencyFk'));
-        params.append("local_agency_fk",Sstorage.get('tokenID'));
-
-        params.append("req_method","GET");
-
+    export : function(value){
         return new Promise((resolve, reject) => {
-            Axios.get(api).then((response) => {
+            orderExport({
+                order_ids: value,
+            }).then((response) => {
                 console.log(response);
-                resolve(response);
+                if (response.data.is_success) {
+                    console.log(response);
+                    resolve(response.data) ;
+                } else {
+                    reject(response.error_msg);
+                }
             }).catch((error) => {
+                console.log(error);
                 reject(error);
             });
-        }).catch((error) => {
-            reject(error);
         });
-            // Axios.post(api, params).then((response) => {
-            //     console.log(response);
-            //     response.data.result.forEach(element => {
-            //         this.$set(element, 'isSet', false);
-            //     });
-            //     resolve(response.data) ;
-            // }).catch((error) => {
-            //     // console.log(error);
-            //     reject(error);
-            // })
     },
 }
 

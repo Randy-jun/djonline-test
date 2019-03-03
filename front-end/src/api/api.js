@@ -99,6 +99,16 @@ export const orderChange = params => {
 export const orderDel = params => {
   return axios.post('/order/deleteorder/', params)
 }
+
+//改变订单状态
+export const orderChangeStatus = params => {
+  return axios.post('/order/multichangeorderstatus/', params)
+}
+
+//导出订单
+export const orderExport = params => {
+  return axios.post('/order/export/', params)
+}
 //=====================================================
 
 
