@@ -30,8 +30,9 @@ const orderDict = {
     leaveCity:"o_from",
     arriveCity:"o_to",
     address:"address",
-    group:"o_tijiao",
+    group:"o_org",
     user:"o_zhidan",
+    userSubmit:"o_tijiao",
 };
 
 var order = {
@@ -94,6 +95,18 @@ var order = {
             }
             orderChange(params).then((response) => {
                 console.log(response);
+                if (response.data.is_success) {
+                    let data = response.data.data;
+                    var orderData = {};
+                    for (var key in orderDict) {
+                        // console.log(key + ":" + orderDict[key]);
+                        orderData[key] = data[orderDict[key]];
+                    }
+                    resolve(orderData)
+                } else {
+                    reject(response.error_msg);
+                }
+
             }).catch ((error) => {
                 console.log(error);
             });
