@@ -76,7 +76,7 @@ export const staffDel = params => {
 //=====================================================
 //获取订单列表
 export const orderList = () => {
-  return axios.get('/user/order')
+  return axios.post('/order/getorders/')
 }
 
 //获取订单详情

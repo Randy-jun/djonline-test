@@ -54,22 +54,22 @@
         <el-col :span="4">
           <el-button-group>
             <el-button type="primary" style="cursor: pointer;" v-on:click="doAdd()">新增订单</el-button>
-            <el-button v-if="buttonShow" type="danger" style="cursor: pointer;">删除订单</el-button>
+            <el-button type="danger" style="cursor: pointer;">删除订单</el-button>
           </el-button-group>
         </el-col>
-        <!-- <el-col :span="4">
+        <el-col :span="4">
           <el-button-group>
             <el-button type="success" style="cursor: pointer;">受理订单</el-button>
-            <el-button type="warning" style="cursor: pointer;">打回订单</el-button>
+            <!-- <el-button type="warning" style="cursor: pointer;">打回订单</el-button> -->
           </el-button-group>
-        </el-col> -->
+        </el-col>
         <el-col :span="4" v-if="buttonShow">
           <el-button-group>
             <el-button type="success" style="cursor: pointer;">确认结算</el-button>
             <el-button type="danger" style="cursor: pointer;">取消结算</el-button>
           </el-button-group>
         </el-col>
-        <el-col :span="2" :push="12" v-if="buttonShow">
+        <el-col :span="2" :push="12">
           <el-button type="primary" style="cursor: pointer;" v-on:click="exportOrder()">导出订单</el-button>
         </el-col>
       </el-row>
@@ -111,7 +111,7 @@
         </el-table>
       <!-- </el-scrollbar> -->
     </el-row>
-    <el-row>
+    <!-- <el-row>
       <el-pagination  
         v-on:size-change="handleSizeChange"
         v-on:current-change="handleCurrentChange"
@@ -121,7 +121,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="table.countAll">
       </el-pagination>
-    </el-row>
+    </el-row> -->
   </el-row>
 </el-row>
 </template>
@@ -143,8 +143,9 @@ export default {
       checkedList:[],
       statusList: [
             {value: 0,label: '暂存'},
-            {value: 1,label: '已提交'},
-            {value: 2,label: '已结算'},
+            {value: 1,label: '提交'},
+            {value: 2,label: '受理'},
+            {value: 3,label: '结算'},
           ],
       buttonShow:false,
       dateValue:null,
@@ -341,12 +342,6 @@ export default {
     }).catch((error) => {
       // console.log(error);
     });
-    UserInfo.getLevel().then((response) => {
-      console.log(response.data);
-      if('0' == response) this.buttonShow = true;
-    }).catch((error) => {
-      console.log(error);
-    })
   }
 }
 </script>
