@@ -178,19 +178,21 @@ def order(request,order_id):
     if request.method =='POST':
         pass
 
-    return Response({"data":result})
+    return Response({"is_success":True, "data":result})
 
 @api_view( ['POST'])
 def delete_order(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         order_id = data['order_id']
+        is_success = True
         try:
             o_order.objects.get(pk=order_id).delete()
             result_str ='successfully deleted'+str(order_id)
         except Exception as e:
+            is_success = False
             result_str ='delete failed:'+ str(e)
-    return Response({'result_str':result_str})
+    return Response({'is_successs':is_success,'result_str':result_str})
 
 @api_view(['POST'])
 #@permission_classes((CustomerAccessPermission,))
