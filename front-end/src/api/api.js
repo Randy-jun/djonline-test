@@ -76,7 +76,7 @@ export const staffDel = params => {
 //=====================================================
 //获取订单列表
 export const orderList = () => {
-  return axios.get('/user/get_employee')
+  return axios.get('/user/order')
 }
 
 //获取订单详情
@@ -89,12 +89,10 @@ export const orderDetail = params => {
 export const orderChange = params => {
   console.log(params)
   if (null === params.id) {
-    return axios.post('/user/add_employee/', params)
+    return axios.post('/order/addorder/', params)
   } else {
-    return axios.post('/user/update_employee/', params)
+    return axios.post('/order/updateorder/', params)
   }
-  
-  
 }
 
 //删除订单

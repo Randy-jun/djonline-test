@@ -25,8 +25,8 @@
   </el-row>
   <el-row :gutter="10" type="flex" justify="center">
     <el-col :span="23">
-      <el-tabs type="border-card">
-        <el-tab-pane label="接机">
+      <el-tabs @tab-click="orderTypeChange" v-model="order.typeCode" type="border-card">
+        <el-tab-pane v-if="isEdit || '0' == order.typeCode" label="接机" name="0">
           <el-row v-if="isEdit" :gutter="10" type="flex" justify="space-between">
             <el-col :span="5">
               <el-input v-model="order.linkMan">
@@ -113,7 +113,93 @@
             <span>备注:{{order.remark}}</span>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane label="送机">送机</el-tab-pane>
+        <el-tab-pane  v-if="isEdit || '1' == order.typeCode" label="送机" name="1">
+          <el-row v-if="isEdit" :gutter="10" type="flex" justify="space-between">
+            <el-col :span="5">
+              <el-input v-model="order.linkMan">
+                <template slot="prepend">联系人</template>
+              </el-input>
+            </el-col>
+             <el-col :span="5">
+              <el-input v-model="order.phoneNumber">
+                <template slot="prepend">联系电话</template>
+              </el-input>
+            </el-col>
+            <el-col :span="5">
+              <span>人数：</span>
+              <el-input-number v-model="order.count" :min="1" :max="100"></el-input-number>
+            </el-col>
+            <el-col :span="5">
+              <span>订单金额：</span>
+              <el-input-number v-model="order.charge" :min="0" :max="9999999"></el-input-number>
+            </el-col>
+          </el-row>
+          <el-row v-else :gutter="10" type="flex" justify="space-between">
+            <span>联系人:{{order.linkMan}}</span>
+            <span>联系电话:{{order.phoneNumber}}</span>
+            <span>人数:{{order.count}}</span>
+            <span>订单金额：{{order.charge}}</span>
+          </el-row>
+          <el-row  v-if="isEdit" :gutter="10" type="flex" justify="space-between">
+            <el-col :span="5">
+              <el-date-picker
+                v-model="order.date"
+                type="date"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd"
+                placeholder="送机日期">
+              </el-date-picker>
+            </el-col>
+            <el-col :span="5">
+              <el-time-picker
+                v-model="order.leaveTime"
+                type="time"
+                align="center"
+                format="hh 时 mm 分"
+                value-format="hh:mm"
+                placeholder="送机时间">
+              </el-time-picker>      
+            </el-col>
+            <el-col :span="5">
+              <el-input v-model="order.lineNumber">
+                <template slot="prepend">航班号</template>
+              </el-input>     
+            </el-col>
+            <el-col :span="5">
+              <el-input v-model="order.terminal">
+                <template slot="prepend">航站楼</template>
+              </el-input>
+            </el-col>
+          </el-row>
+          <el-row v-else :gutter="10" type="flex" justify="space-between">
+            <span>起飞日期:{{order.date}}</span>
+            <span>送机时间:{{order.leaveTime}}</span>
+            <span>航班号:{{order.lineNumber}}</span>
+            <span>航站楼:{{order.terminal}}</span>
+          </el-row>
+          <el-row v-if="isEdit" :gutter="10" type="flex" justify="space-between">
+            <el-col :span="5">
+              <el-input v-model="order.arriveCity">
+                <template slot="prepend">到达城市</template>
+              </el-input>
+            </el-col>
+            <el-col :span="8">
+              <el-input v-model="order.address">
+                <template slot="prepend">接客地址</template>
+              </el-input>
+            </el-col>
+            <el-col :span="8">
+              <el-input v-model="order.remark">
+                <template slot="prepend">备注</template>
+              </el-input>
+            </el-col>
+          </el-row>
+          <el-row v-else :gutter="10" type="flex" justify="space-between">
+            <span>到达城市:{{order.arriveCity}}</span>
+            <span>接客地址:{{order.address}}</span>
+            <span>备注:{{order.remark}}</span>
+          </el-row>
+        </el-tab-pane>
       </el-tabs>
     </el-col>
   </el-row>
@@ -160,6 +246,10 @@ export default {
        var orderlist = "/home/orderlist";
       // console.log(goadd)
       this.$router.replace({ path: orderlist })
+    },
+    orderTypeChange(value) {
+      // console.log(value.paneName);
+      this.order.typeCode = value.paneName;
     },
     orderChange() {
       if (this.isEdit) {
@@ -209,7 +299,7 @@ export default {
         remark: "",
         statusCode: 0,
         terminal: "",
-        typeCode: 0,
+        typeCode: "0",
       };
     } else {
       console.log("57638920847839")
