@@ -292,7 +292,8 @@ def get_orders(request):
 
             results.append(result)
 
-        return JsonResponse({"is_success":True, "data":result})
+        return JsonResponse({"is_success":True, "data":results})
+    return JsonResponse({"error_msg":"Bad request"},status=401)
 
 
 
