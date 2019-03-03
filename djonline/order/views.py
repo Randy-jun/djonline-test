@@ -229,7 +229,7 @@ def export_excel(request):
             air = o_songji.objects.get(o_order__id=order.id)
         data=[order.id, order.o_type, tourist.name, tourist.number, tourist.phone_number, order.remark, air.date, air.fee,
         air.address, air.line_num, air.o_from, air.o_to, air.qifei_time, air.luodi_time, air.hangzhanlou,
-        order.o_from, order.o_time, order.o_zhidan, order.o_tijiao, order.o_shouli, order.o_fukuan, order.o_shoukuan, order.o_jiesuan_type,
+        order.o_from_org, order.o_zhidan_time, order.o_zhidan, order.o_tijiao, order.o_shouli, order.o_fukuan, order.o_shoukuan, order.o_jiesuan_type,
         order.o_dahui_msg]
         ws.append(data)
     wb.save(r'test.xlsx')
