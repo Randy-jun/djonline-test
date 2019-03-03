@@ -81,7 +81,7 @@ export const orderList = () => {
 
 //获取订单详情
 export const orderDetail = params => {
-  console.log("API", params)
+  // console.log("API", params)
   return axios.get('/order/getorder/' + params.id)
 }
 
@@ -97,8 +97,7 @@ export const orderChange = params => {
 
 //删除订单
 export const orderDel = params => {
-  
-  return axios.post('/user/delete_employee/', params)
+  return axios.post('/order/deleteorder/', params)
 }
 //=====================================================
 

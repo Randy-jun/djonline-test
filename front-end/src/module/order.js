@@ -163,29 +163,22 @@ var order = {
         // })
     },
     delete : function(value){
-        var params = new URLSearchParams();
-        params.append("userID",Sstorage.get('userID'));
-        params.append("tokeID",Sstorage.get('localAgencyFk'));
-        params.append("local_agency_fk",Sstorage.get('tokenID'));
-
-        params.append("req_method","DELETE");
-        params.append("pk", value.id);
-
         return new Promise((resolve, reject) => {
-            resolve(1);
-        })
-        // return new Promise((resolve, reject) => {
-        //     Axios.post(api, params).then((response) => {
-        //         if(response.data.status_flag){
-        //             // console.log(response);
-
-        //             resolve(tempData) ;
-        //         }
-        //     }).catch((error) => {
-        //         // console.log(error);
-        //         reject(error);
-        //     })
-        // })
+            orderDel({
+                order_id: value,
+            }).then((response) => {
+                console.log(response);
+                if (response.data.is_success) {
+                    console.log(response);
+                    resolve(response.data) ;
+                } else {
+                    reject(response.error_msg);
+                }
+            }).catch((error) => {
+                console.log(error);
+                reject(error);
+            });
+        });
     },
     exportOrder : function(){
         var params = new URLSearchParams();
