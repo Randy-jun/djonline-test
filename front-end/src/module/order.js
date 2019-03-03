@@ -3,16 +3,17 @@ import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
 import { orderList, orderDetail, orderChange, orderDel } from '@/api/api'
 
-var orderData = {
-    item_num : 7,
-    data : [{id:1,user:"pearl",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pearl",isSet:false},
-            {id:2,user:"pear2",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear2",isSet:false},
-            {id:3,user:"pear3",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear3",isSet:false},
-            {id:4,user:"pear4",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear4",isSet:false},
-            {id:5,user:"pear5",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear5",isSet:false},
-            {id:6,user:"pear6",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear6",isSet:false},
-            {id:7,user:"pear7",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear7",isSet:false},],
-    }
+// var orderData = {
+//     item_num : 7,
+//     data : [{id:1,user:"pearl",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pearl",isSet:false},
+//             {id:2,user:"pear2",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear2",isSet:false},
+//             {id:3,user:"pear3",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear3",isSet:false},
+//             {id:4,user:"pear4",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear4",isSet:false},
+//             {id:5,user:"pear5",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear5",isSet:false},
+//             {id:6,user:"pear6",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear6",isSet:false},
+//             {id:7,user:"pear7",linkman:"孙悟空",phone:"152-2511-5200",count:8, charge:888,address:"幸福中路", group:"中旅",name:"接机",statuscode:1,statusflag:"受理中",date:"2019-02-02",leavetime:"12:00",levaecity:"西安",arriveTime:"08:08",arrivecity:"北京",number:"T678",terminal:"T3",remark:"remark_pear7",isSet:false},],
+//     }
+
 const orderDict = {
     id: "id",
     remark: "remark",
@@ -30,7 +31,7 @@ const orderDict = {
     leaveCity:"o_from",
     arriveCity:"o_to",
     address:"address",
-    group:"o_org",
+    group:"o_from_org",
     user:"o_zhidan",
     userSubmit:"o_tijiao",
 };
@@ -38,6 +39,7 @@ const orderDict = {
 var order = {
     getOne : function(value){
         return new Promise((resolve, reject) => {
+            console.log(value)
             orderDetail({
                 id:value
             }).then((response) => {
@@ -64,27 +66,33 @@ var order = {
         return new Promise((resolve, reject) => {
             orderList().then((response) => {
                 console.log(response);
+                if (response.data.is_success) {
+                    // console.log(response.data)
+                    let orderData = {
+                        item_num : 0,
+                        data : [],
+                    }
+                    // console.log(response.data)
+                    orderData.item_num = response.data.item_num;
+                    
+                    response.data.data.forEach((element)=> {
+                        // console.log(element, index)
+                        let tempOrder = {}
+                        for (var key in orderDict) {
+                            // console.log(key + ":" + orderDict[key]);
+                            tempOrder[key] = element[orderDict[key]];
+                        }
+                        orderData.data.push(tempOrder);
+                    });
+                    // console.log(orderData,"ddsads");
+                    resolve(orderData);
+                } else {
+                    reject(response.error_msg);
+                }
             }).catch((error) => {
-                console.log(error);
+                reject(error);
             });
-            // orderData.result.forEach(element => {
-            //     element[isSet] = false;
-            // });
-            // console.log(orderData)
-            resolve(orderData) ;
-        }).catch((error) => {
-            reject(error);
         });
-            // Axios.post(api, params).then((response) => {
-            //     console.log(response);
-            //     response.data.result.forEach(element => {
-            //         this.$set(element, 'isSet', false);
-            //     });
-            //     resolve(response.data) ;
-            // }).catch((error) => {
-            //     // console.log(error);
-            //     reject(error);
-            // })
     },
     change : function(value){
         return new Promise((resolve, reject) => {

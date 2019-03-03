@@ -81,8 +81,8 @@ export const orderList = () => {
 
 //获取订单详情
 export const orderDetail = params => {
-  // console.log(params)
-  return axios.get('/order/getorder/1', params.id)
+  console.log("API", params)
+  return axios.get('/order/getorder/' + params.id)
 }
 
 //新增订单\更新订单

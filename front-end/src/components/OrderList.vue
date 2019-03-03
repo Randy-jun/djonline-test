@@ -84,22 +84,13 @@
           <!-- <el-table-column v-for="(v,i) in table.columns" :prop="v.field" :label="v.title" :sortable="v.sortable"> -->
           <el-table-column v-for="(value, key) in table.columns" :prop="value.field" :label="value.title" :sortable="value.sortable">
             <template slot-scope="scope">
-              <span v-if="scope.row.isSet">
-                <span v-if='value.isEdit'><el-input size="mini" placeholder="请输入内容" v-model="table.currentRow[value.field]"></el-input></span>
-                <span v-else>{{scope.row[value.field]}}</span>
-              </span>
+              <span v-if='"typeCode" == value.field'>{{typeList[scope.row[value.field]]}}</span>
               <span v-else>{{scope.row[value.field]}}</span>
             </template>
           </el-table-column>
           <el-table-column align='center' width="100" label="状态">
             <template slot-scope="scope">
-              <span v-if="scope.row.isSet">
-                <el-select size="mini" @change="statusChange" v-model="scope.row.statuscode" >
-                  <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
-                  </el-option>
-                </el-select>
-              </span>
-              <span v-else class="el-tag el-tag--mini">{{scope.row.statusflag}}</span>
+              <span class="el-tag el-tag--mini">{{statusList[scope.row.statusCode]}}</span>
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="150">
@@ -141,12 +132,8 @@ export default {
   data() {
     return {
       checkedList:[],
-      statusList: [
-            {value: 0,label: '暂存'},
-            {value: 1,label: '提交'},
-            {value: 2,label: '受理'},
-            {value: 3,label: '结算'},
-          ],
+      statusList: ['暂存', '提交', '受理', '结算'],
+      typeList: ['接机', '送机'],
       buttonShow:false,
       dateValue:null,
       value:true,
@@ -156,16 +143,16 @@ export default {
         columns: [
           // { field: "id", title: "编号", width: 160, isEdit: true, sortable: false },
           { field: "user", title: "提交人员", width: 800, isEdit: true, sortable: false },
-          { field: "linkman", title: "联系人", width: 80, isEdit: true, sortable: false },
-          { field: "phone", title: "联系电话", width: 330, isEdit: true, sortable: false },
+          { field: "group", title: "所属组织", width: 200, isEdit: true, sortable: false },
+          { field: "linkMan", title: "联系人", width: 80, isEdit: true, sortable: false },
+          { field: "phoneNumber", title: "联系电话", width: 330, isEdit: true, sortable: false },
           { field: "count", title: "人数", width: 10, isEdit: true, sortable: false },
           { field: "charge", title: "收费金额", width: 15, isEdit: true, sortable: false },
           { field: "address", title: "接送地址", width: 200, isEdit: true, sortable: false },
-          { field: "group", title: "组织", width: 200, isEdit: true, sortable: false },
-          { field: "name", title: "订单类型", width: 200, isEdit: true, sortable: false },
-          { field: "number", title: "航班时间", width: 200, isEdit: true, sortable: false },
-          { field: "leavetime", title: "上机时间", width: 200, isEdit: true, sortable: false },
-          { field: "arrivetime", title: "下机时间", width: 200, isEdit: true, sortable: false },
+          { field: "typeCode", title: "订单类型", width: 200, isEdit: true, sortable: false },
+          { field: "lineNumber", title: "航班时间", width: 200, isEdit: true, sortable: false },
+          { field: "leaveTime", title: "上机时间", width: 200, isEdit: true, sortable: false },
+          { field: "arriveTime", title: "下机时间", width: 200, isEdit: true, sortable: false },
           { field: "terminal", title: "航站楼", width: 200, isEdit: true, sortable: false },
           { field: "remark", title: "备注", width: 220, isEdit: true, sortable: false },
         ],
@@ -265,8 +252,8 @@ export default {
     showOrder(rowContent, index){
       console.log("detail")
       Sstorage.set('orderAdd', false);
-      Sstorage.set('orderID', 1);
-      // Sstorage.set('orderID', rowContent.id);
+      // Sstorage.set('orderID', 1);
+      Sstorage.set('orderID', rowContent.id);
       var orderdetail = "/home/order";
       // console.log(goadd)
       this.$router.replace({ path: orderdetail })
