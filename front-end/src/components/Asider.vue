@@ -26,10 +26,10 @@
         <i class="el-icon-menu"></i>
         <span slot="title">订单管理</span>
       </el-menu-item>
-      <el-menu-item v-if="menu[4]" index="6" v-on:click="navgo('order')">
+      <!-- <el-menu-item v-if="menu[4]" index="6" v-on:click="navgo('order')">
         <i class="el-icon-menu"></i>
         <span slot="title">订单详情</span>
-      </el-menu-item>
+      </el-menu-item> -->
         <!-- <el-menu-item-group>
           <span slot="title">分组一</span>
           <el-menu-item index="1-1">选项1</el-menu-item>

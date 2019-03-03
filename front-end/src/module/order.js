@@ -62,6 +62,11 @@ var order = {
     },
     get : function(){
         return new Promise((resolve, reject) => {
+            orderList().then((response) => {
+                console.log(response);
+            }).catch((error) => {
+                console.log(error);
+            });
             // orderData.result.forEach(element => {
             //     element[isSet] = false;
             // });
