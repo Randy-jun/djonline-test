@@ -208,9 +208,12 @@
       <span v-if="!isAdd" >所属组织:{{order.group}}</span>
     </el-col>
     <el-col :span="5">
-      <span v-if="!isAdd" >提交人：{{order.user}}</span>
+      <span v-if="!isAdd" 制单人：{{order.user}}</span>
     </el-col>
-    <el-col :span="4" :push="6">
+    <el-col :span="5">
+      <span v-if="!isAdd" 提交人：{{order.Submit}}</span>
+    </el-col>
+    <el-col :span="4">
       <el-button-group v-if="isEdit">
         <el-button v-if="isAdd" type="primary" @click="onSave(false)" style="cursor: pointer;">临时保存</el-button>
         <el-button type="success" @click="onSave(true)" style="cursor: pointer;">保存提交</el-button>
@@ -269,9 +272,11 @@ export default {
         this.order.statusCode = 1;
       }
       Order.change(this.order).then((response) => {
-        console.log(response)
-        // this.order = JSON.parse(JSON.stringify(response));
+        // console.log(response)
+        this.order = JSON.parse(JSON.stringify(response));
         // console.log(this.order)
+        this.isEdit = false;
+        this.isAdd = false;
       }).catch((error) => {
         // console.log(error);
       });
