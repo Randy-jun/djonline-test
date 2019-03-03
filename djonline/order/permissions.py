@@ -2,7 +2,7 @@ from rest_framework import permissions
 from usermanage.models import u_token_list
 
 class CustomerAccessPermission(permissions.BasePermission):
-    message = 'You have no permission to change'
+    message = 'You have no permission'
 
     def has_permission(self,request, view):
         #token = request.META['HTTP_TOKEN']
@@ -16,3 +16,6 @@ class CustomerAccessPermission(permissions.BasePermission):
         except Exception as e:
             return False
         return True
+
+
+

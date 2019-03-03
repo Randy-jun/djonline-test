@@ -13,7 +13,7 @@ class o_order(models.Model):
     o_shoukuan = models.CharField(max_length=128)
     o_jiesuan_type = models.CharField(max_length=32)
     o_dahui_msg = models.CharField(max_length=512, blank=True)
-    o_status = models.CharField(max_length=32, default='暂存')
+    o_status = models.IntegerField(max_length=32, default=0)
 
 class o_tourist(models.Model):
     o_order = models.ForeignKey(

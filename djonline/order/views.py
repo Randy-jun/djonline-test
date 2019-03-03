@@ -115,7 +115,9 @@ def index(request):
         password = request.POST['password']
         user = authenticate(username=name, password = password)
 
+
 @api_view(['GET', 'POST'])
+@permission_classes((IsAuthenticated,))
 def export_excel(request):
     title = ['单据编号','单据状态','游客姓名','人数','联系电话','备注','接机日期','结算金额','送达地址',
     '航班号','起飞城市','到达城市','起飞时间','落地时间','航站楼','送单门市','送单时间','制单人','提交人','受理人',
@@ -132,7 +134,7 @@ def export_excel(request):
     ws.append(title)
     for order in orders:
         tourist = o_tourist.objects.get(o_order__id=order.id)
-        if order.o_type == '2':
+        if order.o_type == '0':
             air = o_jieji.objects.get(o_order__id=order.id)
         if order.o_type == '1':
             air = o_songji.objects.get(o_order__id=order.id)
@@ -173,6 +175,9 @@ def order(request,order_id):
         result.update(tourist_serializer.data)
         result.update(air_serializer.data)
 
+    if request.method =='POST':
+        pass
+
     return Response({"data":result})
 
 @api_view( ['POST'])
@@ -198,10 +203,10 @@ def change_order_status(request):
             data = json.loads(request.body)
             order_id = data['order_id']
             order = o_order.objects.get(pk=order_id)
-            if data['order_status'] not in ['打回','提交','已付款','已结算','暂存']:
+            if data['order_status'] not in [0,1,2]:#0zancun,1tijiao,2jiesuan
                 raise Exception('状态无效')
 
-            if  data['order_status'] in ['打回','已付款','已结算'] and ut.user.employee.e_type not in [0,1]:
+            if  data['order_status'] in [1,2] and ut.user.employee.e_type not in [0,1]:
                 return JsonResponse({"error_msg":"非管理员和职员无法打回，修改已付款、已结算"},status=401)
             
             order.o_status = data['order_status']
@@ -220,7 +225,7 @@ def multi_change_order_status(request):
             data = json.loads(request.body)
             order_ids = data['order_ids']
             orders = o_order.objects.filter(id__in=order_ids)
-            if data['order_status'] not in ['打回','提交','已付款','已结算','暂存']:
+            if data['order_status'] not in [0,1,2]:#0zancun,1tijiao,2jiesuan
                 raise Exception('状态无效')
             for order in orders:
                 order.o_status = data['order_status']
