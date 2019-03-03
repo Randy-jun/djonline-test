@@ -8,9 +8,10 @@
       </h2>
     </el-col>
     <el-col :span="10">
-      <el-steps :active="order.statuscode" finish-status="success" simple>
+      <el-steps :active="order.statusCode" finish-status="success" simple>
         <el-step title="暂存"></el-step>
         <el-step title="提交"></el-step>
+        <el-step title="受理"></el-step>
         <el-step title="结算"></el-step>
       </el-steps>
     </el-col>
@@ -27,7 +28,7 @@
         <el-tab-pane label="接机">
           <el-row v-if="isEdit" :gutter="10" type="flex" justify="space-between">
             <el-col :span="5">
-              <el-input v-model="order.linkman">
+              <el-input v-model="order.linkMan">
                 <template slot="prepend">联系人</template>
               </el-input>
             </el-col>
@@ -46,7 +47,7 @@
             </el-col>
           </el-row>
           <el-row v-else :gutter="10" type="flex" justify="space-between">
-            <span>联系人:{{order.linkman}}</span>
+            <span>联系人:{{order.linkMan}}</span>
             <span>联系电话:{{order.phoneNumber}}</span>
             <span>人数:{{order.count}}</span>
             <span>订单金额：{{order.charge}}</span>
@@ -135,7 +136,7 @@
 <script>
 import Order from '@/module/order.js';
 import InputCheck from '@/module/inputcheck.js';
-import UserInfo from '@/module/userinfo.js';
+// import UserInfo from '@/module/userinfo.js';
 import Sstorage from '@/module/sstorage.js';
 
 export default {
@@ -145,27 +146,10 @@ export default {
   },
   data() {
     return {
-      order:{
-        id:1,
-        remark:"",
-        typeCode:2,
-        statusCode:2,
-        phoneNumber:"1231321123",
-        from:"beijing",
-        date:"2015-01-02",
-        time:"12:55",
-        zhidan:"adam",
-        tijiao:"adam",
-        shouli:"bill",
-        fukuan:"Sam",
-        shoukuan:"Tom",
-        jiesuan_type:"2",
-        dahui_msg:"default",
-        status:"已付款",
-      },
+      order:{},
       orderTemp:null,
       isEdit:false,
-      isAdd:true,
+      isAdd:false,
       orderId:null,
       userLevel:null,
     }
@@ -192,17 +176,36 @@ export default {
     this.userLevel = Sstorage.get('userLevel');
     this.isAdd = Sstorage.get('orderAdd');
     if (this.Add) {
-
+      this.isEdit = true;
+      this.order = {
+        address: "",
+        arriveCity: "",
+        arriveTime: "",
+        charge: 0,
+        count: 1,
+        date: "",
+        leaveTime: "",
+        leaveCity: "",
+        lineNumber: "",
+        linkMan: "",
+        phoneNumber: "",
+        remark: "",
+        statusCode: 0,
+        terminal: "",
+        typeCode: 0,
+      };
     } else {
+      this.isEdit = false;
       this.orderId = Sstorage.get('orderID');
       Order.getOne(this.orderId).then((response) => {
         // console.log(response)
         this.order = JSON.parse(JSON.stringify(response));
-        console.log(this.order)
+        // console.log(this.order)
       }).catch((error) => {
         // console.log(error);
       });
     }
+    console.log(this.isEdit, this.isAdd)
   }
 }
 </script>

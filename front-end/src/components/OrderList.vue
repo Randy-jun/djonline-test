@@ -53,7 +53,7 @@
       <el-row :gutter="10" class="filter">
         <el-col :span="4">
           <el-button-group>
-            <el-button type="primary" style="cursor: pointer;" v-on:click="showOrder(null,null)">新增订单</el-button>
+            <el-button type="primary" style="cursor: pointer;" v-on:click="doAdd()">新增订单</el-button>
             <el-button v-if="buttonShow" type="danger" style="cursor: pointer;">删除订单</el-button>
           </el-button-group>
         </el-col>
@@ -131,7 +131,7 @@
 import Order from '@/module/order.js';
 import InputCheck from '@/module/inputcheck.js';
 import UserInfo from '@/module/userinfo.js';
-// import CustomeAlert from  '@/components/sysinfo/CustomAlert.vue';
+import Sstorage from '@/module/sstorage.js';
 
 export default {
   name: 'OrderList',
@@ -255,10 +255,20 @@ export default {
         this.table.data.splice(index, 1, rowContent)
       }
     },
-    showOrder(rowContent, index){
-      var ordershow = "/home/order";
+    doAdd() {
+      Sstorage.set('orderAdd', true);
+      var orderdetail = "/home/order";
       // console.log(goadd)
-      this.$router.replace({ path: ordershow })
+      this.$router.replace({ path: orderdetail })
+    },
+    showOrder(rowContent, index){
+      console.log("detail")
+      Sstorage.set('orderAdd', false);
+      Sstorage.set('orderID', 1);
+      // Sstorage.set('orderID', rowContent.id);
+      var orderdetail = "/home/order";
+      // console.log(goadd)
+      this.$router.replace({ path: orderdetail })
     },
     doDel(rowContent, index){
       this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
@@ -289,7 +299,7 @@ export default {
         });
     },
     exportOrder(){
-      window.open("http://localhost:9090/order/export/")
+      window.open("http://60.205.204.124:8080/order/export/")
       // Order.exportOrder((response) => {
       //   console.log("exportOrder");
       // }).catch((error) => {
@@ -304,9 +314,8 @@ export default {
     }
   },
   mounted() {
-    // var list = JSON.parse(localStorage.getItem('list'));
-    
-    // const api='http://127.0.0.1:9090/acct/agencies/';
+    Sstorage.remove('orderID');
+    Sstorage.remove('orderAdd');
     
     Order.get().then((response) => {
       console.log(response)
