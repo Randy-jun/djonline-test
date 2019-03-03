@@ -323,7 +323,7 @@ def change_order_status(request):
             data = json.loads(request.body)
             order_id = data['order_id']
             order = o_order.objects.get(pk=order_id)
-            if data['order_status'] not in [0,1,2]:#0zancun,1tijiao,2jiesuan
+            if data['order_status'] not in [0,1]:#0zancun,1tijiao,2jiesuan
                 raise Exception('状态无效')
 
             if  data['order_status'] in [1,2] and ut.user.employee.e_type not in [0,1]:
@@ -345,7 +345,7 @@ def multi_change_order_status(request):
             data = json.loads(request.body)
             order_ids = data['order_ids']
             orders = o_order.objects.filter(id__in=order_ids)
-            if data['order_status'] not in [0,1,2]:#0zancun,1tijiao,2jiesuan
+            if data['order_status'] not in [2,3]:#0zancun,1tijiao,2shouli,3jiesuan
                 raise Exception('状态无效')
             for order in orders:
                 order.o_status = data['order_status']
