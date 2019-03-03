@@ -32,7 +32,7 @@ def add_order(request):
     jieji = o_jieji.objects.get(o_order__pk=order.id)
     songji = o_songji.objects.get(o_order__pk=order.id)
     tourist = o_tourist.objects.get(o_order__pk=order.id)'''
-    order_item = ['o_type', 'o_from', 'o_time', 'o_zhidan', 'o_tijiao', 'o_shouli', 
+    order_item = ['o_type', 'o_from', 'o_zhidan_time', 'o_zhidan', 'o_tijiao', 'o_shouli', 
     'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg']
     tourist_item = ['name', 'phone_number', 'number']
     jieji_item = ['date', 'line_num', 'fee', 'address',
@@ -40,6 +40,10 @@ def add_order(request):
     songji_item = ['date', 'line_num', 'fee', 'address',
     'o_from', 'o_to', 'qifei_time', 'luodi_time', 'hangzhanlou']
     data=None
+
+    auth = request.META["HTTP_AUTHORIZATION"]
+    user,token = auth.split(":")                                                                                                              
+    ut = u_token_list.objects.get(token=token)
 
     if request.method == 'POST':        
         order_dict = {}
@@ -49,6 +53,9 @@ def add_order(request):
         result = {}
         mark = 0
         data = json.loads(request.body)
+        data['o_zhidan_time'] = datetime.datetime.now()
+        data['o_from'] = ut.user.employee.e_org.name
+        data['o_zhidan'] = ut.user.first_name
         print(data)
         for i in order_item:
             order_dict[i] = data.get(i, None)
@@ -59,6 +66,7 @@ def add_order(request):
             tourist_dict[i] = data.get(i, None)
         tourist_dict['o_order'] = order
         tourist = o_tourist.objects.create(**tourist_dict)
+        tourist_dict['o_order'] = order.id
         result.update(tourist_dict)       
         
         mark = mark+1
@@ -75,6 +83,7 @@ def add_order(request):
                 jieji_dict['o_order'] = order
                 jieji = o_jieji.objects.create(**jieji_dict)
                 mark = mark+1
+                jieji_dict['o_order'] = order.id
                 result.update(jiejie_dict)
             except Exception as e:
                 order.delete()
@@ -87,6 +96,7 @@ def add_order(request):
                 songji_dict['o_order']=order
                 songji = o_songji.objects.create(**songji_dict)          
                 mark = mark+1
+                songji_dict['o_order']=order.id
                 result.update(songji_dict)
             except Exception as e:
                 order.delete()
