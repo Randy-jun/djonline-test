@@ -73,7 +73,36 @@ export const staffDel = params => {
   return axios.post('/user/delete_employee/', params)
 }
 //=====================================================
+//=====================================================
+//获取订单列表
+export const orderList = () => {
+  return axios.get('/user/get_employee')
+}
 
+//获取订单详情
+export const orderDetail = params => {
+  // console.log(params)
+  return axios.get('/order/getorder/1', params.id)
+}
+
+//新增订单\更新订单
+export const orderChange = params => {
+  console.log(params)
+  if (null === params.id) {
+    return axios.post('/user/add_employee/', params)
+  } else {
+    return axios.post('/user/update_employee/', params)
+  }
+  
+  
+}
+
+//删除订单
+export const orderDel = params => {
+  
+  return axios.post('/user/delete_employee/', params)
+}
+//=====================================================
 
 
 // //获取商品类别信息

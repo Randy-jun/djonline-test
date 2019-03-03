@@ -8,9 +8,10 @@
       </h2>
     </el-col>
     <el-col :span="10">
-      <el-steps :active="order.statuscode" finish-status="success" simple>
+      <el-steps :active="order.statusCode" finish-status="success" simple>
         <el-step title="暂存"></el-step>
         <el-step title="提交"></el-step>
+        <el-step title="受理"></el-step>
         <el-step title="结算"></el-step>
       </el-steps>
     </el-col>
@@ -19,6 +20,7 @@
         <el-button type="primary" @click="orderChange" style="cursor: pointer;">{{isEdit?"取消修改":"修改订单"}}</el-button>
         <el-button type="danger" style="cursor: pointer;">删除订单</el-button>
       </el-button-group>
+      <el-button v-else type="primary" @click="goBack" style="cursor: pointer;">返回</el-button>
     </el-col>
   </el-row>
   <el-row :gutter="10" type="flex" justify="center">
@@ -27,7 +29,7 @@
         <el-tab-pane label="接机">
           <el-row v-if="isEdit" :gutter="10" type="flex" justify="space-between">
             <el-col :span="5">
-              <el-input v-model="order.linkman">
+              <el-input v-model="order.linkMan">
                 <template slot="prepend">联系人</template>
               </el-input>
             </el-col>
@@ -46,7 +48,7 @@
             </el-col>
           </el-row>
           <el-row v-else :gutter="10" type="flex" justify="space-between">
-            <span>联系人:{{order.linkman}}</span>
+            <span>联系人:{{order.linkMan}}</span>
             <span>联系电话:{{order.phoneNumber}}</span>
             <span>人数:{{order.count}}</span>
             <span>订单金额：{{order.charge}}</span>
@@ -90,7 +92,7 @@
           </el-row>
           <el-row v-if="isEdit" :gutter="10" type="flex" justify="space-between">
             <el-col :span="5">
-              <el-input v-model="order.levaeCity">
+              <el-input v-model="order.leaveCity">
                 <template slot="prepend">起飞城市</template>
               </el-input>
             </el-col>
@@ -106,7 +108,7 @@
             </el-col>
           </el-row>
           <el-row v-else :gutter="10" type="flex" justify="space-between">
-            <span>起飞城市:{{order.levaeCity}}</span>
+            <span>起飞城市:{{order.leaveCity}}</span>
             <span>送客地址:{{order.address}}</span>
             <span>备注:{{order.remark}}</span>
           </el-row>
@@ -135,7 +137,7 @@
 <script>
 import Order from '@/module/order.js';
 import InputCheck from '@/module/inputcheck.js';
-import UserInfo from '@/module/userinfo.js';
+// import UserInfo from '@/module/userinfo.js';
 import Sstorage from '@/module/sstorage.js';
 
 export default {
@@ -145,34 +147,19 @@ export default {
   },
   data() {
     return {
-      order:{
-        id:1,
-        remark:"",
-        typeCode:2,
-        statusCode:2,
-        phoneNumber:"1231321123",
-        from:"beijing",
-        date:"2015-01-02",
-        time:"12:55",
-        zhidan:"adam",
-        tijiao:"adam",
-        shouli:"bill",
-        fukuan:"Sam",
-        shoukuan:"Tom",
-        jiesuan_type:"2",
-        dahui_msg:"default",
-        status:"已付款",
-      },
+      order:{},
       orderTemp:null,
       isEdit:false,
-      isAdd:true,
+      isAdd:false,
       orderId:null,
       userLevel:null,
     }
   },
   methods: {
-    onSubmit() {
-      console.log('submit!');
+    goBack() {
+       var orderlist = "/home/orderlist";
+      // console.log(goadd)
+      this.$router.replace({ path: orderlist })
     },
     orderChange() {
       if (this.isEdit) {
@@ -185,15 +172,48 @@ export default {
       
     },
     onSave(isSave) {
-      this.isEdit = false;
+      // this.isEdit = false;
+      if (isSave) {
+        this.order.statusCode = 2;
+      } else {
+        this.order.statusCode = 1;
+      }
+      Order.change(this.order).then((response) => {
+        console.log(response)
+        // this.order = JSON.parse(JSON.stringify(response));
+        // console.log(this.order)
+      }).catch((error) => {
+        // console.log(error);
+      });
     },
   },
   mounted() {
     this.userLevel = Sstorage.get('userLevel');
     this.isAdd = Sstorage.get('orderAdd');
-    if (this.Add) {
-
+    console.log(this.isAdd)
+    if (this.isAdd) {
+      this.isEdit = true;
+      this.order = {
+        id:null,
+        address: "",
+        arriveCity: "",
+        arriveTime: "",
+        charge: 0,
+        count: 1,
+        date: "",
+        leaveTime: "",
+        leaveCity: "",
+        lineNumber: "",
+        linkMan: "",
+        phoneNumber: "",
+        remark: "",
+        statusCode: 0,
+        terminal: "",
+        typeCode: 0,
+      };
     } else {
+      console.log("57638920847839")
+      this.isEdit = false;
       this.orderId = Sstorage.get('orderID');
       Order.getOne(this.orderId).then((response) => {
         // console.log(response)
@@ -203,6 +223,7 @@ export default {
         // console.log(error);
       });
     }
+    console.log(this.isEdit, this.isAdd)
   }
 }
 </script>
