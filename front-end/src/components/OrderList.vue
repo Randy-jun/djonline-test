@@ -59,8 +59,8 @@
         </el-col>
         <el-col :span="4">
           <el-button-group>
-            <el-button type="success" @click="changeStatus(2)" style="cursor: pointer;">受理订单</el-button>
-            <el-button type="warning" @click="changeStatus(3)" style="cursor: pointer;">打回订单</el-button>
+            <el-button type="success" @click="statusChange(2)" style="cursor: pointer;">受理订单</el-button>
+            <el-button type="warning" @click="statusChange(3)" style="cursor: pointer;">打回订单</el-button>
           </el-button-group>
         </el-col>
         <el-col :span="4" v-if="buttonShow">
@@ -169,18 +169,17 @@ export default {
     handleSelectionChange(value){
       this.checkedList = [];
       value.forEach((item) => {
-        // console.log(item.id)
+        console.log(item.id)
         this.checkedList.push(item.id);
       });
     },
-    statusChange(value){
-      let obj = {};
-      obj = this.statusList.find((item)=>{//这里的selectList就是上面遍历的数据源
-          return item.value === value;//筛选出匹配数据
+    statusChange(statusCode){
+      console.log(this.checkedList,statusCode)
+      Order.changeStatus(statusCode, this.checkedList).then((response) => {
+        console.log(response);
+      }).catch((error) => {
+        console.log(error);
       });
-      // console.log(obj)
-      this.table.currentRow.statuscode = obj.value;
-      this.table.currentRow.statusflag = obj.label;
     },
     // handleCurrentChange(selectRow){
     //   this.table.currentRow = selectRow;

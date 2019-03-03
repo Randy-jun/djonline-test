@@ -125,11 +125,12 @@ var order = {
             });
         });
     },
-    changeStatus : function(value){
+    changeStatus : function(statusCode, value){
         return new Promise((resolve, reject) => {
-            var params = {};
-            
-            orderChangeStatus(params).then((response) => {
+            orderChangeStatus({
+                order_status: statusCode,
+                order_ids: value,
+            }).then((response) => {
                 console.log(response);
                 if (response.data.is_success) {
                     let data = response.data.data;

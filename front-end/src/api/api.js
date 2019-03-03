@@ -102,6 +102,7 @@ export const orderDel = params => {
 
 //改变订单状态
 export const orderChangeStatus = params => {
+  console.log(params)
   return axios.post('/order/multichangeorderstatus/', params)
 }
 
