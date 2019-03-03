@@ -51,12 +51,12 @@ def add_order(request):
         data = json.loads(request.body)
         print(data)
         for i in order_item:
-            order_dict[i] = data['order'].get(i, None)
+            order_dict[i] = data.get(i, None)
         result.update(order_dict)  
         order = o_order.objects.create(**order_dict) 
 
         for i in tourist_item:
-            tourist_dict[i] = data['tourist'].get(i, None)
+            tourist_dict[i] = data.get(i, None)
         tourist_dict['o_order'] = order
         tourist = o_tourist.objects.create(**tourist_dict)
         result.update(tourist_dict)       
@@ -71,7 +71,7 @@ def add_order(request):
         if 'jieji' in data.keys():
             try:
                 for i in jieji_item:
-                    jieji_dict[i] = data['jieji'].get(i, None)
+                    jieji_dict[i] = data.get(i, None)
                 jieji_dict['o_order'] = order
                 jieji = o_jieji.objects.create(**jieji_dict)
                 mark = mark+1
@@ -83,7 +83,7 @@ def add_order(request):
         if 'songji' in data.keys():
             try:
                 for i in songji_item:
-                    songji_dict[i] = data['songji'].get(i, None)
+                    songji_dict[i] = data.get(i, None)
                 songji_dict['o_order']=order
                 songji = o_songji.objects.create(**songji_dict)          
                 mark = mark+1
