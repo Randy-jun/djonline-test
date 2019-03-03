@@ -32,7 +32,7 @@ def add_order(request):
     jieji = o_jieji.objects.get(o_order__pk=order.id)
     songji = o_songji.objects.get(o_order__pk=order.id)
     tourist = o_tourist.objects.get(o_order__pk=order.id)'''
-    order_item = ['o_type', 'o_from', 'o_zhidan_time', 'o_zhidan', 'o_tijiao', 'o_shouli', 
+    order_item = ['o_type', 'o_from_org', 'o_zhidan_time', 'o_zhidan', 'o_tijiao', 'o_shouli', 
     'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg']
     tourist_item = ['name', 'phone_number', 'number']
     jieji_item = ['date', 'line_num', 'fee', 'address',
@@ -54,13 +54,14 @@ def add_order(request):
         mark = 0
         data = json.loads(request.body)
         data['o_zhidan_time'] = datetime.datetime.now()
-        data['o_from'] = ut.user.employee.e_org.name
+        data['o_from_org'] = ut.user.employee.e_org.name
         data['o_zhidan'] = ut.user.first_name
         print(data)
         for i in order_item:
             order_dict[i] = data.get(i, None)
         result.update(order_dict)  
-        order = o_order.objects.create(**order_dict) 
+        order = o_order.objects.create(**order_dict)
+        order.save() 
 
         for i in tourist_item:
             tourist_dict[i] = data.get(i, None)
@@ -76,20 +77,17 @@ def add_order(request):
             order.delete()
             return HttpResponseBadRequest()
 
-        if 'jieji' in data.keys():
-            try:
-                for i in jieji_item:
-                    jieji_dict[i] = data.get(i, None)
-                jieji_dict['o_order'] = order
-                jieji = o_jieji.objects.create(**jieji_dict)
-                mark = mark+1
-                jieji_dict['o_order'] = order.id
-                result.update(jiejie_dict)
-            except Exception as e:
-                order.delete()
-                return HttpResponse(content=e,status=400)
-
-        if 'songji' in data.keys():
+        if data['o_type'] == '0':          
+            for i in jieji_item:
+                jieji_dict[i] = data.get(i, None)
+            jieji_dict['o_order'] = order
+            print(jieji_dict)
+            jieji = o_jieji.objects.create(**jieji_dict)
+            mark = mark+1
+            jieji_dict['o_order'] = order.id
+            result.update(jieji_dict)
+            
+        if data['o_type'] == '1':
             try:
                 for i in songji_item:
                     songji_dict[i] = data.get(i, None)
@@ -100,7 +98,7 @@ def add_order(request):
                 result.update(songji_dict)
             except Exception as e:
                 order.delete()
-                return HttpResponse(content=e,status=400)
+                return JsonResponse({"content":str(e)},status=401)
         mark = 0 
     
     #return render(request, 'index1.html', context={'data':data})

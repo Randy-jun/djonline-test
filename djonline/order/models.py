@@ -4,7 +4,7 @@ from django.db import models
 class o_order(models.Model):
     remark = models.CharField(max_length=128, blank=True)
     o_type = models.CharField(max_length=128)
-    o_from = models.CharField(max_length=128)
+    o_from_org = models.CharField(max_length=128)
     o_zhidan_time = models.DateTimeField()
     o_zhidan = models.CharField(max_length=128)
     o_tijiao = models.CharField(max_length=128,null=True)
@@ -16,6 +16,9 @@ class o_order(models.Model):
     o_jiesuan_type = models.CharField(max_length=32,null=True)
     o_dahui_msg = models.CharField(max_length=512, null=True)
     o_status = models.IntegerField(default=0)
+
+    def __str__(self):
+       return self.o_from_org + str(self.o_zhidan_time) + self.o_zhidan
 
 
 class o_tourist(models.Model):
@@ -34,8 +37,8 @@ class o_jieji(models.Model):
     address = models.CharField(max_length=256)
     o_from = models.CharField(max_length=128)
     o_to = models.CharField(max_length=128)
-    qifei_time = models.TimeField()
-    luodi_time = models.TimeField()
+    qifei_time = models.CharField(max_length=128,blank=True)
+    luodi_time = models.CharField(max_length=128,blank=True)
     hangzhanlou = models.CharField(max_length=32)
 
 class o_songji(models.Model):
@@ -45,10 +48,10 @@ class o_songji(models.Model):
     line_num = models.CharField(max_length=128)
     fee = models.FloatField()
     address = models.CharField(max_length=256)
-    o_from = models.CharField(max_length=128)
-    o_to = models.CharField(max_length=128)
-    qifei_time = models.TimeField()
-    luodi_time = models.TimeField()
+    o_from = models.CharField(max_length=128,blank=True)
+    o_to = models.CharField(max_length=128,blank=True)
+    qifei_time = models.CharField(max_length=128)
+    luodi_time = models.CharField(max_length=128)
     hangzhanlou = models.CharField(max_length=32)
 
 
