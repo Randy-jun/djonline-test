@@ -9,5 +9,6 @@ urlpatterns = [
     path('deleteorder/',views.delete_order,name='delete_order'),
     path('changeorderstatus/',views.change_order_status,name='change_order_status'),
     path('multichangeorderstatus/',views.multi_change_order_status,name='multi_change_order_status'),
-    path('export/',views.export_excel,name='export_excel')
+    path('export/',views.export_excel,name='export_excel'),
+    path('updateorder/',views.update_order,name='update_order')
 ]
