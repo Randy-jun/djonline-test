@@ -128,8 +128,15 @@ def update_order(request):
         data = json.loads(request.body)
 
         print(data)
+        try:
+            order_id = data['order_id']
+            if order_id == None:
+                return JsonResponse({"error_msg": "order_id error"},status=401)
 
-        order_id = data['order_id']
+        except Exception as e:
+            return JsonResponse({"error_msg: order_id error":str(e)},status=401)
+
+
         
         order = o_order.objects.get(pk=order_id)
         o_zhidan_time = order.o_zhidan_time
