@@ -61,7 +61,7 @@ def add_order(request):
             order_dict[i] = data.get(i, None)
         order = o_order.objects.create(**order_dict)
         order.save()
-        order_dict['id'] = order.id
+        order_dict['order_id'] = order.id
         result.update(order_dict)   
 
         for i in tourist_item:
@@ -206,7 +206,7 @@ def index(request):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes((IsAuthenticated,))
+#@permission_classes((IsAuthenticated,))
 def export_excel(request):
     title = ['单据编号','单据状态','游客姓名','人数','联系电话','备注','接机日期','结算金额','送达地址',
     '航班号','起飞城市','到达城市','起飞时间','落地时间','航站楼','送单门市','送单时间','制单人','提交人','受理人',
