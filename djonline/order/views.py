@@ -263,6 +263,7 @@ def get_order(request,order_id):
         result.update(order_serializer.data)
         result.update(tourist_serializer.data)
         result.update(air_serializer.data)
+        result['order_id']=order.id
 
     return Response({"is_success":True, "data":result})
 
@@ -288,7 +289,7 @@ def get_orders(request):
             result.update(order_serializer.data)
             result.update(tourist_serializer.data)
             result.update(air_serializer.data)
-            result['id']=order.id
+            result['order_id']=order.id
 
             results.append(result)
 
