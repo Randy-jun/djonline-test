@@ -1,7 +1,7 @@
 //sesstatuscode:0,sionstflagorage function packae
 import Axios from 'axios';
 import Sstorage from '@/module/sstorage.js';
-import { orderList, orderDetail, orderUpdate, orderAdd, orderDel } from '@/api/api'
+import { orderList, orderDetail, orderChange, orderDel } from '@/api/api'
 
 var orderData = {
     item_num : 7,
@@ -60,13 +60,6 @@ var order = {
         });
     },
     get : function(){
-        var params = new URLSearchParams();
-        params.append("userID",Sstorage.get('userID'));
-        params.append("tokeID",Sstorage.get('localAgencyFk'));
-        params.append("local_agency_fk",Sstorage.get('tokenID'));
-
-        params.append("req_method","GET");
-
         return new Promise((resolve, reject) => {
             // orderData.result.forEach(element => {
             //     element[isSet] = false;
@@ -87,22 +80,23 @@ var order = {
             //     reject(error);
             // })
     },
-    update : function(value){
-        var params = new URLSearchParams();
-        params.append("userID",Sstorage.get('userID'));
-        params.append("tokeID",Sstorage.get('localAgencyFk'));
-        params.append("local_agency_fk",Sstorage.get('tokenID'));
-
-        params.append("req_method","UPDATE");
-
-        params.append("pk", value.id);
-        params.append("name", value.name);
-        params.append("remark", value.remark);
-
+    change : function(value){
         return new Promise((resolve, reject) => {
-            let tempData = value;
-            tempData.isSet = false;
-            resolve(tempData);
+            var params = {};
+            if (0 === value.typeCode) {
+                value.arriveCity = "西安";
+            } else if (1 === value.typeCode) {
+                value.leaveCity = "西安";
+            }
+            for (var key in orderDict) {
+                // console.log(key + ":" + orderDict[key]);
+                params[orderDict[key]] = value[key];
+            }
+            orderChange(params).then((response) => {
+                console.log(response);
+            }).catch ((error) => {
+                console.log(error);
+            });
         })
         // return new Promise((resolve, reject) => {
         //     Axios.post(api, params).then((response) => {
@@ -121,16 +115,6 @@ var order = {
         // })
     },
     insert : function(value){
-        var params = new URLSearchParams();
-        params.append("userID",Sstorage.get('userID'));
-        params.append("tokeID",Sstorage.get('localAgencyFk'));
-        params.append("local_agency_fk",Sstorage.get('tokenID'));
-
-        params.append("req_method","UPDATE");
-
-        params.append("name", value.name);
-        params.append("remark", value.remark);
-
         return new Promise((resolve, reject) => {
             let tempData = value;
             tempData.isSet = false;

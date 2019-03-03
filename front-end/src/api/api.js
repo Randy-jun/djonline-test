@@ -81,19 +81,20 @@ export const orderList = () => {
 
 //获取订单详情
 export const orderDetail = params => {
-  console.log(params)
+  // console.log(params)
   return axios.get('/order/getorder/1', params.id)
 }
 
-//新增订单
-export const orderAdd = params => {
+//新增订单\更新订单
+export const orderChange = params => {
   console.log(params)
-  return axios.post('/user/add_employee/', params)
-}
-
-//更新订单
-export const orderUpdate = params => {
-  return axios.post('/user/update_employee/', params)
+  if (null === params.id) {
+    return axios.post('/user/add_employee/', params)
+  } else {
+    return axios.post('/user/update_employee/', params)
+  }
+  
+  
 }
 
 //删除订单

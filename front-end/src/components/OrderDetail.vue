@@ -20,6 +20,7 @@
         <el-button type="primary" @click="orderChange" style="cursor: pointer;">{{isEdit?"取消修改":"修改订单"}}</el-button>
         <el-button type="danger" style="cursor: pointer;">删除订单</el-button>
       </el-button-group>
+      <el-button v-else type="primary" @click="goBack" style="cursor: pointer;">返回</el-button>
     </el-col>
   </el-row>
   <el-row :gutter="10" type="flex" justify="center">
@@ -91,7 +92,7 @@
           </el-row>
           <el-row v-if="isEdit" :gutter="10" type="flex" justify="space-between">
             <el-col :span="5">
-              <el-input v-model="order.levaeCity">
+              <el-input v-model="order.leaveCity">
                 <template slot="prepend">起飞城市</template>
               </el-input>
             </el-col>
@@ -107,7 +108,7 @@
             </el-col>
           </el-row>
           <el-row v-else :gutter="10" type="flex" justify="space-between">
-            <span>起飞城市:{{order.levaeCity}}</span>
+            <span>起飞城市:{{order.leaveCity}}</span>
             <span>送客地址:{{order.address}}</span>
             <span>备注:{{order.remark}}</span>
           </el-row>
@@ -155,8 +156,10 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
-      console.log('submit!');
+    goBack() {
+       var orderlist = "/home/orderlist";
+      // console.log(goadd)
+      this.$router.replace({ path: orderlist })
     },
     orderChange() {
       if (this.isEdit) {
@@ -169,15 +172,29 @@ export default {
       
     },
     onSave(isSave) {
-      this.isEdit = false;
+      // this.isEdit = false;
+      if (isSave) {
+        this.order.statusCode = 2;
+      } else {
+        this.order.statusCode = 1;
+      }
+      Order.change(this.order).then((response) => {
+        console.log(response)
+        // this.order = JSON.parse(JSON.stringify(response));
+        // console.log(this.order)
+      }).catch((error) => {
+        // console.log(error);
+      });
     },
   },
   mounted() {
     this.userLevel = Sstorage.get('userLevel');
     this.isAdd = Sstorage.get('orderAdd');
-    if (this.Add) {
+    console.log(this.isAdd)
+    if (this.isAdd) {
       this.isEdit = true;
       this.order = {
+        id:null,
         address: "",
         arriveCity: "",
         arriveTime: "",
@@ -195,12 +212,13 @@ export default {
         typeCode: 0,
       };
     } else {
+      console.log("57638920847839")
       this.isEdit = false;
       this.orderId = Sstorage.get('orderID');
       Order.getOne(this.orderId).then((response) => {
         // console.log(response)
         this.order = JSON.parse(JSON.stringify(response));
-        // console.log(this.order)
+        console.log(this.order)
       }).catch((error) => {
         // console.log(error);
       });
