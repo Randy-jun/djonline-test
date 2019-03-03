@@ -18,7 +18,7 @@ class o_order(models.Model):
     o_status = models.IntegerField(default=0)
 
     def __str__(self):
-       return self.o_from_org + str(self.o_zhidan_time) + self.o_zhidan
+       return str(self.id) + ':'+self.o_from_org + str(self.o_zhidan_time) + self.o_zhidan
 
 
 class o_tourist(models.Model):

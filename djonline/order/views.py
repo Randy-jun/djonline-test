@@ -242,7 +242,7 @@ def export_excel(request):
     return response
 
 @api_view(['GET', 'POST', 'UPDATE'])
-def order(request,order_id):
+def get_order(request,order_id):
     if request.method == 'GET':
         order_id = order_id
         order = o_order.objects.get(pk=order_id)
@@ -251,7 +251,7 @@ def order(request,order_id):
         order_serializer = o_orderSerializer(order)
         tourist_serializer = o_touristSerializer(tourist)
 
-        if order.o_type == '2':
+        if order.o_type == '0':
             jieji = o_jieji.objects.get(o_order__id=order_id)
             air_serializer = o_jiejiSerializer(jieji)
 
@@ -264,10 +264,38 @@ def order(request,order_id):
         result.update(tourist_serializer.data)
         result.update(air_serializer.data)
 
-    if request.method =='POST':
-        pass
-
     return Response({"is_success":True, "data":result})
+
+def get_orders(request):
+    if request.method == 'POST':
+        data = request.body
+        orders = o_order.objects.all()
+        results = []
+        for order in orders:
+            result = {}
+            order_serializer = o_orderSerializer(order)
+            tourist = o_tourist.objects.get(o_order=order)
+
+            tourist_serializer = o_touristSerializer(tourist)
+            if order.o_type == '0':
+                jieji = o_jieji.objects.get(o_order=order)
+                air_serializer = o_jiejiSerializer(jieji)
+
+            if order.o_type == '1':
+                songji = o_songji.objects.get(o_order=order)
+                air_serializer = o_songjiSerializer(songji)
+
+            result.update(order_serializer.data)
+            result.update(tourist_serializer.data)
+            result.update(air_serializer.data)
+            result['id']=order.id
+
+            results.append(result)
+
+        return JsonResponse({"is_success":True, "data":result})
+
+
+
 
 @api_view( ['POST'])
 def delete_order(request):
