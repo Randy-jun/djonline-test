@@ -310,7 +310,7 @@ def delete_order(request):
         except Exception as e:
             is_success = False
             result_str ='delete failed:'+ str(e)
-    return Response({'is_successs':is_success,'result_str':result_str})
+    return Response({'is_success':is_success,'result_str':result_str})
 
 @api_view(['POST'])
 #@permission_classes((CustomerAccessPermission,))
