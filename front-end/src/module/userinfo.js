@@ -86,6 +86,8 @@ var userInfo = {
                     Sstorage.set('nickName', response.data.ulevelname);
                     Sstorage.set('group', response.data.uorg);
                     Sstorage.set('groupID', response.data.uorgid);
+                    Sstorage.set('tonkenTime', Date.parse(new Date()));
+                    // console.log(Date.parse(new Date()));
                     resolve(response.data);
                 } else {
                     reject(response.data.loginResultString);

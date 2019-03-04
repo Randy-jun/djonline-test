@@ -12,7 +12,21 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
 // http request 拦截器
 axios.interceptors.request.use(
   config => {
+    // let loginTimeLimit = (Date.parse(new Date()) - Sstorage.get('tonkenTime')) / 60000;
+    // console.log(loginTimeLimit) //&& (1 > loginTimeLimit)
     if (Sstorage.get('tonken')) {
+      // if (loginTimeLimit > 1) {
+      //   Sstorage.clearAll();
+      //   this.$router.replace({ path: '/login' })
+      //   // this.$message({
+      //   //   type: 'info',
+      //   //   message: '登录信息已经过期，请重新登录！'
+      //   // });
+      //   // return  router.replace({
+      //   //           path: 'login',
+      //   //           query: { redirect: router.currentRoute.path },
+      //   //         });
+      // }
     //   config.headers.authKey = Sstorage.get('username');
       config.headers.Authorization = Sstorage.get('username') + ':' + Sstorage.get('tonken');
         // config.headers.Authorization = {
