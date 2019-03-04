@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class o_order(models.Model):
-    remark = models.CharField(max_length=128, blank=True)
+    remark = models.CharField(max_length=128, blank=True, null=True)
     o_type = models.CharField(max_length=128)
     o_from_org = models.CharField(max_length=128)
     o_zhidan_time = models.DateTimeField()

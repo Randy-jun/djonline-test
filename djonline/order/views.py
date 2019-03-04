@@ -170,7 +170,7 @@ def update_order(request):
             for i in jieji_item:
                 jieji_dict[i] = data.get(i, None)
             jieji_dict['o_order'] = order
-            print(jieji_dict)
+            print(jieji_dict,order,order.id)
             jieji = o_jieji.objects.update(**jieji_dict)
             mark = mark+1
             jieji_dict['order_id'] = order.id
