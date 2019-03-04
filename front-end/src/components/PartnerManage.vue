@@ -250,7 +250,7 @@ export default {
     Partner.get().then((response) => {
       this.table.data = response.data;
       this.table.countAll = response.item_num;
-      console.log(this.table.countAll, this.table.data)
+      // console.log(this.table.countAll, this.table.data)
       this.table.data.forEach(item => {
         this.$set(item, 'isSet', false);
       });

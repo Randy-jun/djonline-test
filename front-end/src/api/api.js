@@ -88,7 +88,7 @@ export const orderDetail = params => {
 //新增订单\更新订单
 export const orderChange = params => {
   console.log(params)
-  if (null === params.id) {
+  if (null === params.order_id) {
     return axios.post('/order/addorder/', params)
   } else {
     return axios.post('/order/updateorder/', params)
