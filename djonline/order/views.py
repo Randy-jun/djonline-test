@@ -106,7 +106,7 @@ def add_order(request):
     return JsonResponse({"is_success":True,"data":result})
 def update_order(request):
     order_item = ['o_type', 'o_from_org', 'o_zhidan_time', 'o_zhidan', 'o_tijiao', 'o_shouli', 
-    'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg']
+    'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg','remark']
     tourist_item = ['name', 'phone_number', 'number']
     jieji_item = ['date', 'line_num', 'fee', 'address',
     'o_from', 'o_to', 'qifei_time', 'luodi_time', 'hangzhanlou']
@@ -128,13 +128,10 @@ def update_order(request):
         data = json.loads(request.body)
 
         print(data)
-        try:
-            order_id = data['order_id']
-            if order_id == None:
-                return JsonResponse({"error_msg": "order_id error"},status=401)
+        order_id = data['order_id']
+        if order_id == None:
+            return JsonResponse({"error_msg": "order_id error"},status=401)
 
-        except Exception as e:
-            return JsonResponse({"error_msg: order_id error":str(e)},status=401)
 
 
         
@@ -158,7 +155,8 @@ def update_order(request):
         tourist_dict['o_order'] = order
         print('t_d',tourist_dict)
         tourist = o_tourist.objects.update(**tourist_dict)
-        tourist_dict['o_order'] = order.id
+        tourist_dict.pop('o_order')
+        tourist_dict['order_id'] = order.id
         result.update(tourist_dict)       
         
         mark = mark+1
@@ -175,7 +173,8 @@ def update_order(request):
             print(jieji_dict)
             jieji = o_jieji.objects.update(**jieji_dict)
             mark = mark+1
-            jieji_dict['o_order'] = order.id            
+            jieji_dict['order_id'] = order.id
+            jieji_dict.pop('o_order')            
             result.update(jieji_dict)
             
         if data['o_type'] == '1':
@@ -185,7 +184,8 @@ def update_order(request):
                 songji_dict['o_order']=order
                 songji = o_songji.objects.update(**songji_dict)          
                 mark = mark+1
-                songji_dict['o_order']=order.id
+                songji_dict['order_id']=order.id
+                songji_dict.pop('o_order')
                 result.update(songji_dict)
             except Exception as e:
                 order.delete()
@@ -284,15 +284,15 @@ def get_orders(request):
         for order in orders:
             result = {}
             order_serializer = o_orderSerializer(order)
-            tourist = o_tourist.objects.get(o_order=order)
+            tourist = o_tourist.objects.get(o_order__id=order.id)
 
             tourist_serializer = o_touristSerializer(tourist)
             if order.o_type == '0':
-                jieji = o_jieji.objects.get(o_order=order)
+                jieji = o_jieji.objects.get(o_order__id=order.id)
                 air_serializer = o_jiejiSerializer(jieji)
 
             if order.o_type == '1':
-                songji = o_songji.objects.get(o_order=order)
+                songji = o_songji.objects.get(o_order__id=order.id)
                 air_serializer = o_songjiSerializer(songji)
 
             result.update(order_serializer.data)
