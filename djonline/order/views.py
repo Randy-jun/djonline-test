@@ -279,7 +279,10 @@ def get_order(request,order_id):
 def get_orders(request):
     if request.method == 'POST':
         data = request.body
-        orders = o_order.objects.all()
+        auth = request.META["HTTP_AUTHORIZATION"]
+        user,token = auth.split(":")                                                                                                              
+        ut = u_token_list.objects.get(token=token)
+        orders = o_order.objects.filter(o_from_org=ut.user.employee.e_org.name)
         results = []
         for order in orders:
             result = {}
