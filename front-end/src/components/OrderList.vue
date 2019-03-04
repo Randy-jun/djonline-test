@@ -295,33 +295,18 @@ export default {
     },
     exportOrder(){
       // console.log(this.checkedList);
-      Order.export(this.checkedList).then((response) => {
-        // console.log(response.status);
-        this.download(response.data)
-      }).catch((error) => {
-        console.log(error);
-      });
-      // window.open("http://60.205.204.124:8080/order/export/")
+      // Order.export(this.checkedList).then((response) => {
+      //   // console.log(response.status);
+      //   this.download(response.data)
+      // }).catch((error) => {
+      //   console.log(error);
+      // });
+      window.open("http://60.205.204.124:8080/order/export/")
       // Order.exportOrder((response) => {
       //   console.log("exportOrder");
       // }).catch((error) => {
       //   console.log(error);
       // })
-    },
-    download(data) {
-        if(!data){
-            return
-        }
-        var blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8'})
-        var url = window.URL.createObjectURL(blob);
-        var aLink = document.createElement("a");
-        aLink.style.display = "none";
-        aLink.href = url;
-        aLink.setAttribute("download", "excel.xls");
-        document.body.appendChild(aLink);
-        aLink.click();
-        document.body.removeChild(aLink); //下载完成移除元素
-        window.URL.revokeObjectURL(url); //释放掉blob对象
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
