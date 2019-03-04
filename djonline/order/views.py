@@ -106,7 +106,7 @@ def add_order(request):
     return JsonResponse({"is_success":True,"data":result})
 def update_order(request):
     order_item = ['o_type', 'o_from_org', 'o_zhidan_time', 'o_zhidan', 'o_tijiao', 'o_shouli', 
-    'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg','remark']
+    'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg','remark','o_status']
     tourist_item = ['name', 'phone_number', 'number']
     jieji_item = ['date', 'line_num', 'fee', 'address',
     'o_from', 'o_to', 'qifei_time', 'luodi_time', 'hangzhanlou']
