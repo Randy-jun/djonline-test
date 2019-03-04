@@ -17,7 +17,7 @@
   </el-row>
   <el-row v-else>
     <!-- <el-row style="height:750px"> -->
-      <el-row :gutter="10" class="filter">
+      <!-- <el-row :gutter="10" class="filter">
         <el-col :span="2"><span>接送时间</span></el-col>
         <el-col :span="1"><span class="el-tag el-tag--mini" style="cursor: pointer;">不限</span></el-col>
         <el-col :span="1"><span class="el-tag el-tag--mini" style="cursor: pointer;">今天</span></el-col>
@@ -47,14 +47,14 @@
         <el-col :span="1"><span class="el-tag el-tag--mini" style="cursor: pointer;">不限</span></el-col>
         <el-col :span="1"><span class="el-tag el-tag--mini" style="cursor: pointer;">暂存</span></el-col>
         <el-col :span="1"><span class="el-tag el-tag--mini" style="cursor: pointer;">已提交</span></el-col>
-        <!-- <el-col :span="1"><span class="el-tag el-tag--mini" style="cursor: pointer;">受理中</span></el-col> -->
+        <el-col :span="1"><span class="el-tag el-tag--mini" style="cursor: pointer;">受理中</span></el-col>
         <el-col :span="1"><span class="el-tag el-tag--mini" style="cursor: pointer;">已结算</span></el-col>
-      </el-row>
+      </el-row> -->
       <el-row :gutter="10" class="filter">
         <el-col :span="4">
           <el-button-group>
             <el-button type="primary" style="cursor: pointer;" v-on:click="doAdd()">新增订单</el-button>
-            <el-button type="danger" style="cursor: pointer;">删除订单</el-button>
+            <!-- <el-button type="danger" style="cursor: pointer;">删除订单</el-button> -->
           </el-button-group>
         </el-col>
         <el-col :span="4">
