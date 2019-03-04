@@ -33,7 +33,7 @@ def add_order(request):
     songji = o_songji.objects.get(o_order__pk=order.id)
     tourist = o_tourist.objects.get(o_order__pk=order.id)'''
     order_item = ['o_type', 'o_from_org', 'o_zhidan_time', 'o_zhidan', 'o_tijiao', 'o_shouli', 
-    'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg']
+    'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg','remark','o_status']
     tourist_item = ['name', 'phone_number', 'number']
     jieji_item = ['date', 'line_num', 'fee', 'address',
     'o_from', 'o_to', 'qifei_time', 'luodi_time', 'hangzhanlou']
