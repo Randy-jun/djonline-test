@@ -185,7 +185,7 @@ def add_employee(request):
     
     data = json.loads(request.body)
     username = data['username']
-    password = 'William798'
+    password = 'BH111111'
     e_org_id = data['org_id']
     email = ''
     first_name = data['nickname']
@@ -392,7 +392,7 @@ def add_partner(request):
     data = json.loads(request.body)
     print('data',data)
     username = data['username']
-    password = 'William798'#data['password']
+    password = 'BH111111'#data['password']
     p_org_id = data['org_id']
     try:
         employee.objects.get(e_org__id=p_org_id)
