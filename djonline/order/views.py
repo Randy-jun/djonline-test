@@ -28,10 +28,7 @@ from order.serializers import o_jiejiSerializer, o_orderSerializer, o_songjiSeri
 
 # Create your views here.
 def add_order(request):
-    '''order = o_order.objects.get(pk=1)
-    jieji = o_jieji.objects.get(o_order__pk=order.id)
-    songji = o_songji.objects.get(o_order__pk=order.id)
-    tourist = o_tourist.objects.get(o_order__pk=order.id)'''
+    '''add order'''
     order_item = ['o_type', 'o_from_org', 'o_zhidan_time', 'o_zhidan', 'o_tijiao', 'o_shouli', 
     'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg','remark','o_status']
     tourist_item = ['name', 'phone_number', 'number']
@@ -52,15 +49,18 @@ def add_order(request):
         songji_dict = {}
         result = {}
         mark = 0
+        
         data = json.loads(request.body)
         data['o_zhidan_time'] = datetime.datetime.now()
         data['o_from_org'] = ut.user.employee.e_org.name
         data['o_zhidan'] = ut.user.first_name
         print(data)
+
         for i in order_item:
             order_dict[i] = data.get(i, None)
         order = o_order.objects.create(**order_dict)
         order.save()
+        mark = mark+1
         order_dict['order_id'] = order.id
         result.update(order_dict)   
 
@@ -69,14 +69,16 @@ def add_order(request):
         tourist_dict['o_order'] = order
         tourist = o_tourist.objects.create(**tourist_dict)
         tourist_dict['o_order'] = order.id
-        result.update(tourist_dict)       
-        
-        mark = mark+1
+        result.update(tourist_dict)
+        tourist.save()
+        mark=mark+1
+
         jieji = None
         songji = None
-        if 'jieji' in data.keys() and 'songji' in data.keys():
-            order.delete()
-            return HttpResponseBadRequest()
+       
+
+        if data['o_type'] == None:
+            return JsonResponse({"error_msg":"no o_type, add failed"},status=403)
 
         if data['o_type'] == '0':          
             for i in jieji_item:
@@ -84,113 +86,117 @@ def add_order(request):
             jieji_dict['o_order'] = order
             print(jieji_dict)
             jieji = o_jieji.objects.create(**jieji_dict)
-            mark = mark+1
             jieji_dict['o_order'] = order.id
             result.update(jieji_dict)
+            jieji.save()
+            mark = mark + 1
             
         if data['o_type'] == '1':
-            try:
-                for i in songji_item:
-                    songji_dict[i] = data.get(i, None)
-                songji_dict['o_order']=order
-                songji = o_songji.objects.create(**songji_dict)          
-                mark = mark+1
-                songji_dict['o_order']=order.id
-                result.update(songji_dict)
-            except Exception as e:
-                order.delete()
-                return JsonResponse({"content":str(e)},status=401)
-        mark = 0 
-    
-    #return render(request, 'index1.html', context={'data':data})
+            for i in songji_item:
+                songji_dict[i] = data.get(i, None)
+            songji_dict['o_order']=order
+            songji = o_songji.objects.create(**songji_dict) 
+            songji_dict['o_order']=order.id
+            result.update(songji_dict)
+            songji.save()
+            mark = mark +1
+        
+        if mark!=3:
+            order.delete()
+            return JsonResponse({"mark":mark,"error_msg":"mark!=3,something got wrong, add failed"},status=403)
+
     return JsonResponse({"is_success":True,"data":result})
+
 def update_order(request):
-    order_item = ['o_type', 'o_from_org', 'o_zhidan_time', 'o_zhidan', 'o_tijiao', 'o_shouli', 
-    'o_fukuan', 'o_shoukuan', 'o_jiesuan_type', 'o_dahui_msg','remark','o_status']
+    '''update order'''
+    order_item = ['o_type', 'o_from_org','o_jiesuan_type', 'remark']
     tourist_item = ['name', 'phone_number', 'number']
     jieji_item = ['date', 'line_num', 'fee', 'address',
     'o_from', 'o_to', 'qifei_time', 'luodi_time', 'hangzhanlou']
     songji_item = ['date', 'line_num', 'fee', 'address',
     'o_from', 'o_to', 'qifei_time', 'luodi_time', 'hangzhanlou']
-    data=None
+
+    data = None
 
     auth = request.META["HTTP_AUTHORIZATION"]
     user,token = auth.split(":")                                                                                                              
     ut = u_token_list.objects.get(token=token)
 
-    if request.method == 'POST':        
+    if request.method == 'POST': 
+
         order_dict = {}
         tourist_dict = {}
         jieji_dict = {}
         songji_dict = {}
         result = {}
-        mark = 0
         data = json.loads(request.body)
 
         print(data)
-        order_id = data['order_id']
+
+        order_id = data['order_id']        
         if order_id == None:
-            return JsonResponse({"error_msg": "order_id error"},status=401)
+            return JsonResponse({"error_msg": "order_id error"},status=403)
 
 
 
         
-        order = o_order.objects.get(pk=order_id)
-        o_zhidan_time = order.o_zhidan_time
-        tourist = o_tourist.objects.get(o_order=order)
-        if data['o_type']=='0':
+        order = o_order.objects.get(pk=order_id) # get order
+        tourist = o_tourist.objects.get(o_order=order) # get tourist
+
+        if data['o_type'] == '0':# get jieji or songji
             o_air = o_jieji.objects.get(o_order=order)
-        elif data['o_type']=='1':
+        elif data['o_type'] == '1':
             o_air = o_songji.objects.get(o_order=order)
         else:
-            JsonResponse({"error_msg:":"error o_type"},status=401)
-        for i in order_item:
+            JsonResponse({"error_msg:":"error o_type"},status=403)
+        for i in order_item:# if item have no value then pop it out
             order_dict[i] = data.get(i, None)
-        order_dict['o_zhidan_time']=o_zhidan_time
+            if order_dict[i] == None:
+                order_dict.pop(i)
         result.update(order_dict)  
         o_order.objects.update(**order_dict)
 
         for i in tourist_item:
             tourist_dict[i] = data.get(i, None)
-        tourist_dict['o_order'] = order
+            if tourist_dict[i] == None:
+                tourist_dict.pop(i)
+        
         print('t_d',tourist_dict)
+
         tourist = o_tourist.objects.update(**tourist_dict)
-        tourist_dict.pop('o_order')
+        
         tourist_dict['order_id'] = order.id
+
         result.update(tourist_dict)       
         
-        mark = mark+1
+         
         jieji = None
         songji = None
-        if 'jieji' in data.keys() and 'songji' in data.keys():
-            order.delete()
-            return HttpResponseBadRequest()
 
         if data['o_type'] == '0':          
             for i in jieji_item:
                 jieji_dict[i] = data.get(i, None)
-            jieji_dict['o_order'] = order
+                if jieji_dict[i] == None:
+                    jieji_dict.pop(i)
+           
             print(jieji_dict,order,order.id)
             jieji = o_jieji.objects.update(**jieji_dict)
-            mark = mark+1
-            jieji_dict['order_id'] = order.id
-            jieji_dict.pop('o_order')            
+            
+            
+                        
             result.update(jieji_dict)
             
         if data['o_type'] == '1':
-            try:
-                for i in songji_item:
-                    songji_dict[i] = data.get(i, None)
-                songji_dict['o_order']=order
-                songji = o_songji.objects.update(**songji_dict)          
-                mark = mark+1
-                songji_dict['order_id']=order.id
-                songji_dict.pop('o_order')
-                result.update(songji_dict)
-            except Exception as e:
-                order.delete()
-                return JsonResponse({"content":str(e)},status=401)
-        mark = 0
+            for i in songji_item:
+                songji_dict[i] = data.get(i, None)
+                if songji_dict[i] == None:
+                    songji.dict.pop(i)
+            
+            songji = o_songji.objects.update(**songji_dict)          
+                
+            songji_dict['order_id']=order.id
+            
+            result.update(songji_dict)
 
     return JsonResponse({"is_success":True,"data":result})
 
@@ -282,11 +288,13 @@ def get_orders(request):
         auth = request.META["HTTP_AUTHORIZATION"]
         user,token = auth.split(":")                                                                                                              
         ut = u_token_list.objects.get(token=token)
+        print(ut.user.employee.e_org.name)
         orders = o_order.objects.filter(o_from_org=ut.user.employee.e_org.name)
         results = []
         for order in orders:
             result = {}
             order_serializer = o_orderSerializer(order)
+            print(order.id)
             tourist = o_tourist.objects.get(o_order__id=order.id)
 
             tourist_serializer = o_touristSerializer(tourist)
