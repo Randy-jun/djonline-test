@@ -163,7 +163,7 @@ def update_order(request):
         
         print('t_d',tourist_dict)
 
-        tourist = o_tourist.objects.update(**tourist_dict)
+        tourist = o_tourist.objects.filter(o_order__id=order.id).update(**tourist_dict)
         
         tourist_dict['order_id'] = order.id
 
@@ -180,7 +180,8 @@ def update_order(request):
                     jieji_dict.pop(i)
            
             print(jieji_dict,order,order.id)
-            jieji = o_jieji.objects.update(**jieji_dict)
+            jieji = o_jieji.objects.filter(o_order__id=order.id).update(**jieji_dict)
+           
             
             
                         
@@ -192,7 +193,7 @@ def update_order(request):
                 if songji_dict[i] == None:
                     songji.dict.pop(i)
             
-            songji = o_songji.objects.update(**songji_dict)          
+            songji = o_songji.objects.filter(o_order__id=order.id).update(**songji_dict)          
                 
             songji_dict['order_id']=order.id
             
